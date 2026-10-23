@@ -1,0 +1,1718 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>家庭防災庫</title>
+<meta name="theme-color" content="#1C3D5A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="防災庫">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font-size:14px} img{max-width:100%} [hidden]{display:none!important}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: phone column. Header + category rail → big "days" number → items (expiry row, rotation toggle, filters, cards) → log, schema.
+   Palette: 防災手冊 — indigo ink + warning yellow. Expiry states use one warm ramp (red → orange → yellow) plus the ink-blue family, so every color belongs to the same set. */
+:root{
+  --bg:#F2F4F6; --surface:#FFFFFF; --surface-2:#F6F8FA; --ink:#13263A; --muted:#5C6977; --line:#D8DEE5;
+  --accent:#1C3D5A; --accent-ink:#FFFFFF; --accent-soft:#E1E9F1;
+  --signal:#F5B800; --signal-ink:#13263A; --wash:#EEF1F4; --hl:var(--signal);
+  --t-exp:#C62E2E; --t-3:#D2630A; --t-6:#9E7700; --t-12:#3D6A97; --t-chk:#5B6B7E; --t-ok:#5C6977;
+  --font-body:"Noto Sans TC",-apple-system,"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --font-num:"Barlow Condensed","Noto Sans TC",-apple-system,system-ui,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1620; --surface:#16212D; --surface-2:#1C2936; --ink:#E6EBF0; --muted:#98A6B4; --line:#2A3846;
+  --accent:#8DB4DA; --accent-ink:#0E1620; --accent-soft:#1E3348;
+  --signal:#F5C431; --signal-ink:#13263A; --wash:#1F2B38; --hl:color-mix(in srgb,var(--signal) 38%,transparent);
+  --t-exp:#F0766B; --t-3:#F29A50; --t-6:#F5C431; --t-12:#8DB4E8; --t-chk:#A7B4C4; --t-ok:#98A6B4; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1620; --surface:#16212D; --surface-2:#1C2936; --ink:#E6EBF0; --muted:#98A6B4; --line:#2A3846;
+  --accent:#8DB4DA; --accent-ink:#0E1620; --accent-soft:#1E3348;
+  --signal:#F5C431; --signal-ink:#13263A; --wash:#1F2B38; --hl:color-mix(in srgb,var(--signal) 38%,transparent);
+  --t-exp:#F0766B; --t-3:#F29A50; --t-6:#F5C431; --t-12:#8DB4E8; --t-chk:#A7B4C4; --t-ok:#98A6B4; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 96px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.label{font-size:12px;letter-spacing:.08em;color:var(--muted);margin:0}
+svg.i{width:16px;height:16px;flex:0 0 auto}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px 10px;display:flex;flex-direction:column;gap:10px;
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:560px;margin:0 auto;width:100%}
+.brand h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.02em}
+.brand small{display:block;color:var(--muted);font-size:12px}
+.sync{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.pill{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+body.offline .pill{background:color-mix(in srgb,var(--signal) 30%,transparent);color:var(--ink)}
+.switch{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.switch input{accent-color:var(--accent)}
+.rail{display:flex;gap:6px;overflow-x:auto;max-width:560px;margin:0 auto;width:100%;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.rail button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 14px;font-weight:700;font-size:15px;display:flex;align-items:baseline;gap:4px}
+.rail button small{font-weight:400;font-size:11px;color:var(--muted)}
+.rail .dot{min-width:18px;height:18px;border-radius:9px;background:var(--t-exp);color:#fff;font-size:11px;font-weight:700;display:inline-grid;place-items:center;padding:0 5px;align-self:center;font-family:var(--font-num)}
+.item .qty small.short{color:var(--t-3)}
+.att{list-style:none;margin:0;padding:0}
+.att li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px;align-items:center}
+.att li:first-child{border-top:0}
+.att .why{font-size:12px;text-align:right}
+.rail button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.offline-banner{display:none;max-width:560px;margin:0 auto;width:100%;font-size:13px;padding:8px 12px;border-radius:10px;
+  background:color-mix(in srgb,var(--signal) 18%,var(--surface));border:1px solid color-mix(in srgb,var(--signal) 55%,transparent)}
+body.offline .offline-banner{display:block}
+
+/* days */
+.days{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:14px}
+.days-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tools{display:flex;gap:6px}
+.mini{border:1px solid var(--line);background:var(--surface-2);border-radius:99px;height:30px;padding:0 10px;font-size:13px;display:inline-flex;align-items:center;gap:4px;color:var(--ink)}
+.mini.icon{width:30px;padding:0;justify-content:center}
+.mini svg{width:15px;height:15px}
+.days .n{font-family:var(--font-num);font-size:68px;line-height:1;font-weight:700;align-self:flex-start;padding:0 8px 4px;display:inline-flex;align-items:baseline;
+  background:linear-gradient(transparent 50%,var(--hl) 50%)}
+.days .n span{font-size:22px;margin-left:6px;font-weight:600;font-family:var(--font-body);line-height:1}
+.people{display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:12px}
+.who{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.who::-webkit-scrollbar{display:none}
+.who button{flex:1 0 auto;min-width:3.6em;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 10px;font-size:14px;text-align:center}
+.days .big-cap{font-size:13px;color:var(--muted);margin-top:-6px}
+.who button:hover{border-color:var(--accent)}
+
+/* items section */
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sec-head h2{margin:0;font-size:17px;font-weight:700}
+.sec-head small{color:var(--muted);font-size:12px}
+.tiers{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.tier{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 2px;text-align:center;display:flex;flex-direction:column;gap:1px;align-items:center}
+.tier .n{font-family:var(--font-num);font-size:22px;font-weight:700;line-height:1}
+.tier .t{font-size:11px;color:var(--muted);white-space:nowrap}
+.tier.on{border-color:currentColor;box-shadow:inset 0 0 0 1px currentColor;background:color-mix(in srgb,currentColor 8%,var(--surface))}
+.tier.zero .n{color:var(--muted);opacity:.6}
+.c-exp{color:var(--t-exp)} .c-3{color:var(--t-3)} .c-6{color:var(--t-6)} .c-12{color:var(--t-12)} .c-ok{color:var(--t-ok)} .c-chk{color:var(--t-chk)}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:0 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap;line-height:1.7;
+  background:color-mix(in srgb,currentColor 9%,transparent)}
+.chip.c-chk{border-style:dashed}
+.chip.c-ok{background:transparent;border-color:var(--line)}
+
+.rot-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 14px;text-align:left}
+.rot-toggle b{font-size:15px}
+.rot-toggle small{color:var(--muted);font-size:12px;margin-left:6px}
+.rot-toggle .chev{transition:transform .2s}
+.rot-toggle[aria-expanded="true"]{border-radius:12px 12px 0 0;border-bottom-color:transparent}
+.rot-toggle[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.rot-panel{border:1px solid var(--line);border-top:0;background:var(--surface);border-radius:0 0 12px 12px;padding:0 14px 6px;margin-top:-1px}
+.rot{list-style:none;margin:0;padding:0}
+.rot li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.rot li span:first-child{min-width:0}
+.rot .q{font-family:var(--font-num);font-size:16px;color:var(--muted)}
+.rot .d{min-width:5.5em;text-align:right;font-size:13px}
+.rot .loc{color:var(--muted);font-size:12px}
+
+.filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.filters::-webkit-scrollbar{display:none}
+.filters button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 12px;font-size:13px}
+.filters button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.items{display:flex;flex-direction:column;gap:8px}
+.item{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-align:left;width:100%}
+.item:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.thumb{width:56px;height:56px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;font-weight:700;color:var(--accent);overflow:hidden;font-size:20px}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.item .body{min-width:0;display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+.item .name{font-weight:700;font-size:17px;line-height:1.3}
+.item .loc{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:3px;max-width:100%}
+.item .loc span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .loc svg{width:12px;height:12px}
+.item .qty{text-align:right;font-family:var(--font-num);font-size:26px;font-weight:700;line-height:1}
+.item .qty small{display:block;font-family:var(--font-body);font-size:11px;color:var(--muted);font-weight:400;margin-top:2px}
+.item.expired .name{text-decoration:line-through;text-decoration-color:var(--t-exp)}
+.empty{font-size:14px;color:var(--muted);padding:16px;text-align:center;border:1px dashed var(--line);border-radius:12px}
+
+/* log + schema */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.log{list-style:none;margin:0;padding:0;font-size:13px;display:flex;flex-direction:column;gap:6px}
+.log li{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:6px}
+.log li:first-child{border-top:0;padding-top:0}
+.log .when{color:var(--muted);white-space:nowrap}
+details.schema{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px}
+details.schema summary{font-weight:700;cursor:pointer}
+details.schema p{font-size:13px;color:var(--muted);margin:8px 0}
+.tbl-wrap{overflow-x:auto;margin:6px 0 14px}
+table{border-collapse:collapse;font-size:12.5px;min-width:100%}
+th,td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top;white-space:nowrap}
+td:last-child{white-space:normal;min-width:12em;color:var(--muted)}
+th{font-size:11px;letter-spacing:.06em;color:var(--muted);font-weight:500}
+h3.sheet-name{font-size:14px;margin:12px 0 2px}
+h3.sheet-name code{font-family:var(--font-num);font-size:13px;color:var(--muted);font-weight:500;margin-left:6px}
+.future{color:var(--muted);font-weight:400;font-size:12px}
+.foot{font-size:12px;color:var(--muted);text-align:center}
+
+/* FAB */
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:6;
+  background:var(--signal);color:var(--signal-ink);border:0;border-radius:99px;padding:12px 20px;font-weight:700;font-size:15px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+body.offline .fab{display:none}
+
+/* sheets */
+.scrim{position:fixed;inset:0;background:rgba(10,18,28,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;
+  padding:18px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+.sheet h2{margin:0;font-size:19px}
+.sheet .sub{font-size:13px;color:var(--muted);margin-top:-10px}
+.btn{border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:8px 14px;font-size:14px;color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.btn.icon{width:38px;padding:0;display:inline-grid;place-items:center}
+.btn.icon svg{width:17px;height:17px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.danger{color:var(--t-exp);border-color:color-mix(in srgb,var(--t-exp) 40%,var(--line))}
+.sheet-actions{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}
+.sheet-actions .right{display:flex;gap:8px;margin-left:auto}
+
+/* detail card */
+.d-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}
+.d-title h2{font-size:24px;line-height:1.25;text-wrap:balance}
+.d-title .loc{font-size:14px;color:var(--muted);margin-top:4px}
+.d-qty{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:2px}
+.d-qty .n{font-family:var(--font-num);font-size:32px;font-weight:700;line-height:1}
+.d-qty .n small{font-family:var(--font-body);font-size:13px;font-weight:400;color:var(--muted);margin-left:3px}
+.d-photos{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px;align-items:start}
+.d-main{aspect-ratio:1;max-width:100%;border-radius:16px;background:var(--accent);display:grid;place-items:center;overflow:hidden;color:var(--accent-ink);font-size:40px;font-weight:700}
+.d-main img{width:100%;height:100%;object-fit:cover}
+.d-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.d-thumbs button{aspect-ratio:1;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);overflow:hidden;padding:0}
+.d-thumbs button.on{outline:2px solid var(--accent);outline-offset:1px}
+.d-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.hint{font-size:12px;color:var(--muted)}
+.d-wash{background:var(--wash);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.25fr);gap:14px}
+.d-facts{display:flex;flex-direction:column;gap:9px;font-size:14px;margin:0}
+.d-facts dt{font-size:11px;letter-spacing:.06em;color:var(--muted)}
+.d-facts dd{margin:0;font-weight:500}
+.d-facts dd .num{font-size:18px;font-weight:600}
+.ratio-tag{display:inline-block;margin-top:3px;font-size:12px;font-weight:500;padding:1px 7px;border-radius:6px;background:color-mix(in srgb,var(--signal) 32%,transparent);color:var(--ink)}
+.d-method{font-size:14px;line-height:1.65;border-left:1px solid var(--line);padding-left:14px}
+.d-method .lab{font-size:11px;letter-spacing:.06em;color:var(--muted);display:block;margin-bottom:4px}
+.d-dates{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.d-dates > div{display:flex;flex-direction:column;gap:2px}
+.d-dates > div:last-child{text-align:right}
+.d-dates .lab{font-size:11px;letter-spacing:.06em;color:var(--muted)}
+.d-dates .val{font-family:var(--font-num);font-size:19px;font-weight:600}
+.d-dates .rel{font-size:12px}
+
+/* explain */
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar{display:grid;grid-template-columns:5.6em minmax(0,1fr) 3.8em;align-items:center;gap:10px;font-size:13px}
+.bar .k small{display:block;color:var(--muted);font-size:11px;line-height:1.25}
+.bar .track{height:10px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;position:relative}
+.bar .fill{height:100%;background:var(--accent);border-radius:5px}
+.bar.neck .fill{background:var(--signal)}
+.bar .v{text-align:right;font-family:var(--font-num);font-size:17px;font-weight:600}
+.target{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--t-exp)}
+.notes{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:7px;margin:0;padding-left:18px}
+.notes b{color:var(--ink);font-weight:600}
+.warn{color:var(--t-3)}
+
+/* member */
+.m-days{display:flex;align-items:flex-end;gap:12px}
+.m-days .n{font-family:var(--font-num);font-size:48px;line-height:1;font-weight:700;padding:0 6px 3px;display:inline-flex;align-items:baseline;background:linear-gradient(transparent 50%,var(--hl) 50%)}
+.m-days .n span{font-size:18px;margin-left:4px;font-family:var(--font-body);line-height:1}
+.m-days small{font-size:13px;color:var(--muted);padding-bottom:4px}
+.gaps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:14px}
+.gaps li{display:flex;gap:8px;align-items:flex-start}
+.gaps .dot{width:8px;height:8px;border-radius:50%;margin-top:7px;flex:0 0 8px;background:currentColor}
+.gaps li span:last-child{color:var(--ink)}
+.cat-block{display:flex;flex-direction:column;gap:2px}
+.cat-block h3{margin:0 0 4px;font-size:14px;display:flex;justify-content:space-between;align-items:baseline}
+.cat-block h3 small{font-weight:400;color:var(--muted);font-size:12px}
+.alloc{list-style:none;margin:0;padding:0}
+.alloc li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:14px;align-items:center}
+.alloc li:first-child{border-top:0}
+.alloc .nm{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+.alloc .q{font-family:var(--font-num);font-size:17px;font-weight:600;text-align:right}
+.alloc .q small{font-family:var(--font-body);font-size:11px;color:var(--muted);font-weight:400;margin-left:2px}
+.shared{font-size:11px;padding:0 6px;border-radius:5px;background:var(--accent-soft);color:var(--accent);line-height:1.7}
+.cat-empty{font-size:13px;color:var(--muted);padding:2px 0 4px}
+.cats-rest{display:flex;flex-wrap:wrap;gap:6px}
+.cats-rest span{font-size:12px;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:2px 8px}
+
+/* form */
+.field{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.field > span{color:var(--muted)}
+.field input,.field select,.field textarea{border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:9px 10px;font-size:15px;width:100%}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.toggles{display:flex;gap:6px;flex-wrap:wrap}
+.toggles button{border:1px solid var(--line);background:var(--surface-2);border-radius:99px;padding:5px 12px;font-size:14px}
+.toggles button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
+.f-photos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.f-photo{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--surface-2)}
+.f-photo > button.pick{position:absolute;inset:0;border:0;padding:0;background:none}
+.f-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.f-photo.cover{outline:2px solid var(--signal);outline-offset:1px}
+.f-photo .badge{position:absolute;left:4px;bottom:4px;font-size:11px;background:var(--signal);color:var(--signal-ink);border-radius:5px;padding:0 5px;pointer-events:none}
+.f-photo .rm{position:absolute;right:3px;top:3px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(10,18,28,.65);color:#fff;font-size:13px;line-height:22px;padding:0}
+.f-add{aspect-ratio:1;border-radius:10px;border:1px dashed var(--line);display:grid;place-items:center;text-align:center;font-size:12px;color:var(--muted);cursor:pointer;background:var(--surface-2)}
+.f-add input{display:none}
+.stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;width:max-content}
+.stepper button{border:0;background:var(--surface-2);width:40px;height:38px;font-size:20px}
+.stepper output{min-width:4.2em;text-align:center;font-family:var(--font-num);font-size:20px;font-weight:600}
+.mrow{display:grid;grid-template-columns:1fr;gap:6px;border-top:1px solid var(--line);padding-top:10px}
+.mrow .h{display:flex;justify-content:space-between;align-items:baseline}
+.mrow .ctrls{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.mrow .ctrls > div{display:flex;flex-direction:column;gap:3px}
+.mrow .stepper button{width:32px;height:30px;font-size:17px}
+.mrow .stepper output{font-size:16px;min-width:3.4em}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--bg);
+  padding:9px 16px;border-radius:10px;font-size:14px;max-width:calc(100% - 32px)}
+@media (max-width:370px){.days .n{font-size:58px}.tier .t{font-size:10px}}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .22s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}}}
+
+/* mode switch */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:2px;background:var(--surface);gap:2px;flex:0 0 auto}
+.seg button{border:0;background:none;border-radius:8px;padding:6px 14px;font-weight:700;font-size:14px;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+body.resp .seg button[aria-selected="true"]{background:var(--signal);color:var(--signal-ink)}
+body.resp header.top{box-shadow:inset 0 -3px 0 var(--signal)}
+.brand .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}
+.rail button.wish{border-style:dashed}
+.rail button.wish.on{border-style:solid}
+.rail .cnt{min-width:18px;height:18px;border-radius:9px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;display:inline-grid;place-items:center;padding:0 5px;align-self:center;font-family:var(--font-num)}
+.rail button.on .cnt{background:var(--accent-ink);color:var(--accent)}
+
+/* wishlist */
+.wsec{display:flex;flex-direction:column;gap:10px}
+.wgroup{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 14px}
+.wgroup h3{margin:8px 0 2px;font-size:13px;color:var(--muted);font-weight:500;letter-spacing:.06em}
+.wlist{list-style:none;margin:0;padding:0}
+.wlist li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.wlist li:first-child{border-top:0}
+.wlist .nm{font-weight:700;font-size:15px}
+.wlist .note{display:block;font-size:12px;color:var(--muted);font-weight:400}
+.wlist .q{font-family:var(--font-num);font-size:20px;font-weight:700;text-align:right;white-space:nowrap}
+.wlist .q small{font-family:var(--font-body);font-size:11px;color:var(--muted);font-weight:400;margin-left:2px}
+.wlist .acts{display:flex;gap:6px}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn.ghost{background:none}
+.sugg .why{display:block;font-size:12px;color:var(--t-3);font-weight:400}
+
+/* response mode */
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.plan-route{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:14px}
+.plan-route .stop{border:1px solid var(--line);border-radius:8px;padding:3px 9px;background:var(--surface-2)}
+.plan-route .stop small{color:var(--muted);font-size:11px;margin-left:4px}
+.plan-route .stop.empty{border-style:dashed;color:var(--muted)}
+.plan-route .arr{color:var(--muted)}
+.plan-kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;font-size:14px;margin:0}
+.plan-kv dt{color:var(--muted)} .plan-kv dd{margin:0}
+.plan-kv dd.empty{color:var(--t-3)}
+.sgroup{display:flex;flex-direction:column;gap:6px}
+.sgroup h3{margin:4px 0 0;font-size:13px;color:var(--muted);font-weight:500;letter-spacing:.06em}
+.scen{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 14px;text-align:left;width:100%}
+.scen:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.scen b{font-size:16px;display:block}
+.scen small{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+.rd{font-family:var(--font-num);font-size:15px;font-weight:600;padding:2px 9px;border-radius:99px;white-space:nowrap;border:1px solid currentColor}
+.rd.ok{color:var(--accent);background:var(--accent-soft);border-color:transparent}
+.rd.miss{color:var(--t-3);background:color-mix(in srgb,var(--t-3) 9%,transparent)}
+.blk{display:flex;flex-direction:column;gap:8px}
+.blk-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.blk-h h3{margin:0;font-size:15px}
+ol.steps{margin:0;padding-left:1.5em;display:flex;flex-direction:column;gap:7px;font-size:15px;line-height:1.6}
+ol.steps li::marker{font-family:var(--font-num);font-weight:700;color:var(--accent)}
+.needs{list-style:none;margin:0;padding:0}
+.needs li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;align-items:start;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.nd-head{width:100%;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;border:0;background:none;padding:0;text-align:left;font-size:14px;color:var(--ink)}
+.nd-head > span{min-width:0;flex:1}
+.nd-head .chev{margin-top:3px;color:var(--muted);transition:transform .2s}
+.nd-head[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.nd-wrap{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .3s cubic-bezier(.2,.7,.2,1),opacity .2s ease}
+li.open > div > .nd-wrap{grid-template-rows:1fr;opacity:1}
+.nd-in{overflow:hidden;min-height:0}
+.pb{display:flex;flex-direction:column;gap:5px;margin-top:6px}
+.pb-meta{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.pb-num{font-family:var(--font-num);font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.pb-num small{font-size:13px;color:var(--muted);font-weight:500}
+.pb b{font-family:var(--font-num);font-size:15px;color:var(--t-3)}
+.pb.done b{color:var(--accent)}
+.pb-track{position:relative;display:block;height:10px;border-radius:99px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
+.pb-track i{position:absolute;top:2px;bottom:2px;width:1px;background:var(--line)}
+.pb-fill{position:absolute;inset:0 auto 0 0;width:var(--p);border-radius:99px;z-index:1;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--signal) 70%,var(--surface)),var(--signal));box-shadow:inset 0 -2px 0 rgba(0,0,0,.08)}
+.pb.done .pb-fill{background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 70%,var(--surface)),var(--accent))}
+@media (prefers-reduced-motion:no-preference){.pb-fill{animation:pbgrow .7s cubic-bezier(.2,.7,.2,1)}@keyframes pbgrow{from{width:0}}
+  .sheet.noanim .pb-fill{animation:none}}
+@media (prefers-reduced-motion:reduce){.nd-wrap{transition:none}}
+.nd-body{margin-top:8px;background:var(--wash);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.nd-sec .lab{font-size:11px;letter-spacing:.06em;color:var(--muted);display:block;margin-bottom:4px}
+.nd-note{font-size:14px;line-height:1.6;white-space:pre-wrap}
+.rel{list-style:none;margin:0;padding:0}
+.rel li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.rel li:first-child{border-top:0}
+.rel li > .chip{grid-column:1/-1;justify-self:start}
+.rel button{border:0;background:none;padding:0;text-align:left;display:flex;flex-direction:column;gap:1px;min-width:0;color:var(--ink)}
+.rel .t{font-weight:600;font-size:14px;display:flex;gap:6px;align-items:center;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.rel .m{font-size:12px;color:var(--muted);display:flex;gap:3px;align-items:center}
+.rel .m svg{width:12px;height:12px}
+.rel .q{font-family:var(--font-num);font-size:16px;font-weight:600;white-space:nowrap}
+.nd-acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.nd-acts .btn svg{width:14px;height:14px;vertical-align:-2px}
+.lk{display:flex;align-items:center;gap:8px;min-width:0}
+.lk input{width:18px;height:18px;accent-color:var(--accent);flex:0 0 auto}
+.sheet.noanim{animation:none}
+.needs li:first-child{border-top:0}
+.needs .ic{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;margin-top:1px}
+.needs .ic.ok{background:var(--accent);color:var(--accent-ink)}
+.needs .ic.no{background:none;border:1.5px solid var(--t-3);color:var(--t-3)}
+.needs .note{display:block;font-size:12px;color:var(--muted)}
+.needs .note.warn{color:var(--t-3)}
+.needs input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);margin:1px 0 0}
+.inwish{font-size:12px;color:var(--muted);white-space:nowrap}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.split > div{background:var(--wash);border-radius:12px;padding:10px 12px}
+.split h4{margin:0 0 6px;font-size:13px}
+.split ul{list-style:none;margin:0;padding:0;font-size:13px;display:flex;flex-direction:column;gap:4px}
+.split li{display:flex;justify-content:space-between;gap:6px}
+.split li span:last-child{font-family:var(--font-num);font-weight:600;white-space:nowrap}
+.pick{display:flex;gap:6px;flex-wrap:wrap}
+.pick button{border:1px solid var(--line);background:var(--surface-2);border-radius:99px;padding:4px 12px;font-size:14px}
+.pick button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.src{font-size:12px;color:var(--muted)}
+.src a{color:var(--accent)}
+body.resp .fab{display:none}
+@media (max-width:400px){.split{grid-template-columns:1fr}}
+
+/* login + account */
+button.pill{border:0;cursor:pointer;font:inherit;font-size:12px}
+body.locked{overflow:hidden}
+.login{position:fixed;inset:0;z-index:40;background:var(--bg);overflow:auto;
+  padding:calc(24px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.login-card{max-width:420px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.login-brand{padding:12px 0 6px;border-bottom:3px solid var(--signal)}
+.login-brand h1{margin:0;font-size:30px;letter-spacing:.04em}
+.login-brand p{margin:4px 0 10px;color:var(--muted);font-size:14px}
+.login-opt{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.login-opt h2{margin:0;font-size:16px}
+.login-opt p{margin:0;font-size:13px;color:var(--muted)}
+.gbtn{min-height:44px;display:flex;align-items:center}
+.pw-row{display:flex;gap:8px}
+.pw-row input{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:9px 10px;font-size:16px}
+.login-msg{font-size:14px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--signal) 18%,var(--surface));border:1px solid color-mix(in srgb,var(--signal) 55%,transparent)}
+.login-err{font-size:14px;color:var(--t-exp);min-height:1.4em}
+</style>
+
+<header class="top">
+  <div class="top-row">
+    <div class="brand"><h1>家庭防災庫</h1>
+      <div class="meta"><button class="pill" id="syncPill" data-act="acct">範例模式</button><label class="switch"><input type="checkbox" id="offlineToggle"> 模擬離線</label></div></div>
+    <div class="seg" role="tablist" aria-label="模式">
+      <button role="tab" data-act="mode" data-k="prep" aria-selected="true">整備</button>
+      <button role="tab" data-act="mode" data-k="resp" aria-selected="false">應變</button>
+    </div>
+  </div>
+  <nav class="rail" id="rail" aria-label="大類"></nav>
+  <div class="offline-banner">離線中：顯示的是最後一次同步的資料，暫時不能新增或紀錄消耗。恢復網路後會自動更新。</div>
+</header>
+
+<div id="login" class="login" hidden></div>
+
+<main class="wrap">
+  <section class="days" id="days"></section>
+
+  <section id="wish" class="wsec" hidden></section>
+  <section id="resp" class="wsec" hidden></section>
+
+  <section id="inv" style="display:flex;flex-direction:column;gap:10px">
+    <div class="sec-head"><h2 id="invTitle"></h2><small id="invCount"></small></div>
+    <div class="tiers" id="tiers" aria-label="到期提醒，點選可篩選"></div>
+    <div id="rotWrap">
+      <button class="rot-toggle" id="rotToggle" data-act="rot" aria-expanded="false" aria-controls="rotPanel"></button>
+      <div class="rot-panel" id="rotPanel" hidden></div>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="items" id="items"></div>
+  </section>
+
+  <section class="card" id="logCard">
+    <div class="sec-head"><h2>最近消耗</h2><small>寫入「消耗紀錄」分頁</small></div>
+    <ul class="log" id="log"></ul>
+  </section>
+
+  <details class="schema">
+    <summary>Google 試算表欄位結構（v0.5）</summary>
+    <p>所有大類共用同一張「品項」表，靠「大類」欄區分；每個大類只顯示用得到的欄位。照片存在 Drive 資料夾，表裡只存檔案 ID。</p>
+    <h3 class="sheet-name">成員<code>Members</code></h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>欄位</th><th>範例</th><th>說明</th></tr>
+      <tr><td>成員ID</td><td>girl</td><td>品項的「歸屬」欄會指到這裡</td></tr>
+      <tr><td>稱呼</td><td>妹妹</td><td>畫面上顯示的名字，建議兩個字</td></tr>
+      <tr><td>生日</td><td>2024-04-01</td><td>自動換算成人／兒童／幼兒（0–3 歲幼兒、4–12 歲兒童、13 歲以上成人）</td></tr>
+      <tr><td>每日飲用水 L</td><td>3</td><td>已包含沖泡食品吃進去的水</td></tr>
+      <tr><td>每日餐數</td><td>3</td><td></td></tr>
+      <tr><td>每日熱量 kcal</td><td>1150</td><td>預設依年齡估計，可自行修改</td></tr>
+    </table></div>
+    <h3 class="sheet-name">品項<code>Items</code></h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>欄位</th><th>範例</th><th>說明</th></tr>
+      <tr><td>品項ID</td><td>F005</td><td>自動產生</td></tr>
+      <tr><td>大類</td><td>食</td><td>食／衣／住／行／醫藥／樂／生存</td></tr>
+      <tr><td>子類</td><td>嬰幼兒</td><td>每個大類各自一組，例如食：主食、配菜、即食、嬰幼兒、飲用水、生活用水</td></tr>
+      <tr><td>名稱</td><td>幼兒奶粉隨身包</td><td></td></tr>
+      <tr><td>數量</td><td>10</td><td>消耗後由系統扣減</td></tr>
+      <tr><td>單位</td><td>包</td><td></td></tr>
+      <tr><td>每單位容量 L</td><td></td><td>只有水類用，例如 2L 瓶裝填 2</td></tr>
+      <tr><td>每份熱量 kcal</td><td>150</td><td>食品用</td></tr>
+      <tr><td>每份沖泡水 ml</td><td>210</td><td>畫面自動算出「每 100 ml 水換多少 kcal」</td></tr>
+      <tr><td>使用方法</td><td>每包加 210 ml 溫開水</td><td></td></tr>
+      <tr><td>適合對象</td><td>幼兒</td><td>可複選，逗號分隔</td></tr>
+      <tr><td>歸屬</td><td>girl</td><td>all＝全家共用；成員ID＝放在該成員避難包</td></tr>
+      <tr><td>存放位置</td><td>妹妹避難包</td><td>家中儲藏處、車上、某人避難包</td></tr>
+      <tr><td>有效日</td><td>2027-01-10</td><td>食品、藥品、水：依此分級提醒</td></tr>
+      <tr><td>最後檢查日</td><td>2026-04-06</td><td>沒有有效日的品項超過 6 個月提醒檢查</td></tr>
+      <tr><td>尺寸</td><td>130</td><td>衣類用；孩子長得快，每半年提醒檢查</td></tr>
+      <tr><td>需求方式</td><td>each</td><td>each＝每人 N 個（看夠不夠分）；daily＝每人每天 N 個（看能用幾天）；空白＝不計算</td></tr>
+      <tr><td>需求數量</td><td>1</td><td>搭配需求方式</td></tr>
+      <tr><td>容量 mAh</td><td>20000</td><td>電力類，用來估算可充手機次數</td></tr>
+      <tr><td>電量 %</td><td>80</td><td>電力類；低於 50% 或超過 6 個月沒充電會提醒</td></tr>
+      <tr><td>照片ID</td><td></td><td>Drive 檔案 ID，逗號分隔；第一張為列表縮圖</td></tr>
+      <tr><td>更新時間</td><td></td><td>用來判斷離線資料是否過舊</td></tr>
+    </table></div>
+    <h3 class="sheet-name">消耗紀錄<code>Usage</code></h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>欄位</th><th>範例</th><th>說明</th></tr>
+      <tr><td>時間</td><td>2026-10-23 13:40</td><td>自動帶入</td></tr>
+      <tr><td>品項ID</td><td>F007</td><td></td></tr>
+      <tr><td>數量</td><td>2</td><td>只需輸入這一欄</td></tr>
+    </table></div>
+    <h3 class="sheet-name">設定<code>Settings</code></h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>欄位</th><th>範例</th><th>說明</th></tr>
+      <tr><td>每人每日生活用水 L</td><td>2</td><td>洗手、刷牙、擦澡，和飲用水分開算</td></tr>
+      <tr><td>避難包目標天數</td><td>3</td><td>個人分配的及格線</td></tr>
+      <tr><td>提醒門檻（天）</td><td>365, 182, 90</td><td>1 年、半年、3 個月</td></tr>
+      <tr><td>檢查週期（天）</td><td>182</td><td>沒有有效日的品項</td></tr>
+      <tr><td>家庭密碼雜湊</td><td>（加密後存放）</td><td>任意裝置唯讀檢視用</td></tr>
+    </table></div>
+    <h3 class="sheet-name">待購<code>Wishlist</code></h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>欄位</th><th>範例</th><th>說明</th></tr>
+      <tr><td>待購ID</td><td>B001</td><td>自動產生</td></tr>
+      <tr><td>大類</td><td>醫藥</td><td>買到後移入這一類</td></tr>
+      <tr><td>名稱／數量／單位</td><td>口服電解質粉 10 包</td><td></td></tr>
+      <tr><td>備註</td><td>藥局，成人兒童通用款</td><td>購買處、預算、規格</td></tr>
+    </table></div>
+    <h3 class="sheet-name">應變情境<code>Scenarios</code></h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>欄位</th><th>範例</th><th>說明</th></tr>
+      <tr><td>情境ID／分組／標題</td><td>diarrhea／途中狀況／逃難途中：腹瀉</td><td></td></tr>
+      <tr><td>步驟</td><td>（多行文字）</td><td>每行一步，可在網頁直接改</td></tr>
+      <tr><td>手動勾選</td><td>病歷異地備份=TRUE</td><td>不是物資、要自己確認的項目</td></tr>
+    </table></div>
+    <p>物資檢查的規則（例如「每人都有求救哨」）寫在程式裡，直接讀品項表判斷。</p>
+    <h3 class="sheet-name">家庭計畫<code>Plan</code></h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>欄位</th><th>範例</th><th>說明</th></tr>
+      <tr><td>第一集合點／等待時間</td><td>（你填）／1 小時</td><td></td></tr>
+      <tr><td>第二集合點</td><td>（你填）</td><td></td></tr>
+      <tr><td>最終目標</td><td>（你填）</td><td>例如外縣市親友家</td></tr>
+      <tr><td>1991 約定電話</td><td>（你填）</td><td>全家約定用同一支號碼</td></tr>
+      <tr><td>外縣市聯絡人</td><td>（你填）</td><td>本地電話塞爆時的中繼</td></tr>
+    </table></div>
+    <p class="future">下一階段：集合點路線圖與轉角標註。</p>
+  </details>
+
+  <p class="foot">原型 v0.5・以上全為範例資料。這是原型，資料只存在這個頁面，重新整理會回到範例。<br>正式版會接 Google 試算表與 Drive。</p>
+</main>
+
+<button class="fab" id="fab" data-act="add">＋ 新增品項</button>
+<div id="sheetRoot"></div>
+
+<script>
+(function(){
+  // 部署後填入：Apps Script 網頁應用程式網址、Google OAuth 用戶端 ID。留空＝範例模式。
+  const CONFIG=window.FP_CONFIG||{API:'',CLIENT_ID:''};
+  const pad=n=>String(n).padStart(2,'0');
+  const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const addDays=n=>{const d=new Date(today); d.setDate(d.getDate()+n); return fmt(d);};
+  const parse=s=>{const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d);};
+  const daysTo=s=>Math.round((parse(s)-today)/86400000);
+  const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const r1=n=>isFinite(n)?(Math.round(n*10)/10):0;
+  const ICON={
+    pencil:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M14 6l4 4"/></svg>',
+    sliders:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
+    info:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>',
+    pin:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>',
+    chev:'<svg class="i chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>'
+  };
+
+  const CFG={
+    '食':{title:'食品與飲水',subs:['主食','配菜','即食','嬰幼兒','飲用水','生活用水'],expReq:true,methodLab:'使用方法'},
+    '衣':{title:'衣物',subs:['外套','保暖衣','內衣褲','襪子','雨具','鞋'],methodLab:'說明'},
+    '住':{title:'居住與衛生',subs:['衛生','保暖','寢具','收納'],methodLab:'說明'},
+    '行':{title:'外出與避難',subs:['照明','求救','證件現金','防護','地圖'],methodLab:'說明'},
+    '醫藥':{title:'醫藥',subs:['常備藥','外傷','衛材'],expReq:true,suits:true,methodLab:'用法與注意'},
+    '樂':{title:'安撫與娛樂',subs:['玩具','書本','安撫'],methodLab:'說明'},
+    '生存':{title:'電力與工具',subs:['電力','通訊','工具','火源'],methodLab:'說明'}
+  };
+  const CATS=Object.keys(CFG);
+
+  const S={
+    cat:'食', sub:'全部', tier:null, offline:false, rotOpen:false, hyg:2, goBag:3,
+    members:[
+      {id:'dad', name:'爸爸', birth:'1988-05-01', kcal:2000, water:3, meals:3},
+      {id:'mom', name:'媽媽', birth:'1989-08-01', kcal:1600, water:3, meals:3},
+      {id:'son1',name:'哥哥', birth:'2018-03-01', kcal:1550, water:3, meals:3},
+      {id:'son2',name:'弟弟', birth:'2021-06-01', kcal:1400, water:3, meals:3},
+      {id:'girl',name:'妹妹', birth:'2024-04-01', kcal:1150, water:3, meals:3}
+    ],
+    items:[]
+  };
+  const I=(o)=>S.items.push({owner:'all',photos:[],checked:addDays(-40),exp:'',method:'',suits:[],...o});
+  // 食
+  I({id:'F001',cat:'食',sub:'主食',name:'乾燥米飯',method:'冷水 60 分鐘或熱水 15 分鐘，加水至內袋刻度線後封口靜置。',kcal:360,prep:160,qty:15,unit:'包',exp:addDays(1300),suits:['成人','兒童'],loc:'客廳儲藏櫃'});
+  I({id:'F002',cat:'食',sub:'配菜',name:'鮪魚罐頭',method:'開罐即食，可拌飯。易開罐不需開罐器。',kcal:180,prep:0,qty:12,unit:'罐',exp:addDays(143),suits:['成人','兒童'],loc:'廚房下櫃'});
+  I({id:'F003',cat:'食',sub:'即食',name:'口糧餅乾',method:'開封即食，口乾，記得搭配飲水。',kcal:450,prep:0,qty:14,unit:'包',exp:addDays(300),suits:['成人','兒童'],loc:'客廳儲藏櫃'});
+  I({id:'F004',cat:'食',sub:'即食',name:'即食粥調理包',method:'常溫可直接吃；有熱源時隔水加熱 5 分鐘更好入口。',kcal:220,prep:0,qty:10,unit:'包',exp:addDays(250),suits:['成人','兒童','幼兒'],loc:'客廳儲藏櫃'});
+  I({id:'F005',cat:'食',sub:'嬰幼兒',name:'幼兒奶粉隨身包',method:'每包加 210 ml 溫開水搖勻；沒有溫水時可用常溫開水，泡好 1 小時內喝完。',kcal:150,prep:210,qty:10,unit:'包',exp:addDays(79),suits:['幼兒'],owner:'girl',loc:'妹妹避難包',checked:addDays(-200)});
+  I({id:'F006',cat:'食',sub:'嬰幼兒',name:'寶寶果泥',method:'擠出即食，開封後當餐吃完。',kcal:90,prep:0,qty:8,unit:'包',exp:addDays(39),suits:['幼兒','兒童'],owner:'girl',loc:'妹妹避難包',checked:addDays(-200)});
+  I({id:'F007',cat:'食',sub:'主食',name:'杯麵',method:'熱水 400 ml 泡 3 分鐘；沒熱水可乾吃。',kcal:450,prep:400,qty:6,unit:'杯',exp:addDays(-13),suits:['成人'],loc:'廚房上櫃'});
+  I({id:'F010',cat:'食',sub:'主食',name:'沖泡燕麥',method:'每份加 200 ml 熱水或冷水，攪拌靜置 3 分鐘。',kcal:380,prep:200,qty:12,unit:'包',exp:addDays(420),suits:['成人','兒童'],loc:'廚房上櫃'});
+  I({id:'F008',cat:'食',sub:'即食',name:'口糧餅乾',method:'開封即食，口乾，記得搭配飲水。',kcal:450,prep:0,qty:3,unit:'包',exp:addDays(300),suits:['成人','兒童'],owner:'dad',loc:'爸爸避難包',checked:addDays(-200)});
+  I({id:'F009',cat:'食',sub:'即食',name:'口糧餅乾',method:'開封即食，口乾，記得搭配飲水。',kcal:450,prep:0,qty:3,unit:'包',exp:addDays(300),suits:['成人','兒童'],owner:'son1',loc:'哥哥避難包',checked:addDays(-200)});
+  I({id:'W001',cat:'食',sub:'飲用水',name:'瓶裝水 2L',method:'未開封常溫避光保存。',unitL:2,qty:24,unit:'瓶',exp:addDays(700),suits:['成人','兒童','幼兒'],loc:'客廳儲藏櫃'});
+  I({id:'W002',cat:'食',sub:'飲用水',name:'瓶裝水 600ml',unitL:0.6,qty:6,unit:'瓶',exp:addDays(500),suits:['成人','兒童','幼兒'],owner:'dad',loc:'爸爸避難包',checked:addDays(-200)});
+  I({id:'W003',cat:'食',sub:'飲用水',name:'瓶裝水 600ml',unitL:0.6,qty:4,unit:'瓶',exp:addDays(500),suits:['成人','兒童','幼兒'],owner:'son1',loc:'哥哥避難包',checked:addDays(-200)});
+  I({id:'W004',cat:'食',sub:'生活用水',name:'儲水桶 20L',method:'洗手、刷牙、擦澡用，不建議飲用。每半年換水並清洗水桶。',unitL:20,qty:2,unit:'桶',loc:'浴室',checked:addDays(-210)});
+  // 衣
+  I({id:'C001',cat:'衣',sub:'外套',name:'輕量羽絨外套',size:'L',qty:1,unit:'件',owner:'dad',loc:'爸爸避難包',method:'可收進收納袋，夜間保暖用。',checked:addDays(-60)});
+  I({id:'C002',cat:'衣',sub:'保暖衣',name:'保暖衛生衣褲',size:'130',qty:2,unit:'套',owner:'son1',loc:'哥哥避難包',method:'孩子長得快，換季時確認尺寸。',checked:addDays(-220)});
+  I({id:'C003',cat:'衣',sub:'內衣褲',name:'內衣褲',size:'90',qty:3,unit:'套',owner:'girl',loc:'妹妹避難包',checked:addDays(-100)});
+  I({id:'C004',cat:'衣',sub:'襪子',name:'厚襪',qty:12,unit:'雙',loc:'衣櫃上層收納箱',needType:'each',need:3,method:'每人至少 3 雙替換。'});
+  I({id:'C005',cat:'衣',sub:'雨具',name:'輕便雨衣',qty:4,unit:'件',loc:'玄關鞋櫃',needType:'each',need:1});
+  // 住
+  I({id:'H001',cat:'住',sub:'衛生',name:'移動式馬桶',qty:1,unit:'組',loc:'浴室櫃',method:'套上便袋使用，便後加凝固劑綁緊丟棄。',checked:addDays(-100)});
+  I({id:'H002',cat:'住',sub:'衛生',name:'凝固劑便袋',qty:30,unit:'包',loc:'浴室櫃',needType:'daily',need:5,method:'每人每天約 5 次估算。',exp:addDays(1500)});
+  I({id:'H003',cat:'住',sub:'衛生',name:'大垃圾袋',qty:40,unit:'個',loc:'廚房下櫃',needType:'daily',need:0.4});
+  I({id:'H004',cat:'住',sub:'保暖',name:'鋁箔保暖毯',qty:6,unit:'條',loc:'客廳儲藏櫃',needType:'each',need:1});
+  I({id:'H005',cat:'住',sub:'寢具',name:'充氣枕',qty:2,unit:'個',loc:'客廳儲藏櫃',needType:'each',need:1});
+  I({id:'H006',cat:'住',sub:'寢具',name:'折疊椅',qty:3,unit:'張',loc:'陽台',checked:addDays(-30)});
+  // 行
+  I({id:'G001',cat:'行',sub:'照明',name:'頭燈',qty:2,unit:'個',loc:'玄關抽屜',needType:'each',need:1,method:'使用 3 號電池，檢查時順便換電池。',checked:addDays(-190)});
+  I({id:'G002',cat:'行',sub:'求救',name:'求救哨',qty:5,unit:'個',loc:'各人避難包',needType:'each',need:1,method:'每個避難包外側掛一個，教孩子吹三短聲。'});
+  I({id:'G003',cat:'行',sub:'證件現金',name:'證件影本防水袋',qty:1,unit:'份',owner:'dad',loc:'爸爸避難包',method:'全家證件、健保卡影本與家人合照。',checked:addDays(-150)});
+  I({id:'G004',cat:'行',sub:'證件現金',name:'現金（小鈔與硬幣）',qty:1,unit:'份',owner:'mom',loc:'媽媽避難包',method:'停電時無法刷卡，準備百元鈔與硬幣。'});
+  I({id:'G005',cat:'行',sub:'防護',name:'口罩',qty:20,unit:'片',loc:'玄關抽屜',needType:'daily',need:1,exp:addDays(600)});
+  I({id:'G006',cat:'行',sub:'地圖',name:'集合點卡',qty:5,unit:'張',loc:'各人避難包',needType:'each',need:1,method:'集合點與路線圖下一階段建立後列印。'});
+  // 醫藥
+  I({id:'M001',cat:'醫藥',sub:'常備藥',name:'成人退燒止痛藥',qty:20,unit:'顆',exp:addDays(400),suits:['成人'],loc:'醫藥箱',method:'依藥盒仿單使用。'});
+  I({id:'M002',cat:'醫藥',sub:'常備藥',name:'兒童退燒糖漿',qty:1,unit:'瓶',exp:addDays(60),suits:['兒童','幼兒'],loc:'醫藥箱',method:'依孩子體重與仿單劑量使用，開封後依瓶身標示期限丟棄。'});
+  I({id:'M003',cat:'醫藥',sub:'外傷',name:'生理食鹽水 20ml',qty:10,unit:'支',exp:addDays(500),suits:['成人','兒童','幼兒'],loc:'醫藥箱',method:'沖洗傷口、眼睛。'});
+  I({id:'M004',cat:'醫藥',sub:'衛材',name:'急救包（紗布、繃帶、膠帶）',qty:1,unit:'組',suits:['成人','兒童','幼兒'],loc:'醫藥箱',checked:addDays(-100)});
+  // 樂
+  I({id:'P001',cat:'樂',sub:'玩具',name:'撲克牌',qty:1,unit:'副',loc:'客廳儲藏櫃'});
+  I({id:'P002',cat:'樂',sub:'書本',name:'繪本',qty:2,unit:'本',owner:'girl',loc:'妹妹避難包'});
+  I({id:'P003',cat:'樂',sub:'玩具',name:'小盒積木',qty:1,unit:'盒',owner:'son1',loc:'哥哥避難包'});
+  I({id:'P004',cat:'樂',sub:'安撫',name:'安撫娃娃（備用）',qty:1,unit:'隻',owner:'girl',loc:'妹妹避難包',method:'和平常抱的那隻同款，避免臨時找不到。'});
+  // 生存
+  I({id:'E001',cat:'生存',sub:'電力',name:'行動電源 20000mAh',qty:2,unit:'個',mah:20000,battery:80,loc:'客廳儲藏櫃',checked:addDays(-30),method:'每 3 個月充一次，保持 50% 以上。'});
+  I({id:'E002',cat:'生存',sub:'電力',name:'行動電源 10000mAh',qty:1,unit:'個',mah:10000,battery:40,owner:'dad',loc:'爸爸避難包',checked:addDays(-200)});
+  I({id:'E003',cat:'生存',sub:'通訊',name:'手搖收音機',qty:1,unit:'台',loc:'客廳儲藏櫃',checked:addDays(-100),method:'可手搖充電，順便當手電筒。'});
+  I({id:'E004',cat:'生存',sub:'通訊',name:'對講機',qty:2,unit:'支',battery:60,loc:'客廳儲藏櫃',checked:addDays(-90)});
+  I({id:'E005',cat:'生存',sub:'火源',name:'卡式爐瓦斯罐',qty:6,unit:'罐',exp:addDays(900),loc:'陽台',method:'通風處使用，遠離火源存放。'});
+  I({id:'E006',cat:'生存',sub:'工具',name:'多功能工具刀',qty:1,unit:'把',owner:'dad',loc:'爸爸避難包'});
+  S.log=[{t:addDays(-6)+' 20:15',name:'杯麵',n:2,unit:'杯'},{t:addDays(-20)+' 09:02',name:'鮪魚罐頭',n:3,unit:'罐'}];
+  S.mode='prep'; S.injured='dad'; S.checks={}; S.openNeeds=new Set(); S.links={}; S.ret=null;
+  S.details={
+    cash:{mode:'manual',current:10000,target:20000,unit:'元',note:'分兩份放：爸爸包、媽媽包各一份。以百元鈔和硬幣為主，停電時無法刷卡。'},
+    reserve:{mode:'manual',current:50000,target:100000,unit:'元',note:'先以 3 個月固定支出（房租、薪資、基本耗材）估算，請改成實際數字。'},
+    mask:{mode:'auto',current:'',target:50,unit:'片',note:''}
+  };
+  S.plan={meet1:'',wait1:'1 小時',meet2:'',final:'',phone:'',contact:''};
+  S.wants=[
+    {id:'B001',cat:'醫藥',name:'口服電解質粉',qty:10,unit:'包',note:'藥局，成人兒童通用款'},
+    {id:'B002',cat:'生存',name:'淨水錠',qty:1,unit:'盒',note:'戶外用品店'},
+    {id:'B003',cat:'衣',name:'兒童雨鞋',qty:2,unit:'雙',note:'哥哥、弟弟各一雙，先量腳長'}
+  ];
+
+  const age=m=>{if(!m.birth||!/^\d{4}-\d{1,2}-\d{1,2}$/.test(m.birth))return null; const b=parse(m.birth);let a=today.getFullYear()-b.getFullYear();if(today.getMonth()<b.getMonth()||(today.getMonth()===b.getMonth()&&today.getDate()<b.getDate()))a--;return a;};
+  const cat=m=>{const a=age(m);return a==null?'成人':a<4?'幼兒':a<13?'兒童':'成人';};
+  const ageTxt=m=>age(m)==null?'未填生日':age(m)+' 歲';
+  const mem=id=>S.members.find(m=>m.id===id);
+  const isWater=it=>it.cat==='食'&&(it.sub==='飲用水'||it.sub==='生活用水');
+  const isFood=it=>it.cat==='食'&&!isWater(it);
+  const active=it=>!it.exp||daysTo(it.exp)>=0;
+  const kcalPer100=it=>it.prep>0&&it.kcal>0?Math.round(it.kcal/it.prep*100):null;
+  const lowBattery=it=>it.battery!=null&&it.battery!==''&&Number(it.battery)<50;
+  const phoneCharges=it=>it.mah?Math.floor(it.mah*3.7/1000*0.65/15*(it.battery!=null&&it.battery!==''?it.battery/100:1)*it.qty*10)/10:null;
+
+  function tierOf(it){
+    if(it.exp){const d=daysTo(it.exp); if(d<0)return'exp'; if(d<=90)return'3';
+      if(lowBattery(it)||(!isFood(it)&&!isWater(it)&&-daysTo(it.checked)>182))return'chk';
+      if(d<=182)return'6'; if(d<=365)return'12'; return'ok';}
+    return (lowBattery(it)||-daysTo(it.checked)>182)?'chk':'ok';
+  }
+  const TIER={exp:['已過期','c-exp'],'3':['3 個月內','c-3'],'6':['半年內','c-6'],'12':['1 年內','c-12'],chk:['待檢查','c-chk'],ok:['安全','c-ok']};
+  function tierChip(it){
+    const t=tierOf(it),[,cls]=TIER[t];
+    if(t==='chk'){
+      if(lowBattery(it))return `<span class="chip ${cls}">電量 ${it.battery}%</span>`;
+      return `<span class="chip ${cls}">${-daysTo(it.checked)} 天未檢查</span>`;
+    }
+    if(!it.exp)return `<span class="chip c-ok">檢查 ${it.checked.slice(5)}</span>`;
+    const d=daysTo(it.exp);
+    return `<span class="chip ${cls}">${d<0?`過期 ${-d} 天`:`剩 ${d} 天`}</span>`;
+  }
+  // need rules for shared items: 'each' = N per person, 'daily' = N per person per day
+  function coverage(it){
+    if(!it.needType||!it.need||it.owner!=='all')return null;
+    const n=S.members.length;
+    if(it.needType==='each'){const c=Math.min(n,Math.floor(it.qty/it.need)); return {txt:`夠 ${c}/${n} 人`,short:c<n,long:`每人 ${it.need} ${it.unit}，目前夠 ${c}/${n} 人`};}
+    const d=it.qty/(it.need*n); return {txt:`可用 ${r1(d)} 天`,short:d<S.goBag,long:`每人每天 ${it.need} ${it.unit}，全家可用 ${r1(d)} 天`};
+  }
+  function attention(it){
+    const t=tierOf(it), cov=coverage(it), why=[];
+    if(t==='exp')why.push('已過期'); else if(t==='3')why.push(`${daysTo(it.exp)} 天後到期`);
+    if(t==='chk')why.push(lowBattery(it)?`電量 ${it.battery}%`:`${-daysTo(it.checked)} 天未檢查`);
+    if(cov&&cov.short)why.push(cov.txt);
+    return why;
+  }
+  const inCat=c=>S.items.filter(it=>it.cat===c);
+
+  // ---- food calculation ----
+  function calc(items, people){
+    const food=items.filter(it=>isFood(it)&&active(it));
+    const servings=food.reduce((a,it)=>a+it.qty,0);
+    const kcal=food.reduce((a,it)=>a+it.qty*(it.kcal||0),0);
+    const prepML=food.reduce((a,it)=>a+it.qty*(it.prep||0),0);
+    const drink=items.filter(it=>it.cat==='食'&&it.sub==='飲用水'&&active(it)).reduce((a,it)=>a+it.qty*it.unitL,0);
+    const hygStock=items.filter(it=>it.cat==='食'&&it.sub==='生活用水').reduce((a,it)=>a+it.qty*it.unitL,0);
+    const dMeals=people.reduce((a,m)=>a+m.meals,0);
+    const dKcal=people.reduce((a,m)=>a+m.kcal,0);
+    const dDrink=people.reduce((a,m)=>a+m.water,0);
+    const dPrep=servings?dMeals*prepML/servings/1000:0;
+    const dWater=dDrink+Math.max(0,dPrep-dDrink);
+    const dHyg=S.hyg*people.length;
+    const days={meals:dMeals?servings/dMeals:0,kcal:dKcal?kcal/dKcal:0,water:dWater?drink/dWater:0};
+    const min=Math.min(days.meals,days.kcal,days.water);
+    const neck=Object.keys(days).find(k=>days[k]===min);
+    const groups={};
+    people.forEach(m=>{const c=cat(m);(groups[c]=groups[c]||{meals:0,names:[]}).meals+=m.meals;groups[c].names.push(m.name);});
+    const groupDays=Object.entries(groups).map(([c,g])=>({c,names:g.names,days:food.filter(it=>it.suits.includes(c)).reduce((a,it)=>a+it.qty,0)/g.meals}));
+    return {servings,kcal,drink,hygStock,dMeals,dKcal,dDrink,dPrep,dWater,dHyg,days,min,neck,groupDays,
+      hygDays:dHyg?hygStock/dHyg:0, worst:(dWater+dHyg)?drink/(dWater+dHyg):0};
+  }
+  const NECK={meals:'餐數',kcal:'熱量',water:'飲用水'};
+
+  // ---- render ----
+  function renderRail(){
+    document.getElementById('rail').innerHTML=CATS.map(k=>{
+      const n=inCat(k).filter(it=>attention(it).length).length;
+      return `<button data-act="cat" data-k="${k}" class="${S.cat===k?'on':''}" aria-label="${k}${n?`，${n} 項需要處理`:''}">${k}${n?`<span class="dot">${n}</span>`:''}</button>`;
+    }).join('')+`<button data-act="cat" data-k="待購" class="wish ${S.cat==='待購'?'on':''}" aria-label="待購，${S.wants.length} 項">待購${S.wants.length?`<span class="cnt">${S.wants.length}</span>`:''}</button>`;
+  }
+  function renderDays(){
+    const who=`<div class="people"><p class="label">看每個人分到的資源</p>
+        <div class="who">${S.members.map(m=>`<button data-act="member" data-id="${m.id}">${esc(m.name)}</button>`).join('')}</div></div>`;
+    if(S.mode==='resp'){
+      const ready=SCEN.filter(sc=>{const r=readiness(sc);return r.ok===r.total;}).length;
+      document.getElementById('days').innerHTML=`
+        <div class="days-top"><p class="label">應變準備度</p></div>
+        <div class="n">${ready}/${SCEN.length}<span>個情境準備齊全</span></div>
+        <div class="big-cap">點情境看怎麼做；缺的東西可以直接加入待購</div>`;
+      return;
+    }
+    if(S.cat==='待購'){
+      document.getElementById('days').innerHTML=`
+        <div class="days-top"><p class="label">待購清單</p></div>
+        <div class="n">${S.wants.length}<span>項待買</span></div>
+        <div class="big-cap">買到後按「買到了」，補上有效日與存放位置就移進庫存</div>`;
+      return;
+    }
+    if(S.cat==='食'){
+      const c=calc(S.items,S.members);
+      document.getElementById('days').innerHTML=`
+        <div class="days-top"><p class="label">全家 ${S.members.length} 人・現有存量可撐</p>
+          <div class="tools"><button class="mini" data-act="explain">${ICON.info}說明</button><button class="mini icon" data-act="settings" aria-label="調整每人需求">${ICON.sliders}</button></div></div>
+        <div class="n">${r1(c.min)}<span>天</span></div>${who}`;
+    }else{
+      const n=inCat(S.cat).filter(it=>attention(it).length).length;
+      document.getElementById('days').innerHTML=`
+        <div class="days-top"><p class="label">${CFG[S.cat].title}・${inCat(S.cat).length} 項</p>
+          <div class="tools"><button class="mini" data-act="explain">${ICON.info}說明</button></div></div>
+        <div class="n">${n}<span>項要處理</span></div>
+        <div class="big-cap">${n?'過期、快到期、待檢查、電量不足或不夠分的品項':'全部就緒'}</div>${who}`;
+    }
+  }
+  function renderTiers(){
+    const its=inCat(S.cat);
+    document.getElementById('tiers').innerHTML=['exp','3','6','12','chk'].map(k=>{
+      const n=its.filter(it=>tierOf(it)===k).length,[lab,cls]=TIER[k];
+      return `<button class="tier ${cls} ${S.tier===k?'on':''} ${n?'':'zero'}" data-act="tier" data-k="${k}" aria-pressed="${S.tier===k}"><span class="n">${n}</span><span class="t">${lab}</span></button>`;
+    }).join('');
+  }
+  function renderRotation(){
+    const its=inCat(S.cat).filter(it=>it.exp&&['exp','3','6','12'].includes(tierOf(it))).sort((a,b)=>a.exp.localeCompare(b.exp));
+    const wrap=document.getElementById('rotWrap');
+    wrap.hidden=!its.length;
+    if(!its.length)return;
+    const t=document.getElementById('rotToggle'), p=document.getElementById('rotPanel');
+    t.setAttribute('aria-expanded',S.rotOpen);
+    t.innerHTML=`<span><b>輪替清單</b><small>${its.length} 項 1 年內到期${S.cat==='食'?'，換新後排進日常吃掉':'，記得補新'}</small></span>${ICON.chev}`;
+    p.hidden=!S.rotOpen;
+    p.innerHTML=`<ul class="rot">${its.map(it=>{const d=daysTo(it.exp),[,cls]=TIER[tierOf(it)];
+      return `<li><span>${esc(it.name)}<span class="loc">・${esc(it.loc)}</span></span><span class="q">${it.qty} ${esc(it.unit)}</span><span class="d ${cls}">${d<0?`過期 ${-d} 天`:`剩 ${d} 天`}</span></li>`;}).join('')}</ul>`;
+  }
+  function qtyBlock(it){
+    if(isWater(it))return `${r1(it.qty*it.unitL)}<small>公升・${it.qty} ${esc(it.unit)}</small>`;
+    const cov=coverage(it);
+    return `${it.qty}<small>${esc(it.unit)}</small>${cov?`<small class="${cov.short?'short':''}">${cov.txt}</small>`:''}`;
+  }
+  function renderItems(){
+    document.getElementById('invTitle').textContent=CFG[S.cat].title;
+    document.getElementById('filters').innerHTML=['全部'].concat(CFG[S.cat].subs).map(s=>`<button data-act="sub" data-k="${s}" class="${S.sub===s?'on':''}">${s}</button>`).join('');
+    let its=inCat(S.cat);
+    if(S.sub!=='全部')its=its.filter(it=>it.sub===S.sub);
+    if(S.tier)its=its.filter(it=>tierOf(it)===S.tier);
+    const order={exp:0,'3':1,chk:2,'6':3,'12':4,ok:5};
+    its.sort((a,b)=>order[tierOf(a)]-order[tierOf(b)]||a.name.localeCompare(b.name,'zh-Hant'));
+    document.getElementById('invCount').textContent=`${its.length} 項${S.tier?'・篩選 '+TIER[S.tier][0]:''}`;
+    const el=document.getElementById('items');
+    if(!its.length){el.innerHTML=`<div class="empty">這個條件下沒有品項${S.offline?'':'。點右下「新增品項」加入。'}</div>`;return;}
+    el.innerHTML=its.map(it=>`<button class="item ${tierOf(it)==='exp'?'expired':''}" data-act="open" data-id="${it.id}">
+        <span class="thumb">${it.photos.length?`<img src="${psrc(it.photos[0])}" alt="">`:esc(it.name.slice(0,1))}</span>
+        <span class="body"><span class="name">${esc(it.name)}</span>${tierChip(it)}<span class="loc">${ICON.pin}<span>${esc(it.loc)}</span></span></span>
+        <span class="qty">${qtyBlock(it)}</span></button>`).join('');
+  }
+  function renderLog(){
+    document.getElementById('log').innerHTML=S.log.length?S.log.slice(0,6).map(l=>`<li><span>${esc(l.name)} −${l.n} ${esc(l.unit)}</span><span class="when">${esc(l.t.slice(5))}</span></li>`).join(''):'<li>還沒有消耗紀錄</li>';
+  }
+  function render(){
+    const resp=S.mode==='resp', wish=!resp&&S.cat==='待購';
+    document.body.classList.toggle('resp',resp);
+    document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-selected',b.dataset.k===S.mode));
+    document.getElementById('rail').hidden=resp;
+    document.getElementById('inv').hidden=resp||wish;
+    document.getElementById('logCard').hidden=resp||wish;
+    document.getElementById('wish').hidden=!wish;
+    document.getElementById('resp').hidden=!resp;
+    document.getElementById('fab').textContent=wish?'＋ 新增待購':'＋ 新增品項';
+    renderRail(); renderDays();
+    if(resp){renderResp();return;}
+    if(wish){renderWish();return;}
+    renderTiers();renderRotation();renderItems();renderLog();
+  }
+
+  // ---- sheets ----
+  const root=document.getElementById('sheetRoot');
+  function openSheet(html,label,keep){
+    const prev=root.querySelector('.sheet'), top=prev?prev.scrollTop:0;
+    root.innerHTML=`<div class="scrim" data-act="close-scrim"><div class="sheet ${keep?'noanim':''}" role="dialog" aria-modal="true" aria-label="${esc(label||'')}">${html}</div></div>`;
+    if(keep)root.querySelector('.sheet').scrollTop=top;
+  }
+  function closeSheet(){root.innerHTML='';}
+  function toast(t){const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200);}
+  function barRow(label,sub,val,max,neck){
+    const w=Math.max(2,Math.min(100,val/max*100));
+    return `<div class="bar ${neck?'neck':''}"><div class="k">${label}<small>${sub}</small></div><div class="track"><div class="fill" style="width:${w}%"></div></div><div class="v">${r1(val)} 天</div></div>`;
+  }
+
+  function openExplain(){
+    if(S.cat!=='食'){
+      const list=inCat(S.cat).map(it=>({it,why:attention(it)})).filter(x=>x.why.length);
+      openSheet(`<h2>${CFG[S.cat].title}：${list.length} 項要處理</h2>
+        <div class="sub">列出已過期、3 個月內到期、超過 6 個月沒檢查、電量低於 50%，以及全家共用但不夠分的品項。</div>
+        ${list.length?`<ul class="att">${list.map(({it,why})=>`<li><span>${esc(it.name)}<span style="color:var(--muted);font-size:12px">・${esc(it.loc)}</span></span><span class="why c-3">${why.map(esc).join('・')}</span></li>`).join('')}</ul>`:'<div class="empty">全部就緒</div>'}
+        <ul class="notes"><li>「不夠分」依品項設定的需求計算：每人需要幾個，或每人每天用幾個（可用天數低於避難包目標 ${S.goBag} 天就提醒）。</li></ul>
+        <div class="sheet-actions"><span></span><button class="btn primary" data-act="close">知道了</button></div>`,'要處理的品項');
+      return;
+    }
+    const c=calc(S.items,S.members);
+    const max=Math.max(c.days.meals,c.days.kcal,c.days.water,1)*1.1;
+    const expCount=S.items.filter(it=>isFood(it)&&!active(it)).length;
+    const groupWarn=c.groupDays.filter(g=>g.days<c.min).map(g=>`<li class="warn">${g.c}（${g.names.join('、')}）能吃的份量只夠 <b class="num">${r1(g.days)}</b> 天</li>`).join('');
+    openSheet(`<h2>可撐 ${r1(c.min)} 天怎麼算</h2><div class="sub">餐數、熱量、飲用水各算一次，取最短的。這次的瓶頸是<b style="color:var(--ink)">${NECK[c.neck]}</b>（黃色）。</div>
+      <div class="bars">
+        ${barRow('餐數',`${c.servings} 份 ÷ ${c.dMeals} 份/日`,c.days.meals,max,c.neck==='meals')}
+        ${barRow('熱量',`${Math.round(c.kcal).toLocaleString()} ÷ ${c.dKcal.toLocaleString()} kcal`,c.days.kcal,max,c.neck==='kcal')}
+        ${barRow('飲用水',`${r1(c.drink)} L ÷ ${r1(c.dWater)} L/日`,c.days.water,max,c.neck==='water')}
+      </div>
+      <ul class="notes">
+        <li>每人每日飲用水已包含沖泡食品吃進去的水。目前沖泡平均每天用 <b class="num">${r1(c.dPrep)}</b> L，在 <b class="num">${r1(c.dDrink)}</b> L 之內，不另外加。</li>
+        <li>生活用水另計：存量 <b class="num">${r1(c.hygStock)}</b> L，每天 ${r1(c.dHyg)} L，可撐 <b class="num">${r1(c.hygDays)}</b> 天。</li>
+        <li>底線：生活用水用完、飲用水也要拿來洗手刷牙時，飲用水只剩 <b class="num">${r1(c.worst)}</b> 天。</li>
+        ${groupWarn}
+        ${expCount?`<li>已過期的 ${expCount} 項食品不列入計算。</li>`:''}
+        <li>每人每日飲水、餐數、熱量可以從右上的調整鈕修改。</li>
+      </ul>
+      <div class="sheet-actions"><span></span><button class="btn primary" data-act="close">知道了</button></div>`,'計算方式');
+  }
+
+  function allocRow(it,shared){
+    const q=isWater(it)?`${r1(it.qty*it.unitL)}<small>L</small>`:`${it.qty}<small>${esc(it.unit)}</small>`;
+    const flag=['exp','3','chk'].includes(tierOf(it))?tierChip(it):'';
+    return `<li><span class="nm">${esc(it.name)}${shared?'<span class="shared">共用</span>':''}${flag}</span><span class="q">${q}</span></li>`;
+  }
+  function openMember(id){
+    const m=mem(id), c0=cat(m);
+    const fits=it=>!it.suits||!it.suits.length||isWater(it)||it.suits.includes(c0);
+    const own=S.items.filter(it=>it.owner===m.id);
+    const c=calc(own,[m]);
+    const gaps=[];
+    if(!own.some(it=>it.cat==='食'&&it.sub==='飲用水'&&active(it)))gaps.push(['c-exp','避難包裡沒有飲用水']);
+    else if(c.days.water<S.goBag)gaps.push(['c-3',`飲用水只夠 ${r1(c.days.water)} 天`]);
+    if(!own.some(it=>isFood(it)&&active(it)))gaps.push(['c-exp','避難包裡沒有食物']);
+    else if(c.days.kcal<S.goBag)gaps.push(['c-3',`熱量只夠 ${r1(c.days.kcal)} 天`]);
+    own.filter(it=>it.suits&&it.suits.length&&!isWater(it)&&!it.suits.includes(c0)).forEach(it=>gaps.push(['c-6',`「${it.name}」不適合${c0}`]));
+    const needPrep=own.filter(it=>isFood(it)&&it.prep>0&&active(it));
+    if(needPrep.length&&!own.some(it=>it.cat==='食'&&it.sub==='飲用水'))gaps.push(['c-3',`${needPrep.map(i=>i.name).join('、')}要沖泡，包裡卻沒有水`]);
+    if(!own.some(it=>it.cat==='衣'))gaps.push(['c-6','沒有個人衣物']);
+    const blocks=CATS.map(k=>{
+      const o=own.filter(it=>it.cat===k), sh=S.items.filter(it=>it.cat===k&&it.owner==='all'&&fits(it));
+      return `<div class="cat-block"><h3>${k}<small>個人 ${o.length}・共用 ${sh.length}</small></h3>
+        ${o.length||sh.length?`<ul class="alloc">${o.map(it=>allocRow(it,false)).join('')}${sh.map(it=>allocRow(it,true)).join('')}</ul>`:'<div class="cat-empty">沒有分配到的品項</div>'}</div>`;
+    }).join('');
+    openSheet(`<h2>${esc(m.name)}</h2><div class="sub">${c0}・${ageTxt(m)}・每天 ${m.water} L 水、${m.meals} 餐、${m.kcal} kcal</div>
+      <div class="m-days"><div class="n">${r1(c.min)}<span>天</span></div><small>個人避難包的食物與水可撐（目標 ${S.goBag} 天，不含共用）</small></div>
+      ${gaps.length?`<ul class="gaps">${gaps.map(([cl,t])=>`<li class="${cl}"><span class="dot"></span><span>${esc(t)}</span></li>`).join('')}</ul>`:''}
+      ${blocks}
+      <div class="sheet-actions"><span></span><button class="btn primary" data-act="close">關閉</button></div>`,m.name+'的資源');
+  }
+
+  function needText(it){
+    const cov=coverage(it);
+    if(cov)return cov.long;
+    if(it.needType&&it.need&&it.owner!=='all')return it.needType==='each'?`每人 ${it.need} ${it.unit}`:`每人每天 ${it.need} ${it.unit}`;
+    return null;
+  }
+  function factsFor(it){
+    const row=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
+    if(isFood(it)){const r=kcalPer100(it);
+      return row('適合對象',it.suits.join('、')||'—')+row('每份熱量',`<span class="num">${it.kcal}</span> kcal`)+
+        row('沖泡水',it.prep?`<span class="num">${it.prep}</span> ml${r!=null?`<br><span class="ratio-tag">每 100 ml 水換 ${r} kcal</span>`:''}`:'不需要');}
+    if(isWater(it))return row('每單位容量',`<span class="num">${it.unitL}</span> L × ${it.qty} ${esc(it.unit)}`)+row('用途',it.sub==='飲用水'?'飲用、沖泡':'洗手、刷牙、擦澡');
+    let h=row('子類',esc(it.sub));
+    if(it.size)h+=row('尺寸',`<span class="num">${esc(it.size)}</span>`);
+    if(it.suits&&it.suits.length)h+=row('適合對象',it.suits.join('、'));
+    if(it.mah)h+=row('容量',`<span class="num">${it.mah.toLocaleString()}</span> mAh`);
+    if(it.battery!=null&&it.battery!=='')h+=row('電量',`<span class="num ${lowBattery(it)?'c-chk':''}">${it.battery}</span> %`);
+    const pc=phoneCharges(it); if(pc!=null)h+=row('約可充手機',`<span class="num">${pc}</span> 次<br><span class="ratio-tag">以每次約 15 Wh 估算</span>`);
+    const nt=needText(it); if(nt)h+=row('需求',esc(nt));
+    return h;
+  }
+
+  let photoIdx=0;
+  function openItem(id,keepIdx){
+    const it=S.items.find(x=>x.id===id); if(!it)return;
+    if(!keepIdx)photoIdx=0;
+    if(photoIdx>=it.photos.length)photoIdx=0;
+    const ro=S.offline;
+    const owner=it.owner==='all'?'全家共用':`${mem(it.owner).name}的`;
+    const qty=isWater(it)?`${r1(it.qty*it.unitL)}<small>L</small>`:`${it.qty}<small>${esc(it.unit)}</small>`;
+    const main=it.photos[photoIdx];
+    const side=it.photos.length>1
+      ?`<div class="d-thumbs">${it.photos.map((p,i)=>`<button data-act="ph" data-id="${it.id}" data-i="${i}" class="${i===photoIdx?'on':''}" aria-label="第 ${i+1} 張照片"><img src="${psrc(p)}" alt=""></button>`).join('')}</div>`
+      :`<div class="hint">${it.photos.length?'只有 1 張照片。':'還沒有照片。'}${ro?'':'在編輯裡可以加照片、選列表縮圖。'}</div>`;
+    const d=it.exp?daysTo(it.exp):null, [,cls]=TIER[tierOf(it)];
+    const chkDays=-daysTo(it.checked);
+    const chkLab=it.battery!=null&&it.battery!==''?'上次充電':'最後檢查日';
+    openSheet(`
+      <div class="d-head">
+        <div class="d-title"><h2>${esc(it.name)}</h2><div class="loc">${esc(it.loc)}・${esc(owner)}</div></div>
+        <div class="d-qty"><div class="n">${qty}</div>${tierChip(it)}</div>
+      </div>
+      <div class="d-photos">
+        <div class="d-main">${main?`<img src="${pfull(main)}" data-pid="${esc(main)}" alt="${esc(it.name)}">`:esc(it.name.slice(0,1))}</div>
+        ${side}
+      </div>
+      <div class="d-wash">
+        <dl class="d-facts">${factsFor(it)}</dl>
+        <div class="d-method"><span class="lab">${CFG[it.cat].methodLab}</span>${it.method?esc(it.method):'<span style="color:var(--muted)">尚未填寫</span>'}</div>
+      </div>
+      <div class="d-dates">
+        <div><span class="lab">${chkLab}</span><span class="val">${it.checked}</span><span class="rel ${tierOf(it)==='chk'?'c-chk':''}" style="${tierOf(it)==='chk'?'':'color:var(--muted)'}">${chkDays===0?'今天':chkDays+' 天前'}</span></div>
+        <div><span class="lab">有效日</span><span class="val">${it.exp||'—'}</span><span class="rel ${it.exp?cls:''}" style="${it.exp?'':'color:var(--muted)'}">${it.exp?(d<0?`已過期 ${-d} 天`:`剩 ${d} 天`):'依檢查日提醒'}</span></div>
+      </div>
+      <div class="sheet-actions">
+        ${S.ret?`<button class="btn" data-act="scen" data-id="${S.ret}">← 返回情境</button>`:'<button class="btn" data-act="close">關閉</button>'}
+        <div class="right">
+          <button class="btn icon" data-act="edit" data-id="${it.id}" aria-label="編輯品項" ${ro?'disabled':''}>${ICON.pencil}</button>
+          <button class="btn" data-act="checked" data-id="${it.id}" ${ro?'disabled':''}>${it.battery!=null&&it.battery!==''?'已充電':'已檢查'}</button>
+          <button class="btn primary" data-act="consume" data-id="${it.id}" ${ro||!it.qty?'disabled':''}>紀錄消耗</button>
+        </div>
+      </div>`,it.name);
+  }
+
+  let cState=null;
+  function drawConsume(){
+    const it=S.items.find(x=>x.id===cState.id);
+    openSheet(`<h2>紀錄消耗</h2><div class="sub">${esc(it.name)}・目前 ${it.qty} ${esc(it.unit)}</div>
+      <div class="stepper" style="align-self:center"><button data-act="cn" data-d="-1" aria-label="減少">−</button><output>${cState.n} ${esc(it.unit)}</output><button data-act="cn" data-d="1" aria-label="增加">＋</button></div>
+      <div class="sheet-actions"><button class="btn" data-act="back" data-id="${it.id}">返回</button><button class="btn primary" data-act="cok">扣除 ${cState.n} ${esc(it.unit)}</button></div>`,'紀錄消耗');
+  }
+
+  let fState=null;
+  function openForm(id,preset){
+    const it=id?S.items.find(x=>x.id===id):null;
+    const c=preset?preset.cat:S.cat, sub=CFG[c].subs[0];
+    fState=it?JSON.parse(JSON.stringify(it)):{id:null,cat:c,sub,name:'',method:'',kcal:'',prep:0,qty:1,unit:c==='食'?'包':'個',unitL:'',exp:c==='食'||c==='醫藥'?addDays(365):'',suits:c==='食'?['成人','兒童']:[],owner:'all',loc:'',checked:fmt(today),photos:[],needType:'',need:'',size:'',mah:'',battery:''};
+    if(preset&&!it)Object.assign(fState,{name:preset.name,qty:preset.qty,unit:preset.unit,fromWant:preset.fromWant});
+    drawForm(false);
+  }
+  function drawForm(keep=true){
+    const f=fState, cfg=CFG[f.cat], food=f.cat==='食', water=food&&(f.sub==='飲用水'||f.sub==='生活用水');
+    const r=food&&!water&&Number(f.prep)>0&&Number(f.kcal)>0?Math.round(f.kcal/f.prep*100):null;
+    const expOptional=!cfg.expReq||f.sub==='生活用水';
+    const inp=(k,lab,type,extra='')=>`<label class="field"><span>${lab}</span><input id="f-${k}" data-f="${k}" ${type?`type="${type}"`:''} value="${esc(f[k]??'')}" ${extra}></label>`;
+    openSheet(`<h2>${f.id?'編輯品項':f.fromWant?'買到了：補上資料':'新增品項'}</h2><div class="sub">大類：${f.cat}${f.fromWant?'・填好有效日與存放位置後移進庫存':''}</div>
+      <div class="field"><span>照片（點一張設為列表縮圖）</span>
+        <div class="f-photos">${f.photos.map((p,i)=>`<div class="f-photo ${i===0?'cover':''}"><button class="pick" data-act="fcover" data-i="${i}" aria-label="設為縮圖"><img src="${psrc(p)}" alt=""></button>${i===0?'<span class="badge">縮圖</span>':''}<button class="rm" data-act="frm" data-i="${i}" aria-label="移除照片">✕</button></div>`).join('')}
+          <label class="f-add" for="f-files">＋<br>加照片<input type="file" id="f-files" accept="image/*" multiple data-fphoto="1"></label></div></div>
+      <div class="grid2">
+        <label class="field"><span>子類</span><select id="f-sub" data-f="sub">${cfg.subs.map(s=>`<option ${f.sub===s?'selected':''}>${s}</option>`).join('')}</select></label>
+        ${inp('name','名稱','','placeholder="例：'+(food?'乾燥米飯':'頭燈')+'"')}
+        ${inp('qty','數量','number','inputmode="numeric" min="0"')}
+        ${inp('unit','單位','','placeholder="包、個、件"')}
+        ${water?inp('unitL','每單位容量 L','number','step="0.1" inputmode="decimal"'):''}
+        ${food&&!water?inp('kcal','每份熱量 kcal','number','inputmode="numeric"')+inp('prep','每份沖泡水 ml','number','inputmode="numeric"'):''}
+        ${f.cat==='衣'?inp('size','尺寸','','placeholder="L、130、90"'):''}
+        ${f.cat==='生存'?inp('mah','容量 mAh（電力類）','number','inputmode="numeric"')+inp('battery','目前電量 %','number','inputmode="numeric" min="0" max="100"'):''}
+        <label class="field"><span>有效日${expOptional?'（可空白）':''}</span><input id="f-exp" data-f="exp" type="date" value="${f.exp||''}"></label>
+      </div>
+      ${food&&!water?`<div class="hint" id="f-ratio" ${r==null?'hidden':''}>${r!=null?`每 100 ml 水換 ${r} kcal`:''}</div>`:''}
+      <label class="field"><span>${cfg.methodLab}</span><textarea id="f-method" data-f="method" rows="2">${esc(f.method)}</textarea></label>
+      ${(food&&!water)||cfg.suits?`<div class="field"><span>適合對象（可複選）</span><div class="toggles">${['成人','兒童','幼兒'].map(s=>`<button data-act="fs" data-k="${s}" class="${f.suits.includes(s)?'on':''}">${s}</button>`).join('')}</div></div>`:''}
+      ${food?'':`<div class="field"><span>需求（全家共用時用來判斷夠不夠分）</span>
+        <div class="toggles">${[['','不計算'],['each','每人幾個'],['daily','每人每天幾個']].map(([k,l])=>`<button data-act="fn" data-k="${k}" class="${(f.needType||'')===k?'on':''}">${l}</button>`).join('')}</div>
+        ${f.needType?`<input id="f-need" data-f="need" type="number" step="0.1" inputmode="decimal" value="${esc(f.need)}" placeholder="數量" style="margin-top:6px">`:''}</div>`}
+      <div class="grid2">
+        <label class="field"><span>歸屬</span><select id="f-owner" data-f="owner"><option value="all" ${f.owner==='all'?'selected':''}>全家共用</option>${S.members.map(m=>`<option value="${m.id}" ${f.owner===m.id?'selected':''}>${esc(m.name)}</option>`).join('')}</select></label>
+        ${inp('loc','存放位置','','placeholder="客廳儲藏櫃、某人避難包"')}
+      </div>
+      <div class="sheet-actions">${f.id?`<button class="btn danger" data-act="fdel">${f.delArm?'再按一次確認刪除':'刪除品項'}</button>`:''}<div class="right"><button class="btn" data-act="${f.id?'back':'close'}" data-id="${f.id||''}">取消</button><button class="btn primary" data-act="fok">${f.id?'儲存':f.fromWant?'移進庫存':'新增'}</button></div></div>`,f.id?'編輯品項':f.fromWant?'買到了：補上資料':'新增品項',keep);
+  }
+
+  function openSettings(){
+    const step=(id,k,v,unit,d)=>`<div><span>${unit}</span><div class="stepper"><button data-act="ms" data-id="${id}" data-k="${k}" data-d="${-d}" aria-label="減少">−</button><output>${v}</output><button data-act="ms" data-id="${id}" data-k="${k}" data-d="${d}" aria-label="增加">＋</button></div></div>`;
+    openSheet(`<h2>每人每日需求</h2><div class="sub">改完立刻重算可撐天數。飲用水已包含沖泡食品的水。</div>
+      ${S.members.map(m=>`<div class="mrow"><div class="h"><b>${esc(m.name)}</b><span style="font-size:12px;color:var(--muted)">${cat(m)}・${ageTxt(m)}</span></div>
+        <div class="ctrls">${step(m.id,'water',m.water,'飲用水 L',0.5)}${step(m.id,'meals',m.meals,'餐數',1)}${step(m.id,'kcal',m.kcal,'熱量 kcal',50)}</div></div>`).join('')}
+      <div class="mrow"><div class="h"><b>全家共通</b></div><div class="ctrls">${step('_','hyg',S.hyg,'生活用水 L/人/日',0.5)}${step('_','goBag',S.goBag,'避難包目標天數',1)}</div></div>
+      <div class="sheet-actions"><span></span><button class="btn primary" data-act="close">完成</button></div>`,'每人每日需求');
+  }
+
+  // ================= wishlist =================
+  function wantNames(){return new Set(S.wants.map(w=>w.name));}
+  let suggCache=[];
+  function suggestions(){
+    const have=wantNames(), seen=new Set(), out=[];
+    const push=o=>{if(have.has(o.name)||seen.has(o.name))return; seen.add(o.name); out.push(o);};
+    S.items.forEach(it=>{
+      const cov=coverage(it), n=S.members.length;
+      if(cov&&cov.short){
+        const q=it.needType==='each'?Math.max(1,Math.ceil(it.need*n-it.qty)):Math.max(1,Math.ceil(it.need*n*S.goBag-it.qty));
+        push({name:it.name,cat:it.cat,qty:q,unit:it.unit,why:cov.txt});
+      }else if(it.exp&&['exp','3'].includes(tierOf(it))){
+        push({name:it.name,cat:it.cat,qty:it.qty,unit:it.unit,why:tierOf(it)==='exp'?'已過期，補新的':'3 個月內到期，先補新的'});
+      }
+    });
+    SCEN.forEach(sc=>sc.needs.forEach(nd=>{ if(nd.buy&&!needState(sc,nd).ok)push({...nd.buy,why:`「${sc.title}」需要`}); }));
+    return out;
+  }
+  function renderWish(){
+    const el=document.getElementById('wish');
+    const groups=CATS.map(c=>[c,S.wants.filter(w=>w.cat===c)]).filter(([,l])=>l.length);
+    suggCache=suggestions();
+    el.innerHTML=`
+      <div class="sec-head"><h2>待購清單</h2><small>買到後按「買到了」移進庫存</small></div>
+      ${groups.length?groups.map(([c,l])=>`<div class="wgroup"><h3>${c}</h3><ul class="wlist">${l.map(w=>`
+        <li><span class="nm">${esc(w.name)}${w.note?`<span class="note">${esc(w.note)}</span>`:''}</span>
+          <span class="q">${w.qty}<small>${esc(w.unit)}</small></span>
+          <span class="acts"><button class="btn sm primary" data-act="bought" data-id="${w.id}" ${S.offline?'disabled':''}>買到了</button><button class="btn sm ghost" data-act="wdel" data-id="${w.id}" aria-label="移除 ${esc(w.name)}" ${S.offline?'disabled':''}>✕</button></span></li>`).join('')}</ul></div>`).join('')
+        :'<div class="empty">待購清單是空的。可以從下方建議加入，或點右下「新增待購」。</div>'}
+      <div class="sec-head" style="margin-top:6px"><h2>建議補充</h2><small>依庫存與應變情境自動列出</small></div>
+      ${suggCache.length?`<div class="wgroup"><ul class="wlist sugg">${suggCache.map((g,i)=>`
+        <li><span class="nm">${esc(g.name)}<span class="why">${esc(g.why)}</span></span>
+          <span class="q">${g.qty}<small>${esc(g.unit)}</small></span>
+          <span class="acts"><button class="btn sm" data-act="sadd" data-i="${i}" ${S.offline?'disabled':''}>＋ 加入</button></span></li>`).join('')}</ul></div>`
+        :'<div class="empty">目前沒有建議補充的項目</div>'}`;
+  }
+  function openWantForm(){
+    fState={want:true,name:'',cat:CATS[0],qty:1,unit:'個',note:''};
+    openSheet(`<h2>新增待購</h2>
+      <div class="grid2">
+        <label class="field"><span>名稱</span><input id="w-name" data-f="name" placeholder="例：淨水錠"></label>
+        <label class="field"><span>大類</span><select id="w-cat" data-f="cat">${CATS.map(c=>`<option>${c}</option>`).join('')}</select></label>
+        <label class="field"><span>數量</span><input id="w-qty" data-f="qty" type="number" inputmode="numeric" min="1" value="1"></label>
+        <label class="field"><span>單位</span><input id="w-unit" data-f="unit" value="個"></label>
+      </div>
+      <label class="field"><span>備註（購買處、預算、規格）</span><input id="w-note" data-f="note"></label>
+      <div class="sheet-actions"><button class="btn" data-act="close">取消</button><button class="btn primary" data-act="wok">加入待購</button></div>`,'新增待購');
+  }
+
+  // ================= response mode =================
+  const live=it=>active(it)&&it.qty>0;
+  const match=(re,cat)=>re?S.items.filter(it=>live(it)&&(!cat||it.cat===cat)&&re.test(it.name)):[];
+  const anyRes=f=>{
+    const soon=f.filter(i=>tierOf(i)==='3');
+    return {ok:f.length>0,warn:soon.length>0,note:f.length?f.map(i=>`${i.name} ${i.qty} ${i.unit}`).join('、')+(soon.length?`（${soon.map(i=>i.name).join('、')}快到期）`:''):'沒有'};};
+  const everyoneRes=f=>{
+    const lacking=S.members.filter(m=>!f.some(i=>i.owner===m.id));
+    const shared=f.filter(i=>i.owner==='all').reduce((a,i)=>a+i.qty,0);
+    const short=Math.max(0,lacking.length-shared);
+    return {ok:short===0,note:short?`還差 ${short} 人份`:`${S.members.length} 人都有`};};
+  const foodDays=n=>()=>{const c=calc(S.items,S.members);return {ok:c.min>=n,note:`目前可撐 ${r1(c.min)} 天`};};
+  const covOk=re=>()=>{const it=match(re)[0]; if(!it)return {ok:false,note:'沒有'}; const cov=coverage(it); return cov?{ok:!cov.short,note:cov.long}:{ok:true,note:`${it.qty} ${it.unit}`};};
+  const charged=()=>{const f=match(/行動電源/,'生存'); const good=f.filter(i=>i.battery==null||i.battery===''||i.battery>=50);
+    return {ok:good.length>0,warn:good.length<f.length,note:f.length?f.map(i=>`${i.name} ${i.battery}%`).join('、'):'沒有'};};
+  const planSet=k=>()=>({ok:!!S.plan[k],note:S.plan[k]||'尚未填寫'});
+  const B=(name,cat,qty,unit)=>({name,cat,qty,unit});
+  // need constructors: key = shared id across scenarios (same need, same details); re/cat = which inventory items are related
+  // A = at least one; E = everyone covered. Both count rule-matched items plus items linked by hand.
+  const relLive=nd=>related(nd).map(r=>r.it).filter(live);
+  const A=(key,label,re,cat,x={})=>{const nd={key,label,re,cat,...x}; nd.test=()=>anyRes(relLive(nd)); return nd;};
+  const E=(key,label,re,cat,x={})=>{const nd={key,label,re,cat,...x}; nd.test=()=>everyoneRes(relLive(nd)); return nd;};
+  const C=(key,label,test,re,cat,x={})=>({key,label,test,re,cat,...x});
+  const M=(key,label,x={})=>({key,label,manual:true,...x});
+  const FOOD=/./;
+
+  const SCEN=[
+    {id:'quake',g:'第一時間',title:'地震後第一小時',sum:'確認安全、關總開關、決定留守或撤離',steps:[
+      '搖晃時趴下、掩護、穩住，遠離窗戶與高櫃，不要往外跑。',
+      '停止搖晃後先穿鞋，再確認每個人有沒有受傷。',
+      '關閉瓦斯與電源總開關；聞到瓦斯味不要開燈、不要點火。',
+      '打開門確保出口，把每人的避難包放到門邊。',
+      '用收音機或官方帳號確認災情，不轉傳未經證實的訊息。',
+      '房屋有明顯裂縫、傾斜或起火就撤離（看「決定撤離」）；否則在家避難（看「停水停電在家」）。',
+      '撥 1991 留言報平安，把電話線路留給緊急使用。'],
+     needs:[A('light','照明',/頭燈|手電筒/),A('radio','收音機',/收音機/),E('whistle','每人求救哨',/哨/),A('firstaid','急救包',/急救包/)]},
+    {id:'lost',g:'第一時間',title:'家人走散',sum:'原地、哨音、集合點、1991',plan:true,steps:[
+      '孩子：留在原地，或找穿制服的人（警察、消防員、店員）幫忙，不跟陌生人走。',
+      '大人：先回到最後一起待的地方，找 10 分鐘。',
+      '吹哨三短聲；聽到家人的哨音就原地等待。',
+      '依「我們的計畫」的順序前往集合點，到了就等，時間到再往下一個。',
+      '撥 1991，輸入約定電話留言：人在哪、是否平安、接下來去哪。',
+      '手機有網路時用 LINE 安全通報回報平安。'],
+     needs:[E('whistle','每人求救哨',/哨/),E('meetcard','每人集合點卡',/集合點/),C('phone1991','1991 約定電話',planSet('phone')),A('walkie','對講機',/對講機/,null,{buy:B('對講機','生存',2,'支')})]},
+    {id:'evac',g:'第一時間',title:'決定撤離：衣著與攜帶',sum:'穿什麼、帶什麼、出門前做什麼',plan:true,steps:[
+      '長袖長褲、包鞋，不穿拖鞋；分層穿，方便增減。',
+      '戴帽子、手套（搬動瓦礫）、口罩。',
+      '下雨或夜間加輕便雨衣；孩子穿亮色衣服。',
+      '孩子口袋放聯絡卡：爸媽姓名電話、1991 約定電話、集合點。',
+      '帶走每人避難包、證件影本、現金、藥品、行動電源。',
+      '出門前關瓦斯與電源，門上留字條寫去向與時間。'],
+     needs:[E('warmwear','每人保暖外衣',/外套|保暖|衛生衣/,'衣',{buy:B('保暖外套','衣',3,'件')}),E('raincoat','每人雨衣',/雨衣/,null,{buy:B('輕便雨衣','衣',1,'件')}),A('mask','口罩',/口罩/),A('docs','證件影本',/證件/),A('cash','現金',/現金/),C('power','行動電源有電',charged,/行動電源/,'生存')]},
+    {id:'home',g:'第一時間',title:'停水停電在家',sum:'食物順序、用水分配、用電優先',steps:[
+      '冰箱少開門：先吃冷藏，再吃冷凍，最後才動乾糧與罐頭。',
+      '飲用水不要刻意省著喝：喝今天需要的量，同時想辦法補充。',
+      '洗手刷牙用生活用水；馬桶改用移動式馬桶加凝固劑便袋。',
+      '用電順序：手機聯絡 > 照明 > 收音機；行動電源輪流充。',
+      '卡式爐只在通風處使用。'],
+     needs:[C('food3',()=>`食物與水至少 ${S.goBag} 天`,()=>foodDays(S.goBag)(),FOOD,'食'),
+       C('hygwater','生活用水',()=>{const c=calc(S.items,S.members);return {ok:c.hygDays>=1,note:`可撐 ${r1(c.hygDays)} 天`};},/儲水桶/),
+       A('toilet','移動式馬桶',/馬桶/),C('bags','凝固劑便袋',covOk(/便袋/),/便袋/),C('power','行動電源有電',charged,/行動電源/,'生存'),A('gas','卡式爐瓦斯',/瓦斯/)]},
+    {id:'injured',g:'途中狀況',title:'有人受傷無法移動',sum:'止血、分工、分配避難包',injured:true,steps:[
+      '大量出血先直接加壓止血。',
+      '不確定有沒有傷到脊椎時，不要移動傷者。',
+      '決定誰留下陪伴、誰去求援；不讓孩子單獨留下或單獨求援。',
+      '依下方建議分配傷者的避難包：傷者留手機、哨子、保暖與一天的水和食物，其他交給要移動的人。',
+      '記下位置（地標、門牌、照片），求援的人帶著出發。',
+      '撥 119；電話不通時到最近的避難所或醫療站求援。'],
+     needs:[A('firstaid','急救包',/急救包/),A('saline','生理食鹽水',/食鹽水/),A('blanket','保暖毯',/保暖毯/),A('light','照明',/頭燈|手電筒/)]},
+    {id:'diarrhea',g:'途中狀況',title:'逃難途中：腹瀉',sum:'補水優先、電解質、何時要就醫',steps:[
+      '補水優先：少量多次喝口服電解質液，每次腹瀉後就補一些。',
+      '沒有電解質粉：1 公升乾淨的水加 6 平匙糖、半平匙鹽，攪到溶解；嚐起來不能比眼淚鹹。不要煮沸，24 小時內用完。',
+      '幼兒繼續喝奶；電解質液用杯子或湯匙餵，不用奶瓶。',
+      '照常吃清淡的東西（粥、白飯），不需要禁食。',
+      '止瀉藥只給大人短期使用；發燒或血便時不要用。孩子不要自己給止瀉藥。',
+      '要就醫：血便、高燒不退、吐到喝不下、尿量明顯變少、幼兒精神很差或哭沒有眼淚。',
+      '上廁所後、準備食物前洗手；只喝安全的水（煮沸 3–5 分鐘或用淨水錠）。'],
+     needs:[A('ors','口服電解質粉',/電解質/,null,{buy:B('口服電解質粉','醫藥',10,'包')}),A('purifier','淨水錠',/淨水/,null,{buy:B('淨水錠','生存',1,'盒')}),A('porridge','清淡食物（粥）',/粥/),A('sugarsalt','糖與鹽（自製電解質）',/砂糖|糖包|鹽包|糖與鹽/,null,{buy:B('糖與鹽小包','食',1,'組')})],
+     src:'自製電解質配方：<a href="https://rehydrate.org/solutions/homemade.htm" target="_blank" rel="noopener">Rehydration Project（WHO 配方）</a>'},
+    {id:'fever',g:'途中狀況',title:'逃難途中：發燒',sum:'退燒藥、紀錄、何時要就醫',steps:[
+      '多喝水，衣服不要包太緊。',
+      '退燒藥依仿單或處方使用；孩子依體重，用藥盒附的量杯量。',
+      '在手機或紙上記錄體溫與每次用藥時間。',
+      '要就醫：孩子精神很差或叫不醒、抽搐、呼吸困難、皮膚出現出血點、發燒超過 3 天。'],
+     needs:[A('feverA','成人退燒藥',/成人退燒/),A('feverC','兒童退燒藥',/兒童退燒/),A('thermo','體溫計',/體溫計/,null,{buy:B('電子體溫計','醫藥',1,'支')})]},
+    {id:'water',g:'途中狀況',title:'水快不夠時',sum:'不要刻意少喝，先省生活用水',steps:[
+      '不要刻意少喝；先喝今天需要的量，再想辦法找水。',
+      '減少流汗：待在陰涼處，避開中午搬重物或趕路。',
+      '少吃很鹹或高蛋白的食物，會增加需水量。',
+      '衛生先用生活用水；生活用水用完才動用飲用水。',
+      '來源不明的水：煮沸 3–5 分鐘，或用淨水錠依說明處理。',
+      '沖泡食品先吃「每 100 ml 水換到最多熱量」的（品項卡上有標示）。'],
+     needs:[C('water3',()=>`飲用水至少 ${S.goBag} 天`,()=>{const c=calc(S.items,S.members);return {ok:c.days.water>=S.goBag,note:`飲用水可撐 ${r1(c.days.water)} 天`};},/瓶裝水/,'食'),
+       A('purifier','淨水錠',/淨水/,null,{buy:B('淨水錠','生存',1,'盒')}),A('tank','儲水桶',/儲水桶/),A('gas','卡式爐瓦斯（煮水）',/瓦斯/)],
+     src:'用水原則：<a href="https://gohsep.la.gov/divisions/hazard-mitigation-assistance/fact-sheet-index/food-plus-water-in-an-emergency" target="_blank" rel="noopener">Food + Water in an Emergency</a>'},
+    {id:'kids',g:'途中狀況',title:'孩子害怕、哭鬧',sum:'穩定情緒、給任務、保留日常',steps:[
+      '大人先穩住，用簡短平靜的話說明現在發生什麼、接下來要做什麼。',
+      '給孩子小任務（拿手電筒、數人數），讓他有事可做。',
+      '盡量維持吃飯、睡前故事等日常順序。',
+      '拿出熟悉的東西：安撫娃娃、繪本、小玩具。',
+      '不讓孩子一直看災難畫面與新聞。'],
+     needs:[A('comfort','安撫娃娃',/安撫/),A('toys','繪本或玩具',/./,'樂')]},
+    {id:'war',g:'長期與戰時',title:'戰爭爆發：家庭',sum:'空襲警報、資訊判斷、存糧 3–7 天',steps:[
+      '聽到空襲警報：到最近的地下室、堅固建築或沒有窗戶的房間；來不及就趴低掩護、遠離窗戶。',
+      '解除警報後注意掉落物與二次攻擊，等官方資訊再移動。',
+      '任何「國家戰敗、政府投降」的訊息都是假訊息。',
+      '不拍攝、不轉傳軍隊動態，遠離交戰區域。',
+      '存糧存水以 3–7 天為基準；備好現金、證件影本、行動電源、藥品。',
+      '先查好住家附近的防空避難處所與避難收容所。'],
+     needs:[C('food7','食物與水 7 天',foodDays(7),FOOD,'食'),A('cash','現金',/現金/),A('docs','證件影本',/證件/),A('radio','收音機',/收音機/),C('power','行動電源有電',charged,/行動電源/,'生存'),M('shelter','附近的防空避難處所')],
+     src:'依據 2025《臺灣全民安全指引》：<a href="https://news.tvbs.com.tw/life/3056699" target="_blank" rel="noopener">TVBS 報導</a>'},
+    {id:'clinic',g:'長期與戰時',title:'戰爭爆發：診所營運與支出',sum:'範例內容，請依診所實況修改',steps:[
+      '先確認員工與家人安全，在群組公告營業調整與聯絡方式。',
+      '暫停非必要支出：設備採購、裝修、廣告。',
+      '耗材叫貨降到最低庫存，以急症處置需要的品項為主。',
+      '暫緩新的大型自費療程；進行中的病人安排臨時假牙與必要回診。',
+      '和房東、廠商協商延後付款或分期。',
+      '事先和員工說明薪資與排班的調整方式，不臨時決定。',
+      '病歷、帳務、合約異地備份（雲端加離線各一份）。',
+      '確認保險的戰爭除外條款，以及自己在任職醫院的應變任務。'],
+     needs:[M('reserve','診所預備金'),M('backup','病歷與帳務異地備份'),M('staffgroup','員工緊急聯絡群組'),M('insurance','保險的戰爭除外條款'),M('hospital','任職醫院的應變任務')]},
+  ];
+  const GROUPS=['第一時間','途中狀況','長期與戰時'];
+  const labOf=nd=>typeof nd.label==='function'?nd.label():nd.label;
+  // related items = items matching the need's rule + items linked by hand
+  function related(nd){
+    const auto=nd.re?S.items.filter(it=>(!nd.cat||it.cat===nd.cat)&&nd.re.test(it.name)):[];
+    const extra=[...(S.links[nd.key]||[])].map(id=>S.items.find(x=>x.id===id)).filter(Boolean);
+    const seen=new Set(), out=[];
+    auto.forEach(it=>{if(!seen.has(it.id)){seen.add(it.id);out.push({it,auto:true});}});
+    extra.forEach(it=>{if(!seen.has(it.id)){seen.add(it.id);out.push({it,auto:false});}});
+    return out;
+  }
+  function progress(nd){
+    const d=S.details[nd.key]; if(!d||!(d.target>0))return null;
+    const cur=d.mode==='auto'?related(nd).filter(r=>live(r.it)).reduce((a,r)=>a+r.it.qty,0):(Number(d.current)||0);
+    return {cur,target:d.target,unit:d.unit||'',pct:Math.min(100,Math.round(cur/d.target*100))};
+  }
+  const nfmt=n=>Number(n).toLocaleString('zh-TW');
+  function needState(sc,nd){
+    const p=progress(nd);
+    if(p)return {ok:p.cur>=p.target,note:`${nfmt(p.cur)} / ${nfmt(p.target)} ${p.unit}・${p.pct}%`,prog:p};
+    if(nd.manual){const ok=!!S.checks[nd.key]; return {ok,note:ok?'已確認':'尚未確認'};}
+    return nd.test();
+  }
+  function readiness(sc){const r=sc.needs.map(nd=>needState(sc,nd)); return {ok:r.filter(x=>x.ok).length,total:r.length};}
+  const PLAN_F=[['meet1','第一集合點'],['wait1','在第一集合點等'],['meet2','第二集合點'],['final','最終目標'],['phone','1991 約定電話'],['contact','外縣市聯絡人']];
+  function planReady(){const k=['meet1','meet2','final','phone'];return {ok:k.filter(x=>S.plan[x]).length,total:k.length};}
+  function planRoute(){
+    const stop=(v,lab,extra)=>v?`<span class="stop">${esc(v)}${extra?`<small>${esc(extra)}</small>`:''}</span>`:`<span class="stop empty">${lab}未填</span>`;
+    return `<div class="plan-route">${stop(S.plan.meet1,'第一集合點',S.plan.wait1?'等 '+S.plan.wait1:'')}<span class="arr">→</span>${stop(S.plan.meet2,'第二集合點')}<span class="arr">→</span>${stop(S.plan.final,'最終目標')}</div>`;
+  }
+  function renderResp(){
+    const pr=planReady();
+    document.getElementById('resp').innerHTML=`
+      <div class="plan">
+        <div class="blk-h"><h3 style="margin:0;font-size:16px">我們的計畫</h3><span class="rd ${pr.ok===pr.total?'ok':'miss'}">${pr.ok}/${pr.total}</span></div>
+        ${planRoute()}
+        <dl class="plan-kv"><dt>1991 約定電話</dt><dd class="${S.plan.phone?'':'empty'}">${esc(S.plan.phone||'尚未填寫')}</dd><dt>外縣市聯絡人</dt><dd class="${S.plan.contact?'':'empty'}">${esc(S.plan.contact||'尚未填寫')}</dd></dl>
+        <div style="display:flex;justify-content:flex-end"><button class="btn sm" data-act="plan" ${S.offline?'disabled':''}>${ICON.pencil} 填寫</button></div>
+      </div>
+      ${GROUPS.map(g=>`<div class="sgroup"><h3>${g}</h3>${SCEN.filter(s=>s.g===g).map(sc=>{const r=readiness(sc);
+        return `<button class="scen" data-act="scen" data-id="${sc.id}"><span><b>${esc(sc.title)}</b><small>${esc(sc.sum)}</small></span><span class="rd ${r.ok===r.total?'ok':'miss'}">${r.ok}/${r.total}</span></button>`;}).join('')}</div>`).join('')}
+      <p class="src">內容為一般原則，不能取代醫療專業判斷與官方指示。步驟可以在每個情境裡修改成你們家的版本。</p>`;
+  }
+  function splitBag(m){
+    const own=S.items.filter(it=>it.owner===m.id&&it.qty>0), keep=[], give=[];
+    const keepSubs=['求救','照明','保暖','外傷','衛材','常備藥','安撫','寢具','外套','保暖衣'];
+    own.forEach(it=>{
+      if(it.cat==='食'&&it.sub==='飲用水'){const k=Math.min(it.qty,Math.ceil(m.water/it.unitL)); if(k)keep.push([it,k]); if(it.qty>k)give.push([it,it.qty-k]);}
+      else if(isFood(it)){const k=Math.min(it.qty,m.meals); keep.push([it,k]); if(it.qty>k)give.push([it,it.qty-k]);}
+      else if(keepSubs.includes(it.sub)||it.cat==='醫藥')keep.push([it,it.qty]);
+      else give.push([it,it.qty]);
+    });
+    return {own,keep,give};
+  }
+  const findNeed=(scId,i)=>SCEN.find(s=>s.id===scId).needs[Number(i)];
+  function progBar(p,ok){
+    return `<span class="pb ${ok?'done':''}" role="img" aria-label="${p.pct}%">
+      <span class="pb-meta"><span class="pb-num">${nfmt(p.cur)}<small> / ${nfmt(p.target)} ${esc(p.unit)}</small></span><b>${ok?'✓ 達標':p.pct+'%'}</b></span>
+      <span class="pb-track"><span class="pb-fill" style="--p:${p.pct}%"></span><i style="left:25%"></i><i style="left:50%"></i><i style="left:75%"></i></span></span>`;
+  }
+  function needRow(sc,nd,i,wn){
+    const st=needState(sc,nd), open=S.openNeeds.has(sc.id+':'+i), lab=labOf(nd), ro=S.offline;
+    const icon=nd.manual&&!st.prog
+      ?`<input type="checkbox" data-act="mchk" data-key="${nd.key}" data-scen="${sc.id}" ${st.ok?'checked':''} ${ro?'disabled':''} aria-label="${esc(lab)}">`
+      :`<span class="ic ${st.ok?'ok':'no'}">${st.ok?'✓':'!'}</span>`;
+    const head=`<button class="nd-head" data-act="ntog" data-scen="${sc.id}" data-i="${i}" aria-expanded="${open}">
+        <span>${esc(lab)}${st.prog?progBar(st.prog,st.ok):`<span class="note ${!st.ok||st.warn?'warn':''}">${esc(st.note)}</span>`}</span>${ICON.chev}</button>`;
+    let body='';
+    {
+      const rel=related(nd), d=S.details[nd.key]||{};
+      body=`<div class="nd-wrap" ${open?'':'inert'}><div class="nd-in"><div class="nd-body">
+        <div class="nd-sec"><span class="lab">相關品項</span>
+          ${rel.length?`<ul class="rel">${rel.map(({it,auto})=>`<li><button data-act="nitem" data-id="${it.id}" data-scen="${sc.id}"><span class="t">${esc(it.name)}${auto?'':'<span class="shared">手動</span>'}</span><span class="m">${ICON.pin}${esc(it.loc)}</span></button><span class="q">${isWater(it)?r1(it.qty*it.unitL)+' L':it.qty+' '+esc(it.unit)}</span>${['exp','3','chk'].includes(tierOf(it))?tierChip(it):''}</li>`).join('')}</ul>`
+            :'<div class="cat-empty">還沒有相關品項</div>'}</div>
+        ${d.note?`<div class="nd-sec"><span class="lab">處理細節</span><div class="nd-note">${esc(d.note)}</div></div>`:''}
+        <div class="nd-acts">
+          ${!st.ok&&nd.buy?(wn.has(nd.buy.name)?'<span class="inwish">已在待購</span>':`<button class="btn sm" data-act="nbuy" data-scen="${sc.id}" data-i="${i}" ${ro?'disabled':''}>＋ 待購</button>`):''}
+          <button class="btn sm" data-act="nlink" data-scen="${sc.id}" data-i="${i}" ${ro?'disabled':''}>連結品項</button>
+          <button class="btn sm" data-act="nedit" data-scen="${sc.id}" data-i="${i}" ${ro?'disabled':''}>${ICON.pencil} 細節與目標</button>
+        </div></div></div></div>`;
+    }
+    return `<li class="${open?'open':''}">${icon}<div>${head}${body}</div></li>`;
+  }
+  function openScen(id,keep){
+    const sc=SCEN.find(s=>s.id===id); if(!sc)return;
+    S.ret=id;
+    const wn=wantNames();
+    const r=readiness(sc);
+    let extra='';
+    if(sc.plan)extra+=`<div class="blk"><div class="blk-h"><h3>我們的計畫</h3><button class="btn sm icon" data-act="plan" aria-label="填寫計畫" ${S.offline?'disabled':''}>${ICON.pencil}</button></div>${planRoute()}<div class="src">1991 約定電話：${esc(S.plan.phone||'尚未填寫')}</div></div>`;
+    if(sc.injured){
+      const m=mem(S.injured), sp=splitBag(m);
+      const li=l=>l.length?l.map(([it,q])=>`<li><span>${esc(it.name)}</span><span>${q} ${esc(it.unit)}</span></li>`).join(''):'<li><span style="color:var(--muted)">沒有</span></li>';
+      extra+=`<div class="blk"><h3 style="margin:0;font-size:15px">誰受傷了？</h3>
+        <div class="pick">${S.members.map(x=>`<button data-act="inj" data-id="${x.id}" class="${x.id===m.id?'on':''}">${esc(x.name)}</button>`).join('')}</div>
+        ${sp.own.length?`<div class="split"><div><h4>留給${esc(m.name)}</h4><ul>${li(sp.keep)}</ul></div><div><h4>交給求援的人帶走</h4><ul>${li(sp.give)}</ul></div></div>`
+          :`<div class="empty">${esc(m.name)}沒有個人避難包物品，從全家共用物資分配。</div>`}</div>`;
+    }
+    openSheet(`<h2>${esc(sc.title)}</h2><div class="sub">${esc(sc.sum)}</div>
+      ${extra}
+      <div class="blk"><div class="blk-h"><h3>怎麼做</h3><button class="btn sm icon" data-act="sedit" data-id="${sc.id}" aria-label="修改步驟" ${S.offline?'disabled':''}>${ICON.pencil}</button></div>
+        <ol class="steps">${sc.steps.map(t=>`<li>${esc(t)}</li>`).join('')}</ol></div>
+      <div class="blk"><div class="blk-h"><h3>準備好了嗎</h3><span class="rd ${r.ok===r.total?'ok':'miss'}">${r.ok}/${r.total}</span></div>
+        <div class="hint">點任一項展開：看相關品項、加處理細節或設定目標數量。</div>
+        <ul class="needs">${sc.needs.map((nd,i)=>needRow(sc,nd,i,wn)).join('')}</ul></div>
+      ${sc.src?`<div class="src">${sc.src}</div>`:''}
+      <div class="sheet-actions"><span></span><button class="btn primary" data-act="close">關閉</button></div>`,sc.title,keep);
+  }
+  let dState=null;
+  function openDetail(scId,i){
+    const nd=findNeed(scId,i), d=S.details[nd.key]||{};
+    const hasRel=related(nd).length>0;
+    dState={scId,i,mode:d.mode||(hasRel&&!nd.manual?'auto':'manual'),current:d.current??'',target:d.target??'',unit:d.unit??'',note:d.note??''};
+    drawDetail();
+  }
+  function drawDetail(){
+    const nd=findNeed(dState.scId,dState.i), f=dState, hasRel=related(nd).length>0;
+    const autoSum=related(nd).filter(r=>live(r.it)).reduce((a,r)=>a+r.it.qty,0);
+    openSheet(`<h2>${esc(labOf(nd))}</h2><div class="sub">細節與目標・同一項在其他情境也會顯示</div>
+      <div class="field"><span>目前數量怎麼算</span><div class="toggles">
+        <button data-act="dmode" data-k="manual" class="${f.mode==='manual'?'on':''}">自己輸入</button>
+        <button data-act="dmode" data-k="auto" class="${f.mode==='auto'?'on':''}" ${hasRel?'':'disabled'}>相關品項數量加總${hasRel?`（目前 ${autoSum}）`:''}</button></div></div>
+      <div class="grid2">
+        ${f.mode==='manual'?`<label class="field"><span>目前準備</span><input id="d-current" data-d="current" type="number" inputmode="numeric" value="${esc(f.current)}" placeholder="例：50000"></label>`:''}
+        <label class="field"><span>目標</span><input id="d-target" data-d="target" type="number" inputmode="numeric" value="${esc(f.target)}" placeholder="例：100000"></label>
+        <label class="field"><span>單位</span><input id="d-unit" data-d="unit" value="${esc(f.unit)}" placeholder="元、片、天"></label>
+      </div>
+      <label class="field"><span>處理細節</span><textarea id="d-note" data-d="note" rows="4" placeholder="例：分兩份放，爸爸包與媽媽包各一份，以百元鈔為主">${esc(f.note)}</textarea></label>
+      <div class="hint">有填目標時，達到目標才算準備好；目標留空就照原本的規則判斷。</div>
+      <div class="sheet-actions"><button class="btn" data-act="scen" data-id="${f.scId}">取消</button><button class="btn primary" data-act="dok">儲存</button></div>`,'細節與目標');
+  }
+  let lState=null;
+  function openLink(scId,i){
+    const nd=findNeed(scId,i);
+    lState={scId,i,sel:new Set(S.links[nd.key]||[]),q:''};
+    drawLink();
+  }
+  function drawLink(){
+    const nd=findNeed(lState.scId,lState.i);
+    const autoIds=new Set(related(nd).filter(r=>r.auto).map(r=>r.it.id));
+    const q=lState.q.trim();
+    const its=S.items.filter(it=>!q||it.name.includes(q)||it.loc.includes(q));
+    openSheet(`<h2>連結品項</h2><div class="sub">${esc(labOf(nd))}・勾選和這一項有關的庫存</div>
+      <input id="l-q" data-l="q" value="${esc(lState.q)}" placeholder="搜尋名稱或位置" style="border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:9px 10px;font-size:15px;width:100%">
+      ${CATS.map(c=>{const l=its.filter(it=>it.cat===c); if(!l.length)return '';
+        return `<div class="cat-block"><h3>${c}</h3><ul class="alloc">${l.map(it=>{const au=autoIds.has(it.id);
+          return `<li><label class="lk"><input type="checkbox" data-act="ltog" data-id="${it.id}" ${au||lState.sel.has(it.id)?'checked':''} ${au?'disabled':''}> ${esc(it.name)}${au?'<span class="shared">自動</span>':''}</label><span class="q">${it.qty}<small>${esc(it.unit)}</small></span></li>`;}).join('')}</ul></div>`;}).join('')||'<div class="empty">找不到符合的品項</div>'}
+      <div class="sheet-actions"><button class="btn" data-act="scen" data-id="${lState.scId}">取消</button><button class="btn primary" data-act="lok">儲存</button></div>`,'連結品項');
+  }
+  function openScenEdit(id){
+    const sc=SCEN.find(s=>s.id===id);
+    openSheet(`<h2>修改步驟</h2><div class="sub">${esc(sc.title)}・一行一個步驟</div>
+      <label class="field"><span>步驟</span><textarea id="s-steps" rows="12">${esc(sc.steps.join('\n'))}</textarea></label>
+      <div class="sheet-actions"><button class="btn" data-act="scen" data-id="${sc.id}">取消</button><button class="btn primary" data-act="sok" data-id="${sc.id}">儲存</button></div>`,'修改步驟');
+  }
+  function openPlan(){
+    openSheet(`<h2>我們的計畫</h2><div class="sub">走散或撤離時全家照這個走。路線圖與轉角標註在下一階段加入。</div>
+      ${PLAN_F.map(([k,l])=>`<label class="field"><span>${l}</span><input id="p-${k}" data-pf="${k}" value="${esc(S.plan[k])}" placeholder="${{meet1:'例：住家附近的國小操場',wait1:'例：1 小時',meet2:'例：區公所前廣場',final:'例：外縣市親友家',phone:'例：家裡市話或爸爸手機',contact:'例：外縣市親友的電話'}[k]}"></label>`).join('')}
+      <div class="sheet-actions"><button class="btn" data-act="${S.ret?'scen':'close'}" data-id="${S.ret||''}">取消</button><button class="btn primary" data-act="pok">儲存</button></div>`,'我們的計畫');
+  }
+
+  // ================= data layer (Google 試算表) =================
+  const DEMO=!CONFIG.API;
+  const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  S.role=DEMO?'editor':'viewer'; S.online=true; S.thumbs={}; S.lastSync=0;
+  const fullCache={}, pendingThumb={};
+  const psrc=p=>!p?'':p.startsWith('data:')?(pendingThumb[p]||p):(S.thumbs[p]||'');
+  function pfull(p){
+    if(!p)return ''; if(p.startsWith('data:'))return p;
+    if(fullCache[p])return fullCache[p];
+    if(!DEMO)loadFull(p);
+    return S.thumbs[p]||'';
+  }
+  async function loadFull(id){
+    try{
+      let d=await idb.get('full_'+id).catch(()=>null);
+      if(!d&&S.online){d=(await api('photo',{id})).data; idb.set('full_'+id,d).catch(()=>{});}
+      if(!d)return; fullCache[id]=d;
+      document.querySelectorAll(`img[data-pid="${id}"]`).forEach(im=>im.src=d);
+    }catch(e){}
+  }
+  function resizeImg(file,max,q){return new Promise((res,rej)=>{const img=new Image(), url=URL.createObjectURL(file);
+    img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)), c=document.createElement('canvas');
+      c.width=Math.round(img.width*k); c.height=Math.round(img.height*k); c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg',q));};
+    img.onerror=()=>{URL.revokeObjectURL(url); rej(new Error('讀不到這張照片'));}; img.src=url;});}
+
+  const idb=(()=>{let p;
+    const db=()=>p||(p=new Promise((res,rej)=>{const r=indexedDB.open('family-prep',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);}));
+    const tx=(mode,fn)=>db().then(d=>new Promise((res,rej)=>{const t=d.transaction('kv',mode), q=fn(t.objectStore('kv')); t.oncomplete=()=>res(q&&q.result); t.onerror=()=>rej(t.error);}));
+    return {get:k=>tx('readonly',s=>s.get(k)), set:(k,v)=>tx('readwrite',s=>s.put(v,k)), clear:()=>tx('readwrite',s=>s.clear())};})();
+
+  // ---- session ----
+  let sess=null;
+  const readSession=()=>{try{return JSON.parse(localStorage.getItem('fp-session')||sessionStorage.getItem('fp-session')||'null');}catch(e){return null;}};
+  const saveSession=(s,remember)=>{sess=s; try{(remember?localStorage:sessionStorage).setItem('fp-session',JSON.stringify(s));}catch(e){}};
+  const clearSession=()=>{sess=null; try{localStorage.removeItem('fp-session');sessionStorage.removeItem('fp-session');}catch(e){}};
+
+  async function api(action,data={}){
+    let res;
+    try{res=await fetch(CONFIG.API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,session:sess&&sess.session,...data})});}
+    catch(e){const er=new Error('連不上伺服器'); er.code='NET'; throw er;}
+    let j; try{j=await res.json();}catch(e){const er=new Error('伺服器回應格式錯誤'); er.code='NET'; throw er;}
+    if(!j.ok){const er=new Error(j.message||j.error||'發生錯誤'); er.code=j.error; throw er;}
+    return j;
+  }
+
+  // ---- tables <-> state ----
+  const ITEM_COLS=['id','cat','sub','name','qty','unit','unitL','kcal','prep','method','suits','owner','loc','exp','checked','size','needType','need','mah','battery','photos'];
+  const strRow=r=>Object.fromEntries(Object.entries(r).map(([k,v])=>[k,v==null?'':String(v)]));
+  function toTables(){
+    const keys=new Set([...Object.keys(S.details),...Object.keys(S.links),...Object.keys(S.checks).filter(k=>S.checks[k])]);
+    const t={
+      Members:S.members.map(m=>({id:m.id,name:m.name,birth:m.birth||'',water:m.water,meals:m.meals,kcal:m.kcal})),
+      Items:S.items.map(it=>{const o={}; ITEM_COLS.forEach(k=>o[k]=it[k]); o.suits=(it.suits||[]).join(','); o.photos=(it.photos||[]).join(','); return o;}),
+      Usage:S.log.map(l=>({id:l.id,time:l.t,itemId:l.itemId||'',name:l.name,qty:l.n,unit:l.unit,by:l.by||''})),
+      Wishlist:S.wants.map(w=>({id:w.id,cat:w.cat,name:w.name,qty:w.qty,unit:w.unit,note:w.note||''})),
+      Needs:[...keys].map(k=>{const d=S.details[k]||{}; return {id:k,mode:d.mode||'',current:d.current,target:d.target,unit:d.unit||'',note:d.note||'',links:[...(S.links[k]||[])].join(','),checked:S.checks[k]?'TRUE':''};}),
+      Scenarios:SCEN.filter(s=>s.edited).map(s=>({id:s.id,steps:s.steps.join('\n')})),
+      Plan:Object.entries(S.plan).map(([k,v])=>({id:k,value:v})),
+      Settings:[{id:'hyg',value:S.hyg},{id:'goBag',value:S.goBag}]
+    };
+    Object.keys(t).forEach(n=>t[n]=t[n].map(strRow));
+    return t;
+  }
+  const num=v=>v===''||v==null?'':Number(v);
+  const list=v=>String(v||'').split(',').map(x=>x.trim()).filter(Boolean);
+  function hydrate(t){
+    const T=n=>t[n]||[];
+    S.members=T('Members').map(r=>({id:r.id,name:r.name,birth:r.birth||'',water:Number(r.water)||0,meals:Number(r.meals)||0,kcal:Number(r.kcal)||0}));
+    S.items=T('Items').map(r=>{const it={}; ITEM_COLS.forEach(k=>it[k]=r[k]??'');
+      ['qty','unitL','kcal','prep'].forEach(k=>it[k]=Number(it[k])||0); ['need','mah','battery'].forEach(k=>it[k]=num(it[k]));
+      it.suits=list(r.suits); it.photos=list(r.photos); it.owner=it.owner||'all'; it.checked=it.checked||fmt(today); return it;});
+    S.log=T('Usage').map(r=>({id:r.id,t:r.time,itemId:r.itemId,name:r.name,n:Number(r.qty)||0,unit:r.unit,by:r.by})).sort((a,b)=>b.t.localeCompare(a.t));
+    S.wants=T('Wishlist').map(r=>({id:r.id,cat:r.cat,name:r.name,qty:Number(r.qty)||1,unit:r.unit,note:r.note}));
+    S.details={}; S.links={}; S.checks={};
+    T('Needs').forEach(r=>{
+      if(r.mode||r.target||r.note)S.details[r.id]={mode:r.mode||'manual',current:num(r.current),target:num(r.target),unit:r.unit,note:r.note};
+      const l=list(r.links); if(l.length)S.links[r.id]=new Set(l);
+      if(String(r.checked).toUpperCase()==='TRUE')S.checks[r.id]=true;
+    });
+    T('Scenarios').forEach(r=>{const sc=SCEN.find(s=>s.id===r.id); if(sc&&r.steps){sc.steps=r.steps.split('\n').filter(Boolean); sc.edited=true;}});
+    S.plan={meet1:'',wait1:'1 小時',meet2:'',final:'',phone:'',contact:''};
+    T('Plan').forEach(r=>{S.plan[r.id]=r.value;});
+    T('Settings').forEach(r=>{if(r.id==='hyg')S.hyg=Number(r.value)||0; if(r.id==='goBag')S.goBag=Number(r.value)||3;});
+    if(t.Photos)T('Photos').forEach(r=>{S.thumbs[r.id]=r.thumb;});
+    if(!mem(S.injured)&&S.members[0])S.injured=S.members[0].id;
+  }
+  const snap=t=>Object.fromEntries(Object.entries(t).map(([n,rows])=>[n,Object.fromEntries(rows.map(r=>[r.id,JSON.stringify(r)]))]));
+  let synced=null;
+  function diff(){
+    const cur=snap(toTables()), ch={}; let n=0;
+    Object.keys(cur).forEach(name=>{
+      const before=(synced&&synced[name])||{}, up=[], del=[];
+      Object.entries(cur[name]).forEach(([id,js])=>{if(before[id]!==js)up.push(JSON.parse(js));});
+      if(name!=='Usage')Object.keys(before).forEach(id=>{if(!(id in cur[name]))del.push(id);});
+      if(up.length||del.length){ch[name]={upsert:up,del}; n+=up.length+del.length;}
+    });
+    return {ch,n,cur};
+  }
+  async function saveCache(){
+    if(DEMO)return;
+    try{await idb.set('data',{tables:toTables(),synced,lastSync:S.lastSync,role:S.role}); await idb.set('thumbs',S.thumbs);}catch(e){}
+  }
+
+  // ---- sync ----
+  let syncing=false, again=false, syncTimer=null, syncErr='';
+  function scheduleSync(){
+    if(DEMO||!sess||S.role!=='editor')return;
+    saveCache(); clearTimeout(syncTimer); syncTimer=setTimeout(doSync,500); setPill();
+  }
+  async function uploadPending(){
+    for(const it of S.items){
+      for(let i=0;i<it.photos.length;i++){
+        const p=it.photos[i]; if(!p.startsWith('data:'))continue;
+        const r=await api('upload',{full:p,thumb:pendingThumb[p]||'',name:it.name});
+        S.thumbs[r.id]=pendingThumb[p]||''; fullCache[r.id]=p; idb.set('full_'+r.id,p).catch(()=>{});
+        it.photos[i]=r.id;
+      }
+    }
+  }
+  async function doSync(){
+    if(syncing){again=true;return;}
+    syncing=true; syncErr=''; setPill('同步中…');
+    try{
+      await uploadPending();
+      const {ch,n,cur}=diff();
+      if(n){await api('sync',{changes:ch}); synced=cur;}
+      S.lastSync=Date.now(); saveCache();
+    }catch(err){
+      syncErr=err.message;
+      if(err.code==='AUTH'){clearSession(); showLogin(true,'登入已過期，請重新登入。剛剛的修改還在這台手機上，登入後會自動送出。');}
+      else if(err.code==='NET'){S.online=false; applyMode(); render();}
+      else toast('同步失敗：'+err.message);
+    }finally{
+      syncing=false; setPill();
+      if(again){again=false; doSync();}
+    }
+  }
+  async function refresh(){
+    if(DEMO||!sess)return;
+    setPill('更新中…');
+    try{
+      if(synced&&diff().n&&S.role==='editor')await doSync();
+      const j=await api('load');
+      S.thumbs={}; hydrate(j.tables); synced=snap(toTables());
+      S.role=j.role; S.online=true; S.lastSync=Date.now();
+      if(sess.role!==j.role){sess.role=j.role;}
+      saveCache(); applyMode(); render();
+    }catch(err){
+      if(err.code==='AUTH'){clearSession(); showLogin(true,'登入已過期，請重新登入。'); return;}
+      S.online=false; applyMode(); render();
+    }
+  }
+
+  // ---- status pill + banner ----
+  const hm=ts=>{if(!ts)return '—'; const d=new Date(ts); const same=fmt(d)===fmt(new Date()); return (same?'今天 ':`${d.getMonth()+1}/${d.getDate()} `)+`${pad(d.getHours())}:${pad(d.getMinutes())}`;};
+  function setPill(txt){
+    const el=document.getElementById('syncPill'); if(!el)return;
+    if(DEMO){el.textContent='範例模式';return;}
+    if(txt){el.textContent=txt;return;}
+    const pend=synced&&S.role==='editor'?diff().n:0;
+    el.textContent=!S.online?`離線・${hm(S.lastSync)}`:S.role!=='editor'?`唯讀・${hm(S.lastSync)}`:pend?`未同步 ${pend} 項`:`已同步・${hm(S.lastSync)}`;
+  }
+  function applyMode(){
+    if(DEMO)return;
+    S.offline=!(S.online&&S.role==='editor');
+    document.body.classList.toggle('offline',S.offline);
+    const b=document.querySelector('.offline-banner');
+    if(b)b.textContent=!S.online?`離線中：顯示 ${hm(S.lastSync)} 的資料，不能修改。恢復網路後會自動更新。`:'唯讀模式：用家庭密碼登入，可以查看但不能修改。';
+    setPill();
+  }
+
+  // ---- login screen ----
+  function loadGIS(){return new Promise((res,rej)=>{if(window.google&&google.accounts&&google.accounts.id)return res();
+    const s=document.createElement('script'); s.src='https://accounts.google.com/gsi/client'; s.async=true; s.onload=res; s.onerror=()=>rej(new Error('載入 Google 登入失敗')); document.head.appendChild(s);});}
+  async function showLogin(hasCache,msg){
+    const el=document.getElementById('login'); el.hidden=false; document.body.classList.add('locked');
+    let cache=null; if(hasCache){try{cache=await idb.get('data');}catch(e){}}
+    el.innerHTML=`<div class="login-card">
+      <div class="login-brand"><h1>家庭防災庫</h1><p>食衣住行的防災物資，與全家的應變計畫</p></div>
+      ${msg?`<div class="login-msg">${esc(msg)}</div>`:''}
+      <section class="login-opt"><h2>爸爸、媽媽</h2><p>用 Google 帳號登入，可以新增與修改。</p><div id="gbtn" class="gbtn"><span class="hint">載入 Google 登入中…</span></div></section>
+      <section class="login-opt"><h2>其他家人</h2><p>輸入家庭密碼，只能查看。</p>
+        <form id="pwForm" class="pw-row"><input id="pw" type="password" autocomplete="current-password" placeholder="家庭密碼" aria-label="家庭密碼"><button class="btn primary" type="submit">查看</button></form>
+        <label class="switch"><input type="checkbox" id="pwRemember" checked> 記住這台裝置（借來的手機請取消）</label></section>
+      ${cache?`<section class="login-opt"><h2>沒有網路</h2><p>看這台手機上次存下的資料（${hm(cache.lastSync)}），不能修改。</p><button class="btn" data-act="offlineView">離線查看</button></section>`:''}
+      <div class="login-err" id="loginErr" role="alert"></div>
+    </div>`;
+    document.getElementById('pwForm').addEventListener('submit',async e=>{
+      e.preventDefault(); const pw=document.getElementById('pw').value; if(!pw)return;
+      loginErr('驗證中…');
+      try{const r=await api('loginPassword',{password:pw}); saveSession({session:r.session,role:r.role,name:r.name},document.getElementById('pwRemember').checked); afterLogin();}
+      catch(err){loginErr(err.code==='NET'?'連不上伺服器，請確認網路。':err.message);}
+    });
+    try{
+      await loadGIS();
+      google.accounts.id.initialize({client_id:CONFIG.CLIENT_ID,callback:async resp=>{
+        loginErr('驗證中…');
+        try{const r=await api('loginGoogle',{credential:resp.credential}); saveSession({session:r.session,role:r.role,name:r.name},true); afterLogin();}
+        catch(err){loginErr(err.message);}
+      }});
+      const g=document.getElementById('gbtn'); g.innerHTML='';
+      google.accounts.id.renderButton(g,{theme:'outline',size:'large',text:'signin_with',shape:'pill',locale:'zh-TW',width:260});
+    }catch(err){const g=document.getElementById('gbtn'); if(g)g.innerHTML=`<span class="hint">${esc(err.message)}，請確認網路後重新整理。</span>`;}
+  }
+  const loginErr=t=>{const e=document.getElementById('loginErr'); if(e)e.textContent=t;};
+  function hideLogin(){const el=document.getElementById('login'); el.hidden=true; el.innerHTML=''; document.body.classList.remove('locked');}
+  async function afterLogin(){hideLogin(); S.role=sess.role; S.online=true; applyMode(); render(); await refresh();}
+
+  function openAccount(){
+    if(DEMO){toast('這是範例模式，資料不會儲存');return;}
+    const pend=synced&&S.role==='editor'?diff().n:0;
+    openSheet(`<h2>帳號與同步</h2>
+      <dl class="plan-kv"><dt>身分</dt><dd>${esc(sess?sess.name:'離線查看')}・${S.role==='editor'?'可編輯':'唯讀'}</dd>
+        <dt>連線</dt><dd>${S.online?'在線':'離線'}</dd><dt>最後同步</dt><dd>${hm(S.lastSync)}</dd>
+        ${pend?`<dt>未同步</dt><dd class="empty">${pend} 項</dd>`:''}${syncErr?`<dt>錯誤</dt><dd class="empty">${esc(syncErr)}</dd>`:''}</dl>
+      <div class="hint">試算表是唯一的正本；這台手機存的是最後一次同步的副本，沒網路時可以查看。</div>
+      <div class="sheet-actions"><button class="btn" data-act="logout">${sess?'登出':'回登入頁'}</button>
+        <div class="right"><button class="btn" data-act="close">關閉</button><button class="btn primary" data-act="resync" ${sess?'':'disabled'}>立即同步</button></div></div>`,'帳號與同步');
+  }
+  async function logout(){
+    const pend=synced&&S.role==='editor'?diff().n:0;
+    if(pend&&S.online)await doSync();
+    try{if(sess&&S.online)await api('logout');}catch(e){}
+    clearSession(); await idb.clear().catch(()=>{}); synced=null; closeSheet(); showLogin(false);
+  }
+
+  async function boot(){
+    if(DEMO){render(); setPill(); return;}
+    const t=document.getElementById('offlineToggle'); if(t)t.closest('label').hidden=true;
+    S.members=[]; S.items=[]; S.log=[]; S.wants=[]; S.details={}; S.links={}; S.checks={};
+    S.plan={meet1:'',wait1:'1 小時',meet2:'',final:'',phone:'',contact:''};
+    sess=readSession();
+    let cache=null; try{cache=await idb.get('data');}catch(e){}
+    if(cache){hydrate(cache.tables); synced=cache.synced; S.lastSync=cache.lastSync||0; try{Object.assign(S.thumbs,await idb.get('thumbs')||{});}catch(e){}}
+    if(!sess){showLogin(!!cache); return;}
+    S.role=sess.role; S.online=navigator.onLine!==false; applyMode(); render();
+    await refresh();
+  }
+  window.addEventListener('online',()=>{if(sess)refresh();});
+  window.addEventListener('offline',()=>{if(!DEMO){S.online=false; applyMode(); render();}});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&sess&&!document.querySelector('.sheet')&&!syncing)refresh();});
+
+  // ---- events ----
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-act]'); if(!b)return;
+    const a=b.dataset.act;
+    if(a==='close-scrim'){ if(e.target===b){closeSheet();S.ret=null;} return; }
+    switch(a){
+      case 'cat': S.cat=b.dataset.k; S.sub='全部'; S.tier=null; S.rotOpen=false; render(); break;
+      case 'explain': openExplain(); break;
+      case 'settings': openSettings(); break;
+      case 'member': openMember(b.dataset.id); break;
+      case 'tier': S.tier=S.tier===b.dataset.k?null:b.dataset.k; renderTiers(); renderItems(); break;
+      case 'rot': S.rotOpen=!S.rotOpen; renderRotation(); break;
+      case 'sub': S.sub=b.dataset.k; renderItems(); break;
+      case 'open': openItem(b.dataset.id); break;
+      case 'back': if(b.dataset.id)openItem(b.dataset.id); else closeSheet(); break;
+      case 'close': closeSheet(); S.ret=null; break;
+      case 'ph': photoIdx=Number(b.dataset.i); openItem(b.dataset.id,true); break;
+      case 'add': if(S.offline||S.mode==='resp')break; if(S.cat==='待購')openWantForm(); else openForm(null); break;
+      case 'mode': S.mode=b.dataset.k; S.ret=null; render(); try{window.scrollTo(0,0);}catch(err){} break;
+      case 'bought': {const w=S.wants.find(x=>x.id===b.dataset.id); openForm(null,{cat:w.cat,name:w.name,qty:w.qty,unit:w.unit,fromWant:w.id}); break;}
+      case 'wdel': {const w=S.wants.find(x=>x.id===b.dataset.id); S.wants=S.wants.filter(x=>x!==w); render(); toast(`已移除「${w.name}」`); break;}
+      case 'sadd': {const g=suggCache[Number(b.dataset.i)]; S.wants.push({id:uid('B'),cat:g.cat,name:g.name,qty:g.qty,unit:g.unit,note:''}); render(); toast(`已加入待購：${g.name}`); break;}
+      case 'wok': {const f=fState; if(!f.name.trim()){toast('請填名稱');break;} S.wants.push({id:uid('B'),cat:f.cat,name:f.name.trim(),qty:Number(f.qty)||1,unit:f.unit||'個',note:f.note}); closeSheet(); render(); toast(`已加入待購：${f.name}`); break;}
+      case 'scen': openScen(b.dataset.id); break;
+      case 'inj': S.injured=b.dataset.id; openScen('injured',true); break;
+      case 'nbuy': {const sc=SCEN.find(s=>s.id===b.dataset.scen), nd=sc.needs[Number(b.dataset.i)]; S.wants.push({id:uid('B'),...nd.buy,note:`${sc.title}需要`}); renderRail(); renderDays(); renderResp(); openScen(sc.id,true); toast(`已加入待購：${nd.buy.name}`); break;}
+      case 'mchk': {S.checks[b.dataset.key]=b.checked; renderDays(); renderResp(); openScen(b.dataset.scen,true); break;}
+      case 'ntog': {const k=b.dataset.scen+':'+b.dataset.i, li=b.closest('li'), w=li.querySelector('.nd-wrap'), op=!S.openNeeds.has(k);
+        op?S.openNeeds.add(k):S.openNeeds.delete(k);
+        li.classList.toggle('open',op); b.setAttribute('aria-expanded',op); op?w.removeAttribute('inert'):w.setAttribute('inert','');
+        if(op)setTimeout(()=>{const sh=li.closest('.sheet'); if(!sh)return; const r=li.getBoundingClientRect(), sr=sh.getBoundingClientRect(); if(r.bottom>sr.bottom-8)sh.scrollBy({top:r.bottom-sr.bottom+16,behavior:'smooth'});},300);
+        break;}
+      case 'nitem': S.ret=b.dataset.scen; openItem(b.dataset.id); break;
+      case 'nlink': openLink(b.dataset.scen,b.dataset.i); break;
+      case 'ltog': {const id=b.dataset.id; b.checked?lState.sel.add(id):lState.sel.delete(id); break;}
+      case 'lok': {const nd=findNeed(lState.scId,lState.i); S.links[nd.key]=new Set(lState.sel); S.openNeeds.add(lState.scId+':'+lState.i); renderDays(); renderResp(); openScen(lState.scId); toast('已更新相關品項'); break;}
+      case 'nedit': openDetail(b.dataset.scen,b.dataset.i); break;
+      case 'dmode': dState.mode=b.dataset.k; drawDetail(); break;
+      case 'dok': {const nd=findNeed(dState.scId,dState.i), f=dState, num=v=>v===''||v==null?'':Number(v);
+        const d={mode:f.mode,current:num(f.current),target:num(f.target),unit:f.unit.trim(),note:f.note.trim()};
+        if(d.target!==''&&!(d.target>0)){toast('目標要大於 0');break;}
+        if(d.target===''&&!d.note)delete S.details[nd.key]; else S.details[nd.key]=d;
+        S.openNeeds.add(dState.scId+':'+dState.i); renderDays(); renderResp(); openScen(dState.scId); toast('已儲存'); break;}
+      case 'sedit': openScenEdit(b.dataset.id); break;
+      case 'sok': {const sc=SCEN.find(s=>s.id===b.dataset.id); const v=document.getElementById('s-steps').value.split('\n').map(x=>x.trim()).filter(Boolean); if(v.length){sc.steps=v; sc.edited=true;} openScen(sc.id); toast('步驟已更新'); break;}
+      case 'plan': openPlan(); break;
+      case 'pok': {PLAN_F.forEach(([k])=>{S.plan[k]=document.getElementById('p-'+k).value.trim();}); render(); if(S.ret)openScen(S.ret); else closeSheet(); toast('計畫已儲存'); break;}
+      case 'edit': openForm(b.dataset.id); break;
+      case 'checked': {const it=S.items.find(x=>x.id===b.dataset.id); it.checked=fmt(today); if(it.battery!=null&&it.battery!=='')it.battery=100; render(); openItem(it.id,true); toast(it.battery===100?`已紀錄「${it.name}」充飽電`:`已標記「${it.name}」今天檢查過`); break;}
+      case 'consume': cState={id:b.dataset.id,n:1}; drawConsume(); break;
+      case 'cn': {const it=S.items.find(x=>x.id===cState.id); cState.n=Math.max(1,Math.min(it.qty,cState.n+Number(b.dataset.d))); drawConsume(); break;}
+      case 'cok': {const it=S.items.find(x=>x.id===cState.id); it.qty-=cState.n;
+        const now=new Date(); S.log.unshift({id:uid('U'),t:`${fmt(now)} ${pad(now.getHours())}:${pad(now.getMinutes())}`,itemId:it.id,name:it.name,n:cState.n,unit:it.unit,by:sess?sess.name:''});
+        render(); openItem(it.id,true); toast(`已扣除：${it.name} −${cState.n} ${it.unit}`); break;}
+      case 'fs': {const k=b.dataset.k,s=fState.suits; fState.suits=s.includes(k)?s.filter(x=>x!==k):s.concat(k); drawForm(); break;}
+      case 'fdel': {if(!fState.delArm){fState.delArm=true; drawForm(); break;}
+        const it=S.items.find(x=>x.id===fState.id); S.items=S.items.filter(x=>x.id!==fState.id);
+        Object.values(S.links).forEach(set=>set.delete(fState.id)); closeSheet(); render(); toast(`已刪除「${it.name}」`); break;}
+      case 'fn': fState.needType=b.dataset.k; if(!fState.needType)fState.need=''; drawForm(); break;
+      case 'fcover': {const i=Number(b.dataset.i); const [p]=fState.photos.splice(i,1); fState.photos.unshift(p); drawForm(); break;}
+      case 'frm': fState.photos.splice(Number(b.dataset.i),1); drawForm(); break;
+      case 'fok': {
+        const f=fState, cfg=CFG[f.cat], food=f.cat==='食', water=food&&(f.sub==='飲用水'||f.sub==='生活用水');
+        if(!f.name.trim()){toast('請填名稱');document.getElementById('f-name').focus();break;}
+        if(water&&!(Number(f.unitL)>0)){toast('請填每單位容量（公升）');break;}
+        if(food&&!water&&!f.suits.length){toast('請至少選一個適合對象');break;}
+        if(cfg.expReq&&!f.exp&&f.sub!=='生活用水'){toast('請填有效日');break;}
+        if(f.needType&&!(Number(f.need)>0)){toast('請填需求數量');break;}
+        const num=v=>v===''||v==null?'':Number(v);
+        const clean={...f,qty:Number(f.qty)||0,kcal:Number(f.kcal)||0,prep:Number(f.prep)||0,unitL:Number(f.unitL)||0,need:num(f.need),mah:num(f.mah),battery:num(f.battery),loc:f.loc||'未填位置'};
+        if(!clean.mah)delete clean.mah; if(clean.battery==='')delete clean.battery; if(!clean.needType){delete clean.needType;delete clean.need;}
+        if(water)clean.suits=f.sub==='生活用水'?[]:['成人','兒童','幼兒'];
+        if(f.id){const i=S.items.findIndex(x=>x.id===f.id); S.items[i]=clean; render(); openItem(f.id); toast('已儲存');}
+        else{clean.id=uid('I'); const fw=clean.fromWant; delete clean.fromWant; S.items.push(clean);
+          if(fw){S.wants=S.wants.filter(w=>w.id!==fw); closeSheet(); render(); toast(`「${clean.name}」已移進「${clean.cat}」`);}
+          else{closeSheet(); render(); toast(`已新增「${clean.name}」`);}}
+        break;}
+      case 'ms': {const id=b.dataset.id,k=b.dataset.k,d=Number(b.dataset.d);
+        if(id==='_'){ if(k==='hyg')S.hyg=Math.max(0,r1(S.hyg+d)); else S.goBag=Math.max(1,S.goBag+d); }
+        else{const m=mem(id); const min={water:0,meals:1,kcal:500}[k]; m[k]=Math.max(min,r1(m[k]+d));}
+        openSettings(); renderDays(); renderRail(); break;}
+      case 'acct': openAccount(); break;
+      case 'logout': logout(); break;
+      case 'resync': closeSheet(); refresh(); break;
+      case 'offlineView': hideLogin(); S.role='viewer'; S.online=false; applyMode(); render(); break;
+    }
+    if(!DEMO&&sess&&S.role==='editor'&&synced&&diff().n)scheduleSync();
+  });
+  document.addEventListener('input',e=>{
+    if(e.target.dataset.d&&dState){dState[e.target.dataset.d]=e.target.value;return;}
+    if(e.target.dataset.l&&lState){lState.q=e.target.value; drawLink(); const el=document.getElementById('l-q'); el.focus(); el.setSelectionRange(el.value.length,el.value.length); return;}
+    const k=e.target.dataset.f; if(!k||!fState)return;
+    fState[k]=e.target.value;
+    if(k==='sub'){ if(fState.cat==='食'&&(fState.sub==='飲用水'||fState.sub==='生活用水')){fState.unit=fState.unit==='包'?'瓶':fState.unit;} drawForm(); return; }
+    if(k==='prep'||k==='kcal'){const el=document.getElementById('f-ratio'); const p=Number(fState.prep),kc=Number(fState.kcal);
+      if(el){ if(p>0&&kc>0){el.hidden=false;el.textContent=`每 100 ml 水換 ${Math.round(kc/p*100)} kcal`;} else el.hidden=true; }}
+  });
+  document.addEventListener('change',e=>{
+    if(!e.target.dataset.fphoto||!e.target.files.length||!fState)return;
+    const files=[...e.target.files], st=fState;
+    (async()=>{let ok=0;
+      for(const f of files){try{const full=await resizeImg(f,1600,.82), th=await resizeImg(f,240,.65); pendingThumb[full]=th; st.photos.push(full); ok++;}catch(err){toast(err.message);}}
+      if(fState===st){drawForm(); toast(`已加入 ${ok} 張，按儲存後上傳`);}})();
+  });
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
+  document.getElementById('offlineToggle').addEventListener('change',e=>{
+    S.offline=e.target.checked; document.body.classList.toggle('offline',S.offline);
+    document.getElementById('syncPill').textContent=S.offline?`離線中・資料停在 ${fmt(today).slice(5)} 13:40`:'已同步・今天 13:40';
+    render();
+  });
+
+  boot();
+})();
+</script>
+
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+</script>
+</body>
+</html>
