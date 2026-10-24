@@ -504,6 +504,17 @@ body.locked{overflow:hidden}
   #printArea .a6-page{display:grid;grid-template-columns:105mm 105mm;grid-auto-rows:148.5mm;
     background:linear-gradient(#bbb,#bbb) center/0.2mm 100% no-repeat,linear-gradient(#bbb,#bbb) center/100% 0.2mm no-repeat}
 }
+
+/* iOS date inputs have an intrinsic min width that overflows grid cells */
+.field{min-width:0}
+.field input[type=date]{-webkit-appearance:none;appearance:none;min-width:0;max-width:100%;display:block;box-sizing:border-box;min-height:42px;text-align:left}
+.field input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
+.wedit{border:0;background:none;padding:0;text-align:left;color:var(--ink);font:inherit;font-weight:700;font-size:15px;min-width:0;cursor:pointer}
+.wedit .note{font-weight:400}
+.nobud{color:var(--t-3)}
+.wsub{display:flex;justify-content:flex-end;gap:6px;align-items:baseline;font-size:12px;color:var(--muted);border-top:1px dashed var(--line);padding:6px 0 8px}
+.wsub b{font-family:var(--font-num);font-size:16px;color:var(--ink)}
+.days .n .cur{font-family:var(--font-body);font-size:20px;font-weight:600;margin-right:6px}
 </style>
 
 <header class="top">
@@ -649,11 +660,11 @@ body.locked{overflow:hidden}
     reserve:{mode:'manual',current:50000,target:100000,unit:'元',note:'先以 3 個月固定支出（房租、薪資、基本耗材）估算，請改成實際數字。'},
     mask:{mode:'auto',current:'',target:50,unit:'片',note:''}
   };
-  S.plan={meet1:'住家旁的國小操場',wait1:'1 小時',meet2:'區公所前廣場',final:'',phone:'0912-000-111',contact:''};
+  S.plan={meet1:'住家旁的國小操場',wait1:'1 小時',meet2:'區公所前廣場',final:'',contact:''};
   S.contacts=[{id:'C1',name:'王阿公',relation:'爺爺',phone:'04-2200-0000',note:'台中',onCard:true},{id:'C2',name:'陳舅舅',relation:'外縣市聯絡人',phone:'0933-000-333',note:'高雄',onCard:true}];
   S.wants=[
-    {id:'B001',cat:'醫藥',name:'口服電解質粉',qty:10,unit:'包',note:'藥局，成人兒童通用款'},
-    {id:'B002',cat:'生存',name:'淨水錠',qty:1,unit:'盒',note:'戶外用品店'},
+    {id:'B001',cat:'醫藥',name:'口服電解質粉',qty:10,unit:'包',budget:450,note:'藥局，成人兒童通用款'},
+    {id:'B002',cat:'生存',name:'淨水錠',qty:1,unit:'盒',budget:380,note:'戶外用品店'},
     {id:'B003',cat:'衣',name:'兒童雨鞋',qty:2,unit:'雙',note:'哥哥、弟弟各一雙，先量腳長'}
   ];
 
@@ -746,9 +757,9 @@ body.locked{overflow:hidden}
     }
     if(S.cat==='待購'){
       document.getElementById('days').innerHTML=`
-        <div class="days-top"><p class="label">待購清單</p></div>
-        <div class="n">${S.wants.length}<span>項待買</span></div>
-        <div class="big-cap">買到後按「買到了」，補上有效日與存放位置就移進庫存</div>`;
+        <div class="days-top"><p class="label">待購清單・還要準備的預算</p></div>
+        <div class="n"><small class="cur">NT$</small>${Math.round(S.wants.reduce((a,w)=>a+(Number(w.budget)||0),0)).toLocaleString('zh-TW')}</div>
+        <div class="big-cap">${S.wants.length} 項待買${(()=>{const n=S.wants.filter(w=>!w.budget).length; return n?`・${n} 項還沒填預算`:'';})()}・點品項可以修改</div>`;
       return;
     }
     if(S.cat==='食'){
@@ -1048,9 +1059,10 @@ body.locked{overflow:hidden}
     el.innerHTML=`
       <div class="sec-head"><h2>待購清單</h2><small>買到後按「買到了」移進庫存</small></div>
       ${groups.length?groups.map(([c,l])=>`<div class="wgroup"><h3>${c}</h3><ul class="wlist">${l.map(w=>`
-        <li><span class="nm">${esc(w.name)}${w.note?`<span class="note">${esc(w.note)}</span>`:''}</span>
+        <li><button class="nm wedit" data-act="wedit" data-id="${w.id}">${esc(w.name)}<span class="note">${w.budget?`預算 ${money(w.budget)}`:'<span class="nobud">未填預算</span>'}${w.note?'・'+esc(w.note):''}</span></button>
           <span class="q">${w.qty}<small>${esc(w.unit)}</small></span>
-          <span class="acts"><button class="btn sm primary" data-act="bought" data-id="${w.id}" ${S.offline?'disabled':''}>買到了</button><button class="btn sm ghost" data-act="wdel" data-id="${w.id}" aria-label="移除 ${esc(w.name)}" ${S.offline?'disabled':''}>✕</button></span></li>`).join('')}</ul></div>`).join('')
+          <span class="acts"><button class="btn sm primary" data-act="bought" data-id="${w.id}" ${S.offline?'disabled':''}>買到了</button></span></li>`).join('')}</ul>
+          <div class="wsub">小計 <b>${money(l.reduce((a,w)=>a+(Number(w.budget)||0),0))}</b></div></div>`).join('')
         :'<div class="empty">待購清單是空的。可以從下方建議加入，或點右下「新增待購」。</div>'}
       <div class="sec-head" style="margin-top:6px"><h2>建議補充</h2><small>依庫存與應變情境自動列出</small></div>
       ${suggCache.length?`<div class="wgroup"><ul class="wlist sugg">${suggCache.map((g,i)=>`
@@ -1059,17 +1071,25 @@ body.locked{overflow:hidden}
           <span class="acts"><button class="btn sm" data-act="sadd" data-i="${i}" ${S.offline?'disabled':''}>＋ 加入</button></span></li>`).join('')}</ul></div>`
         :'<div class="empty">目前沒有建議補充的項目</div>'}`;
   }
-  function openWantForm(){
-    fState={want:true,name:'',cat:CATS[0],qty:1,unit:'個',note:''};
-    openSheet(`<h2>新增待購</h2>
+  const money=n=>'NT$ '+Math.round(Number(n)||0).toLocaleString('zh-TW');
+  function openWantForm(id){
+    const w=id?S.wants.find(x=>x.id===id):null;
+    fState={want:true,id:w?w.id:null,name:w?w.name:'',cat:w?w.cat:CATS[0],qty:w?w.qty:1,unit:w?w.unit:'個',budget:w&&w.budget?w.budget:'',note:w?w.note||'':'',delArm:false};
+    drawWantForm(false);
+  }
+  function drawWantForm(keep=true){
+    const f=fState, ro=S.offline, dis=ro?'disabled':'';
+    openSheet(`<h2>${f.id?'編輯待購':'新增待購'}</h2>
       <div class="grid2">
-        <label class="field"><span>名稱</span><input id="w-name" data-f="name" placeholder="例：淨水錠"></label>
-        <label class="field"><span>大類</span><select id="w-cat" data-f="cat">${CATS.map(c=>`<option>${c}</option>`).join('')}</select></label>
-        <label class="field"><span>數量</span><input id="w-qty" data-f="qty" type="number" inputmode="numeric" min="1" value="1"></label>
-        <label class="field"><span>單位</span><input id="w-unit" data-f="unit" value="個"></label>
+        <label class="field"><span>名稱</span><input id="w-name" data-f="name" value="${esc(f.name)}" placeholder="例：淨水錠" ${dis}></label>
+        <label class="field"><span>大類</span><select id="w-cat" data-f="cat" ${dis}>${CATS.map(c=>`<option ${f.cat===c?'selected':''}>${c}</option>`).join('')}</select></label>
+        <label class="field"><span>數量</span><input id="w-qty" data-f="qty" type="number" inputmode="numeric" min="1" value="${esc(f.qty)}" ${dis}></label>
+        <label class="field"><span>單位</span><input id="w-unit" data-f="unit" value="${esc(f.unit)}" ${dis}></label>
       </div>
-      <label class="field"><span>備註（購買處、預算、規格）</span><input id="w-note" data-f="note"></label>
-      <div class="sheet-actions"><button class="btn" data-act="close">取消</button><button class="btn primary" data-act="wok">加入待購</button></div>`,'新增待購');
+      <label class="field"><span>預算金額（這一項全部，新台幣）</span><input id="w-budget" data-f="budget" type="number" inputmode="numeric" min="0" step="1" value="${esc(f.budget)}" placeholder="例：1200" ${dis}></label>
+      <label class="field"><span>備註（購買處、規格）</span><input id="w-note" data-f="note" value="${esc(f.note)}" ${dis}></label>
+      <div class="sheet-actions">${f.id&&!ro?`<button class="btn danger" data-act="wdel">${f.delArm?'再按一次確認移除':'移除'}</button>`:''}
+        <div class="right"><button class="btn" data-act="close">${ro?'關閉':'取消'}</button>${ro?'':`<button class="btn primary" data-act="wok">${f.id?'儲存':'加入待購'}</button>`}</div></div>`,f.id?'編輯待購':'新增待購',keep);
   }
 
   // ================= response mode =================
@@ -1115,7 +1135,7 @@ body.locked{overflow:hidden}
       '用收音機或官方帳號確認災情，不轉傳未經證實的訊息。',
       '隨時準備餘震，再搖時一樣趴下、掩護、穩住。',
       '房屋有明顯裂縫、傾斜或起火就撤離（看「房子無法居住」與「決定撤離」）；否則在家避難（看「停水停電在家」）。',
-      '撥 1991 留言報平安，把電話線路留給緊急使用。'],
+      '打給外縣市聯絡人或用 LINE 安全通報報平安，其他時間把電話線路留給緊急使用。'],
      needs:[A('light','照明',/頭燈|手電筒/),A('radio','收音機',/收音機/),E('whistle','每人求救哨',/哨/),A('firstaid','急救包',/急救包/),M('gasValve','全家知道瓦斯與電源總開關的位置')]},
     {id:'fire',g:'第一時間',title:'火災逃生',sum:'小火快逃，濃煙關門',steps:[
       '大喊「失火了」讓全家知道，不收東西，直接逃。',
@@ -1127,19 +1147,19 @@ body.locked{overflow:hidden}
       '濕毛巾擋不住一氧化碳，不要用塑膠袋套頭。'],
      needs:[M('smokeAlarm','每個房間都有住宅用火災警報器（住警器）'),A('extinguisher','滅火器',/滅火器/,null,{buy:B('住宅用滅火器','生存',1,'支')}),M('fireRoutes','家裡兩條逃生路線，全家都走過'),A('light','照明',/頭燈|手電筒/)],
      src:'依據消防署「小火快逃，濃煙關門」：<a href="https://udn.com/news/story/7320/4648415" target="_blank" rel="noopener">聯合新聞網整理</a>'},
-    {id:'lost',g:'第一時間',title:'家人走散',sum:'原地、哨音、集合點、1991',plan:true,steps:[
+    {id:'lost',g:'第一時間',title:'家人走散',sum:'原地、哨音、集合點、外縣市聯絡人',plan:true,steps:[
       '孩子：留在原地，或找穿制服的人（警察、消防員、店員）幫忙，不跟陌生人走。',
       '大人：先回到最後一起待的地方，找 10 分鐘。',
       '吹哨三短聲；聽到家人的哨音就原地等待。',
       '依「約定集合點」的順序前往，到了就等，時間到再往下一個（識別卡和桌布上都有）。',
-      '撥 1991，輸入約定電話留言：人在哪、是否平安、接下來去哪。',
+      '打給外縣市聯絡人說：人在哪、是否平安、接下來去哪。災區電話塞車時，打外縣市常比較容易通；全家都向同一個人回報，由他轉告。',
       '手機有網路時用 LINE 安全通報回報平安。'],
-     needs:[E('whistle','每人求救哨',/哨/),E('meetcard','每人集合點卡',/集合點/),C('phone1991','1991 約定電話',planSet('phone')),A('walkie','對講機',/對講機/,null,{buy:B('對講機','生存',2,'支')})]},
+     needs:[E('whistle','每人求救哨',/哨/),E('meetcard','每人集合點卡',/集合點/),C('relay','外縣市聯絡人',()=>{const c=S.contacts.filter(x=>x.phone); return {ok:c.length>0,note:c.length?c.map(x=>x.name).join('、'):'還沒有設定'};}),A('walkie','對講機',/對講機/,null,{buy:B('對講機','生存',2,'支')})]},
     {id:'evac',g:'第一時間',title:'決定撤離：衣著與攜帶',sum:'穿什麼、帶什麼、出門前做什麼',plan:true,steps:[
       '長袖長褲、包鞋，不穿拖鞋；分層穿，方便增減。',
       '戴帽子、手套（搬動瓦礫）、口罩。',
       '下雨或夜間加輕便雨衣；孩子穿亮色衣服。',
-      '孩子口袋放聯絡卡：爸媽姓名電話、1991 約定電話、集合點。',
+      '孩子口袋或書包放識別卡（家人電話、集合點）。',
       '帶走每人避難包、證件影本、現金、藥品、行動電源。',
       '出門前關瓦斯與電源，門上留字條寫去向與時間。'],
      needs:[E('warmwear','每人保暖外衣',/外套|保暖|衛生衣/,'衣',{buy:B('保暖外套','衣',3,'件')}),E('raincoat','每人雨衣',/雨衣/,null,{buy:B('輕便雨衣','衣',1,'件')}),A('mask','口罩',/口罩/),A('docs','證件影本',/證件/),A('cash','現金',/現金/),C('power','行動電源有電',charged,/行動電源/,'生存')]},
@@ -1327,7 +1347,7 @@ body.locked{overflow:hidden}
     return miss;
   }
   function famReady(){
-    const items=[...S.members.map(m=>famIssues(m).length===0),!!S.plan.meet1,!!S.plan.final,!!S.plan.phone,S.contacts.length>0];
+    const items=[...S.members.map(m=>famIssues(m).length===0),!!S.plan.meet1,!!S.plan.final,S.contacts.length>0];
     return {ok:items.filter(Boolean).length,total:items.length};
   }
   function memberAvatar(m,cls='av'){
@@ -1348,7 +1368,6 @@ body.locked{overflow:hidden}
         ${S.contacts.length?`<ul class="clist">${S.contacts.map(c=>`<li><button data-act="cedit" data-id="${c.id}"><span><b>${esc(c.name)}</b><small>${esc(c.relation||'')}${c.note?'・'+esc(c.note):''}${c.onCard?'':'・不印在卡上'}</small></span><span class="ph">${esc(c.phone||'')}</span></button></li>`).join('')}</ul>`:'<div class="cat-empty">還沒有聯絡人，例如外縣市親友、爺爺奶奶、外公外婆</div>'}
         <div class="fam-acts"><button class="btn sm" data-act="cadd" ${ro?'disabled':''}>＋ 新增聯絡人</button></div></div>
       <div class="fam-sec"><h4>約定集合點</h4>${planRoute()}
-        <dl class="plan-kv"><dt>1991 約定電話</dt><dd class="${S.plan.phone?'':'empty'}">${esc(S.plan.phone||'尚未填寫')}</dd></dl>
         <div class="fam-acts"><button class="btn sm" data-act="plan" ${ro?'disabled':''}>${ICON.pencil} 填寫集合點</button></div></div>
       <div class="fam-out"><button class="btn primary" data-act="wall">產生手機桌布</button><button class="btn" data-act="cards">列印識別卡</button></div>
     </div>`;
@@ -1401,7 +1420,7 @@ body.locked{overflow:hidden}
     const fam=S.members.filter(x=>x.id!==m.id&&x.phone).map(x=>({name:fullOf(x),rel:x.name,phone:x.phone}));
     const others=S.contacts.filter(c=>c.onCard&&c.phone).map(c=>({name:c.name,rel:c.relation,phone:c.phone}));
     const meet=[S.plan.meet1&&{k:'集合點 1',v:S.plan.meet1+(S.plan.wait1?`（等 ${S.plan.wait1}）`:'')},S.plan.meet2&&{k:'集合點 2',v:S.plan.meet2},S.plan.final&&{k:'最終目標',v:S.plan.final}].filter(Boolean);
-    return {m,full:fullOf(m),nick:m.name,blood:m.blood||'',idno:m.idno||'',birth:m.birth||'',allergy:m.allergy||'',photo:m.photo?pfull(m.photo):'',fam,others,meet,p1991:S.plan.phone||''};
+    return {m,full:fullOf(m),nick:m.name,blood:m.blood||'',idno:m.idno||'',birth:m.birth||'',allergy:m.allergy||'',photo:m.photo?pfull(m.photo):'',fam,others,meet};
   }
 
   // ---- wallpaper (canvas) ----
@@ -1442,10 +1461,9 @@ body.locked{overflow:hidden}
       g.textAlign='right'; g.font=`700 52px ${N}`; g.fillText(p.phone,X+CW-56,y+2); g.textAlign='left';};
     if(d.fam.length){section('家人'); d.fam.slice(0,5).forEach(person);}
     if(d.others.length){section('緊急聯絡人'); d.others.slice(0,3).forEach(person);}
-    if(d.meet.length||d.p1991){section('約定集合點');
-      g.font=`600 34px ${F}`; const LW=Math.max(...[...d.meet.map(r=>r.k),d.p1991?'1991 報平安':''].map(t=>g.measureText(t).width))+28;
-      d.meet.forEach(r=>{y+=58; g.fillStyle='#5C6977'; g.font=`600 34px ${F}`; g.fillText(r.k,cx,y); g.fillStyle='#13263A'; g.font=`600 40px ${F}`; const ls=wrap(r.v,CW-112-LW); ls.slice(0,2).forEach((l,i)=>g.fillText(l,cx+LW,y+i*50)); y+=(Math.min(2,ls.length)-1)*50;});
-      if(d.p1991){y+=58; g.fillStyle='#5C6977'; g.font=`600 34px ${F}`; g.fillText('1991 報平安',cx,y); g.fillStyle='#13263A'; g.font=`700 46px ${N}`; g.fillText(d.p1991,cx+LW,y+2);}}
+    if(d.meet.length){section('約定集合點');
+      g.font=`600 34px ${F}`; const LW=Math.max(...d.meet.map(r=>g.measureText(r.k).width))+28;
+      d.meet.forEach(r=>{y+=58; g.fillStyle='#5C6977'; g.font=`600 34px ${F}`; g.fillText(r.k,cx,y); g.fillStyle='#13263A'; g.font=`600 40px ${F}`; const ls=wrap(r.v,CW-112-LW); ls.slice(0,2).forEach((l,i)=>g.fillText(l,cx+LW,y+i*50)); y+=(Math.min(2,ls.length)-1)*50;});}
     if(y>2290){g.fillStyle='#5C6977'; g.font=`600 26px ${F}`;}
     g.fillStyle='#98A6B4'; g.font=`500 30px ${F}`; g.textAlign='center'; g.fillText('撿到這支手機，請聯絡上面的家人',W/2,2400); g.textAlign='left';
     return c;
@@ -1478,7 +1496,7 @@ body.locked{overflow:hidden}
     ${d.allergy?`<div class="pc-al">過敏：${esc(d.allergy)}</div>`:''}</div>`;}
   function ccBack(d){return `<div class="pc back">${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,4).map(pPerson).join('')}</ul>`:''}
     ${d.others.length?`<span class="pc-lab">緊急聯絡人</span><ul>${d.others.slice(0,2).map(pPerson).join('')}</ul>`:''}
-    ${d.meet.length||d.p1991?`<span class="pc-lab">集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}${d.p1991?`<li><span>1991</span><b>${esc(d.p1991)}</b></li>`:''}</ul>`:''}</div>`;}
+    ${d.meet.length?`<span class="pc-lab">集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}</ul>`:''}</div>`;}
   function a6Card(d){return `<div class="a6"><div class="a6-in">
     <div class="a6-head"><span>ICE 緊急聯絡卡</span><span class="pc-bt big ${d.blood?'':'none'}">${esc(d.blood||'?')}<small>血型</small></span></div>
     <div class="pc-id">${d.photo?`<img src="${d.photo}" alt="">`:''}<div><b class="pc-name">${esc(d.full)}</b><span>${esc(d.nick)}${d.birth?'・生日 '+esc(d.birth):''}</span>
@@ -1486,7 +1504,7 @@ body.locked{overflow:hidden}
     ${d.allergy?`<div class="pc-al">過敏：${esc(d.allergy)}</div>`:''}
     ${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,5).map(pPerson).join('')}</ul>`:''}
     ${d.others.length?`<span class="pc-lab">緊急聯絡人</span><ul>${d.others.slice(0,3).map(pPerson).join('')}</ul>`:''}
-    ${d.meet.length||d.p1991?`<span class="pc-lab">約定集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}${d.p1991?`<li><span>1991 報平安</span><b>${esc(d.p1991)}</b></li>`:''}</ul>`:''}
+    ${d.meet.length?`<span class="pc-lab">約定集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}</ul>`:''}
   </div></div>`;}
   let pState=null;
   function openCards(){pState={fmt:'cc',sel:new Set(S.members.map(m=>m.id))}; drawCards(false);}
@@ -1539,7 +1557,7 @@ body.locked{overflow:hidden}
     return nd.test();
   }
   function readiness(sc){const r=sc.needs.map(nd=>needState(sc,nd)); return {ok:r.filter(x=>x.ok).length,total:r.length};}
-  const PLAN_F=[['meet1','第一集合點'],['wait1','在第一集合點等'],['meet2','第二集合點'],['final','最終目標'],['phone','1991 約定電話']];
+  const PLAN_F=[['meet1','第一集合點'],['wait1','在第一集合點等'],['meet2','第二集合點'],['final','最終目標']];
   function planReady(){const k=['meet1','meet2','final','phone'];return {ok:k.filter(x=>S.plan[x]).length,total:k.length};}
   function planRoute(){
     const stop=(v,lab,extra)=>v?`<span class="stop">${esc(v)}${extra?`<small>${esc(extra)}</small>`:''}</span>`:`<span class="stop empty">${lab}未填</span>`;
@@ -1600,7 +1618,7 @@ body.locked{overflow:hidden}
     const wn=wantNames();
     const r=readiness(sc);
     let extra='';
-    if(sc.plan)extra+=`<div class="blk"><div class="blk-h"><h3>約定集合點</h3><button class="btn sm icon" data-act="plan" aria-label="填寫集合點" ${S.offline?'disabled':''}>${ICON.pencil}</button></div>${planRoute()}<div class="src">1991 約定電話：${esc(S.plan.phone||'尚未填寫')}</div></div>`;
+    if(sc.plan)extra+=`<div class="blk"><div class="blk-h"><h3>約定集合點</h3><button class="btn sm icon" data-act="plan" aria-label="填寫集合點" ${S.offline?'disabled':''}>${ICON.pencil}</button></div>${planRoute()}</div>`;
     if(sc.injured){
       const m=mem(S.injured), sp=splitBag(m);
       const li=l=>l.length?l.map(([it,q])=>`<li><span>${esc(it.name)}</span><span>${q} ${esc(it.unit)}</span></li>`).join(''):'<li><span style="color:var(--muted)">沒有</span></li>';
@@ -1662,7 +1680,7 @@ body.locked{overflow:hidden}
   }
   function openPlan(){
     openSheet(`<h2>約定集合點</h2><div class="sub">走散或撤離時全家照這個順序走，也會印在識別卡和桌布上。</div>
-      ${PLAN_F.map(([k,l])=>`<label class="field"><span>${l}</span><input id="p-${k}" data-pf="${k}" value="${esc(S.plan[k])}" placeholder="${{meet1:'例：住家附近的國小操場',wait1:'例：1 小時',meet2:'例：區公所前廣場',final:'例：外縣市親友家',phone:'例：家裡市話或爸爸手機',contact:'例：外縣市親友的電話'}[k]}"></label>`).join('')}
+      ${PLAN_F.map(([k,l])=>`<label class="field"><span>${l}</span><input id="p-${k}" data-pf="${k}" value="${esc(S.plan[k])}" placeholder="${{meet1:'例：住家附近的國小操場',wait1:'例：1 小時',meet2:'例：區公所前廣場',final:'例：外縣市親友家',contact:'例：外縣市親友的電話'}[k]}"></label>`).join('')}
       <div class="sheet-actions"><button class="btn" data-act="${S.ret?'scen':'close'}" data-id="${S.ret||''}">取消</button><button class="btn primary" data-act="pok">儲存</button></div>`,'我們的計畫');
   }
 
@@ -1722,7 +1740,7 @@ body.locked{overflow:hidden}
       Contacts:S.contacts.map(c=>({id:c.id,name:c.name,relation:c.relation||'',phone:c.phone||'',note:c.note||'',onCard:c.onCard?'TRUE':''})),
       Items:S.items.map(it=>{const o={}; ITEM_COLS.forEach(k=>o[k]=it[k]); o.suits=(it.suits||[]).join(','); o.photos=(it.photos||[]).join(','); return o;}),
       Usage:S.log.map(l=>({id:l.id,time:l.t,itemId:l.itemId||'',name:l.name,qty:l.n,unit:l.unit,by:l.by||''})),
-      Wishlist:S.wants.map(w=>({id:w.id,cat:w.cat,name:w.name,qty:w.qty,unit:w.unit,note:w.note||''})),
+      Wishlist:S.wants.map(w=>({id:w.id,cat:w.cat,name:w.name,qty:w.qty,unit:w.unit,note:w.note||'',budget:w.budget??''})),
       Needs:[...keys].map(k=>{const d=S.details[k]||{}; return {id:k,mode:d.mode||'',current:d.current,target:d.target,unit:d.unit||'',note:d.note||'',links:[...(S.links[k]||[])].join(','),checked:S.checks[k]?'TRUE':''};}),
       Scenarios:SCEN.filter(s=>s.edited).map(s=>({id:s.id,steps:s.steps.join('\n'),group:s.g,title:s.title,sum:s.sum||'',needs:JSON.stringify(s.needs.map(needSpec))})),
       Plan:Object.entries(S.plan).map(([k,v])=>({id:k,value:v})),
@@ -1742,7 +1760,7 @@ body.locked{overflow:hidden}
       ['qty','unitL','kcal','prep'].forEach(k=>it[k]=Number(it[k])||0); ['need','mah','battery'].forEach(k=>it[k]=num(it[k]));
       it.suits=list(r.suits); it.photos=list(r.photos); it.owner=it.owner||'all'; it.checked=it.checked||fmt(today); return it;});
     S.log=T('Usage').map(r=>({id:r.id,t:r.time,itemId:r.itemId,name:r.name,n:Number(r.qty)||0,unit:r.unit,by:r.by})).sort((a,b)=>b.t.localeCompare(a.t));
-    S.wants=T('Wishlist').map(r=>({id:r.id,cat:r.cat,name:r.name,qty:Number(r.qty)||1,unit:r.unit,note:r.note}));
+    S.wants=T('Wishlist').map(r=>({id:r.id,cat:r.cat,name:r.name,qty:Number(r.qty)||1,unit:r.unit,note:r.note,budget:r.budget===''||r.budget==null?'':Number(r.budget)||0}));
     S.details={}; S.links={}; S.checks={};
     T('Needs').forEach(r=>{
       if(r.mode||r.target||r.note)S.details[r.id]={mode:r.mode||'manual',current:num(r.current),target:num(r.target),unit:r.unit,note:r.note};
@@ -1939,9 +1957,13 @@ body.locked{overflow:hidden}
       case 'add': if(S.offline||S.mode==='resp')break; if(S.cat==='待購')openWantForm(); else openForm(null); break;
       case 'mode': S.mode=b.dataset.k; S.ret=null; render(); try{window.scrollTo(0,0);}catch(err){} break;
       case 'bought': {const w=S.wants.find(x=>x.id===b.dataset.id); openForm(null,{cat:w.cat,name:w.name,qty:w.qty,unit:w.unit,fromWant:w.id}); break;}
-      case 'wdel': {const w=S.wants.find(x=>x.id===b.dataset.id); S.wants=S.wants.filter(x=>x!==w); render(); toast(`已移除「${w.name}」`); break;}
+      case 'wedit': openWantForm(b.dataset.id); break;
+      case 'wdel': {if(!fState.delArm){fState.delArm=true; drawWantForm(); break;} const w=S.wants.find(x=>x.id===fState.id); S.wants=S.wants.filter(x=>x!==w); closeSheet(); render(); toast(`已移除「${w.name}」`); break;}
       case 'sadd': {const g=suggCache[Number(b.dataset.i)]; S.wants.push({id:uid('B'),cat:g.cat,name:g.name,qty:g.qty,unit:g.unit,note:''}); render(); toast(`已加入待購：${g.name}`); break;}
-      case 'wok': {const f=fState; if(!f.name.trim()){toast('請填名稱');break;} S.wants.push({id:uid('B'),cat:f.cat,name:f.name.trim(),qty:Number(f.qty)||1,unit:f.unit||'個',note:f.note}); closeSheet(); render(); toast(`已加入待購：${f.name}`); break;}
+      case 'wok': {const f=fState; if(!f.name.trim()){toast('請填名稱');break;}
+        const rec={cat:f.cat,name:f.name.trim(),qty:Number(f.qty)||1,unit:f.unit||'個',budget:f.budget===''?'':Math.max(0,Math.round(Number(f.budget)||0)),note:(f.note||'').trim()};
+        if(f.id)Object.assign(S.wants.find(x=>x.id===f.id),rec); else S.wants.push({id:uid('B'),...rec});
+        closeSheet(); render(); toast(f.id?'已儲存':`已加入待購：${rec.name}`); break;}
       case 'scen': openScen(b.dataset.id); break;
       case 'inj': S.injured=b.dataset.id; openScen('injured',true); break;
       case 'nbuy': {const sc=SCEN.find(s=>s.id===b.dataset.scen), nd=sc.needs[Number(b.dataset.i)]; S.wants.push({id:uid('B'),...nd.buy,note:`${sc.title}需要`}); renderRail(); renderDays(); renderResp(); openScen(sc.id,true); toast(`已加入待購：${nd.buy.name}`); break;}

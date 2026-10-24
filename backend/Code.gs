@@ -20,7 +20,7 @@ const TABLES = {
   Items:     ['id', 'cat', 'sub', 'name', 'qty', 'unit', 'unitL', 'kcal', 'prep', 'method', 'suits', 'owner', 'loc',
               'exp', 'checked', 'size', 'needType', 'need', 'mah', 'battery', 'photos', 'updatedAt', 'updatedBy'],
   Usage:     ['id', 'time', 'itemId', 'name', 'qty', 'unit', 'by'],
-  Wishlist:  ['id', 'cat', 'name', 'qty', 'unit', 'note'],
+  Wishlist:  ['id', 'cat', 'name', 'qty', 'unit', 'note', 'budget'],
   Needs:     ['id', 'mode', 'current', 'target', 'unit', 'note', 'links', 'checked'],
   Scenarios: ['id', 'steps', 'group', 'title', 'sum', 'needs'],
   Contacts:  ['id', 'name', 'relation', 'phone', 'note', 'onCard'],
