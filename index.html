@@ -476,9 +476,9 @@ body.locked{overflow:hidden}
 .pc-id{display:flex;gap:2.5mm;align-items:flex-start}
 .pc-id img{width:16mm;height:20mm;object-fit:cover;border-radius:2.6mm;flex:0 0 auto;box-sizing:border-box;border:.7mm solid #fff;box-shadow:0 0 0 .35mm #1C3D5A,0 0 0 1.1mm #F5B800;margin:1.1mm}
 .pc-id > div{display:flex;flex-direction:column;min-width:0}
-.pc-name{font-size:13pt;line-height:1.15}
-.pc-lab{display:block;font-size:5.6pt;color:#5C6977;letter-spacing:.05em;margin-top:.8mm}
-.pc-no{font-family:var(--font-num);font-size:12pt;letter-spacing:.04em}
+.pc-name{font-size:1.8em;line-height:1.15}
+.pc-lab{display:block;font-size:.78em;color:#5C6977;letter-spacing:.05em;margin-top:.8mm}
+.pc-no{font-family:var(--font-num);font-size:1.65em;letter-spacing:.04em}
 .pc-al{background:#FCE9E9;color:#C62E2E;font-weight:700;border-radius:1.2mm;padding:.6mm 1.6mm}
 .pc-al.none{background:#EEF1F4;color:#5C6977}
 .pc ul,.a6-in ul{list-style:none;margin:0;padding:0}
@@ -486,18 +486,20 @@ body.locked{overflow:hidden}
 .pc li span small,.a6-in li span small{color:#5C6977;margin-left:1mm}
 .pc li b,.a6-in li b{font-family:var(--font-num);white-space:nowrap}
 .pc-meet li b{font-family:var(--font-body);white-space:normal;text-align:right}
-.pc.back{gap:.4mm;font-size:6.6pt}
+.pc.back{gap:.3mm;font-size:6.3pt;line-height:1.22}
+.pc.back li{padding:.2mm 0}
+.pc.back .pc-lab{margin-top:.5mm}
 .ccpair{display:flex;align-items:stretch;break-inside:avoid}
 .ccpair .fold{width:0;border-left:.3mm dashed #98A6B4}
 .a6{width:105mm;height:148.5mm;box-sizing:border-box;padding:7mm;break-inside:avoid}
 .a6-in{height:100%;box-sizing:border-box;border:.4mm solid #C9D2DC;border-radius:4mm;padding:5mm;font-size:11pt;line-height:1.4;display:flex;flex-direction:column;gap:1.6mm;overflow:hidden}
 .a6-head{font-size:9pt}
 .a6 .pc-id img{width:26mm;height:32mm;border-radius:4mm;border-width:1mm;box-shadow:0 0 0 .5mm #1C3D5A,0 0 0 1.6mm #F5B800;margin:1.6mm}
-.a6 .pc-name{font-size:20pt}
-.a6 .pc-no{font-size:17pt}
-.a6 .pc-lab{font-size:8pt;margin-top:2mm}
-.a6 li{padding:.8mm 0}
-.a6 .pc-al{font-size:12pt;padding:1.2mm 2.4mm}
+.a6 .pc-name{font-size:1.8em}
+.a6 .pc-no{font-size:1.5em}
+.a6 .pc-lab{font-size:.72em;margin-top:1.6mm}
+.a6 li{padding:.6mm 0}
+.a6 .pc-al{font-size:1.05em;padding:1mm 2.4mm}
 /* on-screen preview */
 .pprev{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px;overflow:auto;max-height:52vh}
 .pprev .ppage{display:flex;flex-direction:column;gap:4mm;margin-bottom:6mm}
@@ -505,8 +507,11 @@ body.locked{overflow:hidden}
 .pprev .a6{padding:0}
 .pprev.cc .ccpair{transform-origin:top left}
 #printArea{display:none}
+#printArea.measuring{display:block;position:absolute;left:-10000px;top:0}
 @media print{
   @page{size:A4;margin:0}
+  html,body{overflow:visible!important;max-width:none!important;height:auto!important}
+  body.printing{margin:0!important}
   body.printing{background:#fff!important;padding:0!important}
   body.printing > *:not(#printArea){display:none!important}
   body.printing::before{display:none!important}
@@ -685,7 +690,7 @@ body.locked{overflow:hidden}
     mask:{mode:'auto',current:'',target:50,unit:'片',note:''}
   };
   S.plan={meet1:'住家旁的國小操場',wait1:'1 小時',meet2:'區公所前廣場',final:'',contact:''};
-  S.contacts=[{id:'C1',name:'王阿公',relation:'爺爺',phone:'04-2200-0000',note:'台中',onCard:true},{id:'C2',name:'陳舅舅',relation:'外縣市聯絡人',phone:'0933-000-333',note:'高雄',onCard:true}];
+  S.contacts=[{id:'C1',name:'王老先生',kin:'sf',relation:'父親',phone:'04-2200-0000',note:'台中',onCard:true},{id:'C3',name:'林老太太',kin:'pm',relation:'岳母',phone:'02-2700-0000',note:'台北',onCard:true},{id:'C2',name:'陳舅舅',relation:'外縣市聯絡人',phone:'0933-000-333',note:'高雄',onCard:true}];
   S.wants=[
     {id:'B001',cat:'醫藥',name:'口服電解質粉',qty:10,unit:'包',budget:450,note:'藥局，成人兒童通用款'},
     {id:'B002',cat:'生存',name:'淨水錠',qty:1,unit:'盒',budget:380,note:'戶外用品店'},
@@ -1398,7 +1403,7 @@ body.locked{overflow:hidden}
           <span class="bt ${m.blood?'':'none'}">${esc(m.blood||'?')}</span></button></li>`;}).join('')}</ul>
       <div class="fam-acts"><button class="btn sm" data-act="madd" ${ro?'disabled':''}>＋ 新增家人</button></div>
       <div class="fam-sec"><h4>緊急聯絡人</h4>
-        ${S.contacts.length?`<ul class="clist">${S.contacts.map(c=>`<li><button data-act="cedit" data-id="${c.id}"><span><b>${esc(c.name)}</b><small>${esc(c.relation||'')}${c.note?'・'+esc(c.note):''}${c.onCard?'':'・不印在卡上'}</small></span><span class="ph">${esc(c.phone||'')}</span></button></li>`).join('')}</ul>`:'<div class="cat-empty">還沒有聯絡人，例如外縣市親友、爺爺奶奶、外公外婆</div>'}
+        ${S.contacts.length?`<ul class="clist">${S.contacts.map(c=>`<li><button data-act="cedit" data-id="${c.id}"><span><b>${esc(c.name)}</b><small>${esc(c.kin?kinOptions().find(o=>o[0]===c.kin)[1]:(c.relation||''))}${c.note?'・'+esc(c.note):''}${c.onCard?'':'・不印在卡上'}</small></span><span class="ph">${esc(c.phone||'')}</span></button></li>`).join('')}</ul>`:'<div class="cat-empty">還沒有聯絡人，例如外縣市親友、爺爺奶奶、外公外婆</div>'}
         <div class="fam-acts"><button class="btn sm" data-act="cadd" ${ro?'disabled':''}>＋ 新增聯絡人</button></div></div>
       <div class="fam-sec"><h4>約定集合點</h4>${planRoute()}
         <div class="fam-acts"><button class="btn sm" data-act="plan" ${ro?'disabled':''}>${ICON.pencil} 填寫集合點</button></div></div>
@@ -1407,7 +1412,7 @@ body.locked{overflow:hidden}
   }
   let mState=null;
   function openMember2(id,isNew){
-    const m=isNew?{id:uid('M'),name:'',fullName:'',birth:'',blood:'',idno:'',phone:'',allergy:'',photo:'',water:3,meals:3,kcal:2000}:mem(id);
+    const m=isNew?{id:uid('M'),role:'child',name:'',fullName:'',birth:'',blood:'',idno:'',phone:'',allergy:'',photo:'',water:3,meals:3,kcal:2000}:mem(id);
     mState={...m,isNew:!!isNew,delArm:false};
     drawMember(false);
   }
@@ -1425,13 +1430,14 @@ body.locked{overflow:hidden}
         <label class="field"><span>身分證字號</span><input id="m-idno" data-m="idno" value="${esc(f.idno)}" autocapitalize="characters" ${dis}></label>
         <label class="field"><span>手機</span><input id="m-phone" data-m="phone" type="tel" value="${esc(f.phone)}" placeholder="0912-345-678" ${dis}></label>
       </div>
+      <label class="field"><span>在家中的身分（決定卡片上「配偶」「父母」怎麼顯示）</span><select id="m-role" data-m="role" ${dis}>${ROLES.map(([k,l])=>`<option value="${k}" ${roleOf(f)===k?'selected':''}>${l}</option>`).join('')}</select></label>
       <label class="field"><span>過敏（藥物、食物）</span><input id="m-allergy" data-m="allergy" value="${esc(f.allergy)}" placeholder="例：盤尼西林、花生；沒有就空白" ${dis}></label>
       <div class="sheet-actions">${!f.isNew&&!ro&&S.members.length>1?`<button class="btn danger" data-act="mdel">${f.delArm?'再按一次確認刪除':'刪除'}</button>`:''}
         <div class="right"><button class="btn" data-act="close">${ro?'關閉':'取消'}</button>${ro?'':'<button class="btn primary" data-act="mok">儲存</button>'}</div></div>`,'家人資料',keep);
   }
   let ctState=null;
   function openContact(id){
-    const c=id?S.contacts.find(x=>x.id===id):{id:uid('C'),name:'',relation:'',phone:'',note:'',onCard:true};
+    const c=id?S.contacts.find(x=>x.id===id):{id:uid('C'),name:'',relation:'',kin:'',phone:'',note:'',onCard:true};
     ctState={...c,isNew:!id,delArm:false}; drawContact(false);
   }
   function drawContact(keep=true){
@@ -1439,19 +1445,47 @@ body.locked{overflow:hidden}
     openSheet(`<h2>${f.isNew?'新增聯絡人':'聯絡人'}</h2>
       <div class="grid2">
         <label class="field"><span>姓名</span><input id="c-name" data-c="name" value="${esc(f.name)}" ${dis}></label>
-        <label class="field"><span>關係</span><input id="c-relation" data-c="relation" value="${esc(f.relation)}" placeholder="外縣市親友、爺爺" ${dis}></label>
+        <label class="field"><span>家族關係</span><select id="c-kin" data-c="kin" ${dis}>${kinOptions().map(([k,l])=>`<option value="${k}" ${(f.kin||'')===k?'selected':''}>${esc(l)}</option>`).join('')}</select></label>
+        ${f.kin?'':`<label class="field"><span>關係</span><input id="c-relation" data-c="relation" value="${esc(f.relation)}" placeholder="外縣市親友、叔叔" ${dis}></label>`}
         <label class="field"><span>電話</span><input id="c-phone" data-c="phone" type="tel" value="${esc(f.phone)}" ${dis}></label>
         <label class="field"><span>備註</span><input id="c-note" data-c="note" value="${esc(f.note)}" placeholder="例：高雄" ${dis}></label>
       </div>
+      ${f.kin?`<div class="hint">卡片上會依持卡人自動顯示：${(()=>{const sm=selfM(),sp=spouseM(),kid=S.members.find(x=>roleOf(x)==='child'); return [sm&&`${sm.name}的卡「${kinLabel(f,sm)}」`,sp&&`${sp.name}的卡「${kinLabel(f,sp)}」`,kid&&`孩子的卡「${kinLabel(f,kid)}」`].filter(Boolean).join('、');})()}</div>`:''}
       <label class="switch"><input type="checkbox" id="c-onCard" data-c="onCard" ${f.onCard?'checked':''} ${dis}> 印在識別卡和桌布上</label>
       <div class="sheet-actions">${!f.isNew&&!ro?`<button class="btn danger" data-act="cdel">${f.delArm?'再按一次確認刪除':'刪除'}</button>`:''}
         <div class="right"><button class="btn" data-act="close">${ro?'關閉':'取消'}</button>${ro?'':'<button class="btn primary" data-act="ctok">儲存</button>'}</div></div>`,'聯絡人',keep);
   }
 
+  // ---- kinship ----
+  const ROLES=[['self','本人（戶長）'],['spouse','配偶'],['child','子女'],['other','其他同住家人']];
+  const roleOf=m=>m.role||({dad:'self',mom:'spouse'}[m.id]||(['son1','son2','girl'].includes(m.id)?'child':'other'));
+  const selfM=()=>S.members.find(m=>roleOf(m)==='self');
+  const spouseM=()=>S.members.find(m=>roleOf(m)==='spouse');
+  const KIN={sf:{self:'父親',spouse:'公公',child:'爺爺'},sm:{self:'母親',spouse:'婆婆',child:'奶奶'},
+             pf:{self:'岳父',spouse:'父親',child:'外公'},pm:{self:'岳母',spouse:'母親',child:'外婆'}};
+  const kinOptions=()=>{const a=selfM(), b=spouseM(), an=a?a.name:'本人', bn=b?b.name:'配偶';
+    return [['',`其他（自己填關係）`],['sf',`${an}的父親`],['sm',`${an}的母親`],['pf',`${bn}的父親`],['pm',`${bn}的母親`]];};
+  // label of a contact as seen from member m (or from the household when m is null)
+  function kinLabel(c,m){
+    if(!c.kin||!KIN[c.kin])return c.relation||'';
+    const r=m?roleOf(m):'self';
+    if(KIN[c.kin][r])return KIN[c.kin][r];
+    const base=['sf','sm'].includes(c.kin)?selfM():spouseM();
+    return `${base?base.name:''}的${c.kin.endsWith('f')?'父親':'母親'}`;
+  }
+  const isParentOf=(c,m)=>{const r=roleOf(m); return (r==='self'&&['sf','sm'].includes(c.kin))||(r==='spouse'&&['pf','pm'].includes(c.kin));};
+
   // ---- card data ----
   function cardData(m){
-    const fam=S.members.filter(x=>x.id!==m.id&&x.phone).map(x=>({name:fullOf(x),rel:x.name,phone:x.phone}));
-    const others=S.contacts.filter(c=>c.onCard&&c.phone).map(c=>({name:c.name,rel:c.relation,phone:c.phone}));
+    const r=roleOf(m);
+    const rank=x=>x.rank;
+    const fam=S.members.filter(x=>x.id!==m.id&&x.phone).map(x=>{const xr=roleOf(x);
+      const spouse=(r==='self'&&xr==='spouse')||(r==='spouse'&&xr==='self');
+      const parent=r==='child'&&(xr==='self'||xr==='spouse');
+      return {name:fullOf(x),rel:spouse?'配偶':x.name,phone:x.phone,rank:spouse?0:parent?1:4};});
+    S.contacts.filter(c=>c.onCard&&c.phone&&c.kin).forEach(c=>fam.push({name:c.name,rel:kinLabel(c,m),phone:c.phone,rank:isParentOf(c,m)?1:r==='child'?2:3}));
+    fam.sort((a,b)=>rank(a)-rank(b));
+    const others=S.contacts.filter(c=>c.onCard&&c.phone&&!c.kin).map(c=>({name:c.name,rel:c.relation,phone:c.phone}));
     const meet=[S.plan.meet1&&{k:'集合點 1',v:S.plan.meet1+(S.plan.wait1?`（等 ${S.plan.wait1}）`:'')},S.plan.meet2&&{k:'集合點 2',v:S.plan.meet2},S.plan.final&&{k:'最終目標',v:S.plan.final}].filter(Boolean);
     return {m,full:fullOf(m),nick:m.name,blood:m.blood||'',idno:m.idno||'',birth:m.birth||'',allergy:m.allergy||'',photo:m.photo?pfull(m.photo):'',fam,others,meet};
   }
@@ -1496,8 +1530,8 @@ body.locked{overflow:hidden}
     const person=(p)=>{y+=62; g.fillStyle='#13263A'; g.font=`700 44px ${F}`; const left=p.name+(p.rel?`（${p.rel}）`:''); const pw=(g.font=`700 52px ${N}`, g.measureText(p.phone).width);
       g.font=`600 42px ${F}`; const ls=fit(left,CW-112-pw-30,42,'600',F); g.font=`600 ${ls}px ${F}`; g.fillText(left,cx,y);
       g.textAlign='right'; g.font=`700 52px ${N}`; g.fillText(p.phone,X+CW-56,y+2); g.textAlign='left';};
-    if(d.fam.length){section('家人'); d.fam.slice(0,5).forEach(person);}
-    if(d.others.length){section('緊急聯絡人'); d.others.slice(0,3).forEach(person);}
+    if(d.fam.length){section('家人'); d.fam.slice(0,7).forEach(person);}
+    if(d.others.length){section('緊急聯絡人'); d.others.slice(0,Math.max(1,9-Math.min(7,d.fam.length))).forEach(person);}
     if(d.meet.length){section('約定集合點');
       g.font=`600 34px ${F}`; const LW=Math.max(...d.meet.map(r=>g.measureText(r.k).width))+28;
       d.meet.forEach(r=>{y+=58; g.fillStyle='#5C6977'; g.font=`600 34px ${F}`; g.fillText(r.k,cx,y); g.fillStyle='#13263A'; g.font=`600 40px ${F}`; const ls=wrap(r.v,CW-112-LW); ls.slice(0,2).forEach((l,i)=>g.fillText(l,cx+LW,y+i*50)); y+=(Math.min(2,ls.length)-1)*50;});}
@@ -1531,7 +1565,7 @@ body.locked{overflow:hidden}
     <div class="pc-id">${d.photo?`<img src="${d.photo}" alt="">`:''}<div><b class="pc-name">${esc(d.full)}</b><span>${esc(d.nick)}${d.birth?'・'+esc(d.birth):''}</span>
     <span class="pc-lab">身分證字號</span><b class="pc-no">${esc(d.idno||'—')}</b></div></div>
     <div class="pc-al ${d.allergy?'':'none'}">過敏：${esc(d.allergy||'無')}</div></div>`;}
-  function ccBack(d){return `<div class="pc back">${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,4).map(pPerson).join('')}</ul>`:''}
+  function ccBack(d){return `<div class="pc back">${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,6).map(pPerson).join('')}</ul>`:''}
     ${d.others.length?`<span class="pc-lab">緊急聯絡人</span><ul>${d.others.slice(0,2).map(pPerson).join('')}</ul>`:''}
     ${d.meet.length?`<span class="pc-lab">集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}</ul>`:''}</div>`;}
   function a6Card(d){return `<div class="a6"><div class="a6-in">
@@ -1539,7 +1573,7 @@ body.locked{overflow:hidden}
     <div class="pc-id">${d.photo?`<img src="${d.photo}" alt="">`:''}<div><b class="pc-name">${esc(d.full)}</b><span>${esc(d.nick)}${d.birth?'・生日 '+esc(d.birth):''}</span>
       <span class="pc-lab">身分證字號</span><b class="pc-no">${esc(d.idno||'—')}</b></div></div>
     <div class="pc-al ${d.allergy?'':'none'}">過敏：${esc(d.allergy||'無')}</div>
-    ${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,5).map(pPerson).join('')}</ul>`:''}
+    ${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,7).map(pPerson).join('')}</ul>`:''}
     ${d.others.length?`<span class="pc-lab">緊急聯絡人</span><ul>${d.others.slice(0,3).map(pPerson).join('')}</ul>`:''}
     ${d.meet.length?`<span class="pc-lab">約定集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}</ul>`:''}
   </div></div>`;}
@@ -1559,12 +1593,22 @@ body.locked{overflow:hidden}
         <button data-act="pfmt" data-k="a6" class="${pState.fmt==='a6'?'on':''}">單面・A6</button></div>
         <div class="hint">${pState.fmt==='cc'?'A4 一張 5 人。每人一組正反面，剪下後沿中間虛線對摺再護貝（85.6 × 54 mm）。':'A4 一張 4 人，沿中線裁成 4 張 A6（105 × 148 mm）。列印時縮放選 100%、不要「符合頁面」。'}</div></div>
       <div class="field"><span>要印誰</span><div class="pick">${S.members.map(m=>`<button data-act="psel" data-id="${m.id}" class="${pState.sel.has(m.id)?'on':''}">${esc(m.name)}</button>`).join('')}</div></div>
-      <div class="pprev ${pState.fmt}">${cardsHtml()}</div>
+      <div class="pprev ${pState.fmt}" id="pprev">${cardsHtml()}</div>
       <div class="sheet-actions"><button class="btn" data-act="close">關閉</button><button class="btn primary" data-act="pgo" ${pState.sel.size?'':'disabled'}>列印</button></div>`,'列印識別卡',keep);
+    const pv=document.getElementById('pprev'); if(pv)fitCards(pv);
+  }
+  // shrink text until each card's content fits its fixed size (long names, many contacts)
+  function fitCards(rootEl){
+    rootEl.querySelectorAll('.a6-in,.pc').forEach(el=>{
+      el.style.fontSize='';
+      let fs=parseFloat(getComputedStyle(el).fontSize), n=0;
+      while(el.scrollHeight>el.clientHeight+1&&n<30){fs*=0.95; el.style.fontSize=fs+'px'; n++;}
+    });
   }
   function doPrint(){
     let el=document.getElementById('printArea'); if(!el){el=document.createElement('div'); el.id='printArea'; document.body.appendChild(el);}
     el.className='print-'+pState.fmt; el.innerHTML=cardsHtml();
+    el.classList.add('measuring'); try{fitCards(el);}catch(e){} el.classList.remove('measuring');
     document.body.classList.add('printing');
     const done=()=>{document.body.classList.remove('printing'); window.removeEventListener('afterprint',done);};
     window.addEventListener('afterprint',done);
@@ -1773,8 +1817,8 @@ body.locked{overflow:hidden}
   function toTables(){
     const keys=new Set([...Object.keys(S.details),...Object.keys(S.links),...Object.keys(S.checks).filter(k=>S.checks[k])]);
     const t={
-      Members:S.members.map(m=>({id:m.id,name:m.name,birth:m.birth||'',water:m.water,meals:m.meals,kcal:m.kcal,fullName:m.fullName||'',blood:m.blood||'',idno:m.idno||'',phone:m.phone||'',allergy:m.allergy||'',photo:m.photo||''})),
-      Contacts:S.contacts.map(c=>({id:c.id,name:c.name,relation:c.relation||'',phone:c.phone||'',note:c.note||'',onCard:c.onCard?'TRUE':''})),
+      Members:S.members.map(m=>({id:m.id,role:roleOf(m),name:m.name,birth:m.birth||'',water:m.water,meals:m.meals,kcal:m.kcal,fullName:m.fullName||'',blood:m.blood||'',idno:m.idno||'',phone:m.phone||'',allergy:m.allergy||'',photo:m.photo||''})),
+      Contacts:S.contacts.map(c=>({id:c.id,name:c.name,kin:c.kin||'',relation:c.relation||'',phone:c.phone||'',note:c.note||'',onCard:c.onCard?'TRUE':''})),
       Items:S.items.map(it=>{const o={}; ITEM_COLS.forEach(k=>o[k]=it[k]); o.suits=(it.suits||[]).join(','); o.photos=(it.photos||[]).join(','); o.flavors=hasFl(it)?JSON.stringify(it.flavors):''; return o;}),
       Usage:S.log.map(l=>({id:l.id,time:l.t,itemId:l.itemId||'',name:l.name,qty:l.n,unit:l.unit,by:l.by||''})),
       Wishlist:S.wants.map(w=>({id:w.id,cat:w.cat,name:w.name,qty:w.qty,unit:w.unit,note:w.note||'',budget:w.budget??''})),
@@ -1791,8 +1835,8 @@ body.locked{overflow:hidden}
   function hydrate(t){
     const T=n=>t[n]||[];
     S.members=T('Members').map(r=>({id:r.id,name:r.name,birth:r.birth||'',water:Number(r.water)||0,meals:Number(r.meals)||0,kcal:Number(r.kcal)||0,
-      fullName:r.fullName||'',blood:r.blood||'',idno:r.idno||'',phone:r.phone||'',allergy:r.allergy||'',photo:r.photo||''}));
-    S.contacts=T('Contacts').map(r=>({id:r.id,name:r.name,relation:r.relation||'',phone:r.phone||'',note:r.note||'',onCard:String(r.onCard).toUpperCase()==='TRUE'}));
+      role:r.role||'',fullName:r.fullName||'',blood:r.blood||'',idno:r.idno||'',phone:r.phone||'',allergy:r.allergy||'',photo:r.photo||''}));
+    S.contacts=T('Contacts').map(r=>({id:r.id,name:r.name,kin:r.kin||'',relation:r.relation||'',phone:r.phone||'',note:r.note||'',onCard:String(r.onCard).toUpperCase()==='TRUE'}));
     S.items=T('Items').map(r=>{const it={}; ITEM_COLS.forEach(k=>it[k]=r[k]??'');
       ['qty','unitL','kcal','prep'].forEach(k=>it[k]=Number(it[k])||0); ['need','mah','battery'].forEach(k=>it[k]=num(it[k]));
       it.suits=list(r.suits); it.photos=list(r.photos); try{it.flavors=r.flavors?JSON.parse(r.flavors):[];}catch(e){it.flavors=[];} if(it.flavors.length)it.qty=flSum(it.flavors); it.owner=it.owner||'all'; it.checked=it.checked||fmt(today); return it;});
@@ -2043,7 +2087,7 @@ body.locked{overflow:hidden}
       case 'mphotorm': mState.photo=''; drawMember(); break;
       case 'mok': {const f=mState; if(!f.name.trim()){toast('請填稱呼');break;}
         if(f.idno&&!/^[A-Z][0-9A-Z][0-9]{8}$/.test(f.idno.trim().toUpperCase())&&!confirmOnce('idfmt'))break;
-        const rec={id:f.id,name:f.name.trim(),fullName:f.fullName.trim(),birth:f.birth,blood:f.blood,idno:f.idno.trim().toUpperCase(),phone:f.phone.trim(),allergy:f.allergy.trim(),photo:f.photo,water:f.water,meals:f.meals,kcal:f.kcal};
+        const rec={id:f.id,role:roleOf(f),name:f.name.trim(),fullName:f.fullName.trim(),birth:f.birth,blood:f.blood,idno:f.idno.trim().toUpperCase(),phone:f.phone.trim(),allergy:f.allergy.trim(),photo:f.photo,water:f.water,meals:f.meals,kcal:f.kcal};
         if(f.isNew)S.members.push(rec); else Object.assign(mem(f.id),rec);
         closeSheet(); render(); toast('已儲存'); break;}
       case 'mdel': {if(!mState.delArm){mState.delArm=true; drawMember(); break;}
@@ -2052,7 +2096,7 @@ body.locked{overflow:hidden}
       case 'cadd': openContact(null); break;
       case 'cedit': openContact(b.dataset.id); break;
       case 'ctok': {const f=ctState; if(!f.name.trim()){toast('請填姓名');break;}
-        const rec={id:f.id,name:f.name.trim(),relation:f.relation.trim(),phone:f.phone.trim(),note:f.note.trim(),onCard:!!f.onCard};
+        const rec={id:f.id,name:f.name.trim(),kin:f.kin||'',relation:f.kin?kinLabel({kin:f.kin},selfM()):f.relation.trim(),phone:f.phone.trim(),note:f.note.trim(),onCard:!!f.onCard};
         if(f.isNew)S.contacts.push(rec); else Object.assign(S.contacts.find(c=>c.id===f.id),rec);
         closeSheet(); render(); toast('已儲存'); break;}
       case 'cdel': {if(!ctState.delArm){ctState.delArm=true; drawContact(); break;} S.contacts=S.contacts.filter(c=>c.id!==ctState.id); closeSheet(); render(); toast('已刪除'); break;}
@@ -2118,7 +2162,7 @@ body.locked{overflow:hidden}
     if(t.dataset.e&&eState){eState[t.dataset.e]=t.value; return;}
     if(t.dataset.en!=null&&eState){eState.needs[Number(t.dataset.en)].l=t.value; return;}
     if(t.dataset.m&&mState){mState[t.dataset.m]=t.value; return;}
-    if(t.dataset.c&&ctState){ctState[t.dataset.c]=t.type==='checkbox'?t.checked:t.value; return;}
+    if(t.dataset.c&&ctState){ctState[t.dataset.c]=t.type==='checkbox'?t.checked:t.value; if(t.dataset.c==='kin')drawContact(); return;}
     if(e.target.dataset.d&&dState){dState[e.target.dataset.d]=e.target.value;return;}
     if(e.target.dataset.l&&lState){lState.q=e.target.value; drawLink(); const el=document.getElementById('l-q'); el.focus(); el.setSelectionRange(el.value.length,el.value.length); return;}
     if(t.dataset.fl!=null&&fState&&fState.flavors){const x=fState.flavors[Number(t.dataset.fl)]; x[t.dataset.k]=t.value; const q=document.getElementById('f-qty'); if(q&&q.disabled)q.value=flSum(fState.flavors); return;}
