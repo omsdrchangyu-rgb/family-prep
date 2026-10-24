@@ -1,5 +1,5 @@
 /**
- * 家庭防災庫 — Google Apps Script 後台
+ * 家庭防災庫 — Google Apps Script 後台 v0.8
  *
  * 第一次使用：
  *   1. 改下面三個設定（EDITORS、CLIENT_ID）
@@ -18,7 +18,7 @@ const SESSION_DAYS = 60;                                             // 登入�
 const TABLES = {
   Members:   ['id', 'name', 'birth', 'water', 'meals', 'kcal', 'fullName', 'blood', 'idno', 'phone', 'allergy', 'photo'],
   Items:     ['id', 'cat', 'sub', 'name', 'qty', 'unit', 'unitL', 'kcal', 'prep', 'method', 'suits', 'owner', 'loc',
-              'exp', 'checked', 'size', 'needType', 'need', 'mah', 'battery', 'photos', 'updatedAt', 'updatedBy'],
+              'exp', 'checked', 'size', 'needType', 'need', 'mah', 'battery', 'photos', 'updatedAt', 'updatedBy', 'flavors'],
   Usage:     ['id', 'time', 'itemId', 'name', 'qty', 'unit', 'by'],
   Wishlist:  ['id', 'cat', 'name', 'qty', 'unit', 'note', 'budget'],
   Needs:     ['id', 'mode', 'current', 'target', 'unit', 'note', 'links', 'checked'],
@@ -218,6 +218,15 @@ function sync_(changes, sess) {
       if (!TABLES[name]) return;
       const sh = ss.getSheetByName(name);
       const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getDisplayValues()[0];
+      // 前端新增的欄位：自動在最右邊補一欄，之後的新功能不用再改後台
+      (changes[name].upsert || []).forEach(row => Object.keys(row).forEach(k => {
+        if (/^[A-Za-z][A-Za-z0-9_]{0,30}$/.test(k) && head.indexOf(k) < 0) {
+          const at = head.length + 1;
+          sh.getRange(1, at).setValue(k).setFontWeight('bold');
+          sh.getRange(1, at, sh.getMaxRows(), 1).setNumberFormat('@');
+          head.push(k);
+        }
+      }));
       const last = sh.getLastRow();
       const ids = last >= 2 ? sh.getRange(2, 1, last - 1, 1).getDisplayValues().map(r => r[0]) : [];
       const ch = changes[name];

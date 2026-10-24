@@ -527,6 +527,18 @@ body.locked{overflow:hidden}
 .wsub{display:flex;justify-content:flex-end;gap:6px;align-items:baseline;font-size:12px;color:var(--muted);border-top:1px dashed var(--line);padding:6px 0 8px}
 .wsub b{font-family:var(--font-num);font-size:16px;color:var(--ink)}
 .days .n .cur{font-family:var(--font-body);font-size:20px;font-weight:600;margin-right:6px}
+
+/* flavors */
+.flc{font-size:12px;font-weight:500;color:var(--muted);margin-left:6px;white-space:nowrap}
+.fl-list{display:flex;flex-wrap:wrap;gap:4px}
+.fl-chip{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:1px 8px}
+.fl-chip b{font-family:var(--font-num);font-size:15px}
+.fl-chip.out{opacity:.5;text-decoration:line-through}
+.fl-edit{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-direction:column;gap:6px}
+.fl-edit li{display:grid;grid-template-columns:minmax(0,1fr) 5.5em auto;gap:6px;align-items:center}
+.fl-edit input{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:7px 9px;font-size:15px;min-width:0;width:100%}
+.fl-edit .btn.icon{width:32px;height:32px;padding:0}
+.field input:disabled{opacity:.75}
 </style>
 
 <header class="top">
@@ -617,7 +629,7 @@ body.locked{overflow:hidden}
   I({id:'F001',cat:'食',sub:'主食',name:'乾燥米飯',method:'冷水 60 分鐘或熱水 15 分鐘，加水至內袋刻度線後封口靜置。',kcal:360,prep:160,qty:15,unit:'包',exp:addDays(1300),suits:['成人','兒童'],loc:'客廳儲藏櫃'});
   I({id:'F002',cat:'食',sub:'配菜',name:'鮪魚罐頭',method:'開罐即食，可拌飯。易開罐不需開罐器。',kcal:180,prep:0,qty:12,unit:'罐',exp:addDays(143),suits:['成人','兒童'],loc:'廚房下櫃'});
   I({id:'F003',cat:'食',sub:'即食',name:'口糧餅乾',method:'開封即食，口乾，記得搭配飲水。',kcal:450,prep:0,qty:14,unit:'包',exp:addDays(300),suits:['成人','兒童'],loc:'客廳儲藏櫃'});
-  I({id:'F004',cat:'食',sub:'即食',name:'即食粥調理包',method:'常溫可直接吃；有熱源時隔水加熱 5 分鐘更好入口。',kcal:220,prep:0,qty:10,unit:'包',exp:addDays(250),suits:['成人','兒童','幼兒'],loc:'客廳儲藏櫃'});
+  I({id:'F004',cat:'食',sub:'即食',name:'即食粥調理包',method:'常溫可直接吃；有熱源時隔水加熱 5 分鐘更好入口。',kcal:220,prep:0,qty:10,flavors:[{n:'皮蛋瘦肉',q:4},{n:'香菇雞',q:3},{n:'原味',q:3}],unit:'包',exp:addDays(250),suits:['成人','兒童','幼兒'],loc:'客廳儲藏櫃'});
   I({id:'F005',cat:'食',sub:'嬰幼兒',name:'幼兒奶粉隨身包',method:'每包加 210 ml 溫開水搖勻；沒有溫水時可用常溫開水，泡好 1 小時內喝完。',kcal:150,prep:210,qty:10,unit:'包',exp:addDays(79),suits:['幼兒'],owner:'girl',loc:'妹妹避難包',checked:addDays(-200)});
   I({id:'F006',cat:'食',sub:'嬰幼兒',name:'寶寶果泥',method:'擠出即食，開封後當餐吃完。',kcal:90,prep:0,qty:8,unit:'包',exp:addDays(39),suits:['幼兒','兒童'],owner:'girl',loc:'妹妹避難包',checked:addDays(-200)});
   I({id:'F007',cat:'食',sub:'主食',name:'杯麵',method:'熱水 400 ml 泡 3 分鐘；沒熱水可乾吃。',kcal:450,prep:400,qty:6,unit:'杯',exp:addDays(-13),suits:['成人'],loc:'廚房上櫃'});
@@ -826,7 +838,7 @@ body.locked{overflow:hidden}
     if(!its.length){el.innerHTML=`<div class="empty">這個條件下沒有品項${S.offline?'':'。點右下「新增品項」加入。'}</div>`;return;}
     el.innerHTML=its.map(it=>`<button class="item ${tierOf(it)==='exp'?'expired':''}" data-act="open" data-id="${it.id}">
         <span class="thumb">${it.photos.length?`<img src="${psrc(it.photos[0])}" alt="">`:esc(it.name.slice(0,1))}</span>
-        <span class="body"><span class="name">${esc(it.name)}</span>${tierChip(it)}<span class="loc">${ICON.pin}<span>${esc(it.loc)}</span></span></span>
+        <span class="body"><span class="name">${esc(it.name)}${hasFl(it)?`<span class="flc">${it.flavors.length} 種口味</span>`:''}</span>${tierChip(it)}<span class="loc">${ICON.pin}<span>${esc(it.loc)}</span></span></span>
         <span class="qty">${qtyBlock(it)}</span></button>`).join('');
   }
   function renderLog(){
@@ -931,10 +943,12 @@ body.locked{overflow:hidden}
     if(it.needType&&it.need&&it.owner!=='all')return it.needType==='each'?`每人 ${it.need} ${it.unit}`:`每人每天 ${it.need} ${it.unit}`;
     return null;
   }
+  const hasFl=it=>Array.isArray(it.flavors)&&it.flavors.length>0;
+  const flSum=fl=>fl.reduce((a,x)=>a+(Number(x.q)||0),0);
   function factsFor(it){
     const row=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
     if(isFood(it)){const r=kcalPer100(it);
-      return row('適合對象',it.suits.join('、')||'—')+row('每份熱量',`<span class="num">${it.kcal}</span> kcal`)+
+      return (hasFl(it)?row('口味',`<span class="fl-list">${it.flavors.map(x=>`<span class="fl-chip ${x.q?'':'out'}">${esc(x.n)}<b>${x.q}</b></span>`).join('')}</span>`):'')+row('適合對象',it.suits.join('、')||'—')+row('每份熱量',`<span class="num">${it.kcal}</span> kcal`)+
         row('沖泡水',it.prep?`<span class="num">${it.prep}</span> ml${r!=null?`<br><span class="ratio-tag">每 100 ml 水換 ${r} kcal</span>`:''}`:'不需要');}
     if(isWater(it))return row('每單位容量',`<span class="num">${it.unitL}</span> L × ${it.qty} ${esc(it.unit)}`)+row('用途',it.sub==='飲用水'?'飲用、沖泡':'洗手、刷牙、擦澡');
     let h=row('子類',esc(it.sub));
@@ -992,7 +1006,9 @@ body.locked{overflow:hidden}
   let cState=null;
   function drawConsume(){
     const it=S.items.find(x=>x.id===cState.id);
+    if(hasFl(it)&&(cState.fl==null||!it.flavors[cState.fl]||!it.flavors[cState.fl].q)){const i=it.flavors.findIndex(x=>x.q>0); cState.fl=i<0?0:i; cState.n=1;}
     openSheet(`<h2>紀錄消耗</h2><div class="sub">${esc(it.name)}・目前 ${it.qty} ${esc(it.unit)}</div>
+      ${hasFl(it)?`<div class="field"><span>哪個口味</span><div class="toggles">${it.flavors.map((x,i)=>`<button data-act="cfl" data-i="${i}" class="${cState.fl===i?'on':''}" ${x.q?'':'disabled'}>${esc(x.n)} ${x.q}</button>`).join('')}</div></div>`:''}
       <div class="stepper" style="align-self:center"><button data-act="cn" data-d="-1" aria-label="減少">−</button><output>${cState.n} ${esc(it.unit)}</output><button data-act="cn" data-d="1" aria-label="增加">＋</button></div>
       <div class="sheet-actions"><button class="btn" data-act="back" data-id="${it.id}">返回</button><button class="btn primary" data-act="cok">扣除 ${cState.n} ${esc(it.unit)}</button></div>`,'紀錄消耗');
   }
@@ -1001,7 +1017,7 @@ body.locked{overflow:hidden}
   function openForm(id,preset){
     const it=id?S.items.find(x=>x.id===id):null;
     const c=preset?preset.cat:S.cat, sub=CFG[c].subs[0];
-    fState=it?JSON.parse(JSON.stringify(it)):{id:null,cat:c,sub,name:'',method:'',kcal:'',prep:0,qty:1,unit:c==='食'?'包':'個',unitL:'',exp:c==='食'||c==='醫藥'?addDays(365):'',suits:c==='食'?['成人','兒童']:[],owner:'all',loc:'',checked:fmt(today),photos:[],needType:'',need:'',size:'',mah:'',battery:''};
+    fState=it?JSON.parse(JSON.stringify(it)):{id:null,cat:c,sub,name:'',method:'',kcal:'',prep:0,qty:1,unit:c==='食'?'包':'個',unitL:'',exp:c==='食'||c==='醫藥'?addDays(365):'',suits:c==='食'?['成人','兒童']:[],owner:'all',loc:'',checked:fmt(today),photos:[],needType:'',need:'',size:'',mah:'',battery:'',flavors:[]};
     if(preset&&!it)Object.assign(fState,{name:preset.name,qty:preset.qty,unit:preset.unit,fromWant:preset.fromWant});
     drawForm(false);
   }
@@ -1017,7 +1033,7 @@ body.locked{overflow:hidden}
       <div class="grid2">
         <label class="field"><span>子類</span><select id="f-sub" data-f="sub">${cfg.subs.map(s=>`<option ${f.sub===s?'selected':''}>${s}</option>`).join('')}</select></label>
         ${inp('name','名稱','','placeholder="例：'+(food?'乾燥米飯':'頭燈')+'"')}
-        ${inp('qty','數量','number','inputmode="numeric" min="0"')}
+        ${food&&!water&&f.flavors&&f.flavors.length?`<label class="field"><span>數量（口味加總）</span><input id="f-qty" value="${flSum(f.flavors)}" disabled></label>`:inp('qty','數量','number','inputmode="numeric" min="0"')}
         ${inp('unit','單位','','placeholder="包、個、件"')}
         ${water?inp('unitL','每單位容量 L','number','step="0.1" inputmode="decimal"'):''}
         ${food&&!water?inp('kcal','每份熱量 kcal','number','inputmode="numeric"')+inp('prep','每份沖泡水 ml','number','inputmode="numeric"'):''}
@@ -1025,7 +1041,10 @@ body.locked{overflow:hidden}
         ${f.cat==='生存'?inp('mah','容量 mAh（電力類）','number','inputmode="numeric"')+inp('battery','目前電量 %','number','inputmode="numeric" min="0" max="100"'):''}
         <label class="field"><span>有效日${expOptional?'（可空白）':''}</span><input id="f-exp" data-f="exp" type="date" value="${f.exp||''}"></label>
       </div>
-      ${food&&!water?`<div class="hint" id="f-ratio" ${r==null?'hidden':''}>${r!=null?`每 100 ml 水換 ${r} kcal`:''}</div>`:''}
+      ${food&&!water?`<div class="hint" id="f-ratio" ${r==null?'hidden':''}>${r!=null?`每 100 ml 水換 ${r} kcal`:''}</div>
+      <div class="field"><span>口味（選填）・同一種東西不同口味記在一起，數量自動加總</span>
+        ${(f.flavors||[]).length?`<ul class="fl-edit">${f.flavors.map((x,i)=>`<li><input id="fl-n-${i}" data-fl="${i}" data-k="n" value="${esc(x.n)}" placeholder="口味" aria-label="口味名稱"><input id="fl-q-${i}" data-fl="${i}" data-k="q" type="number" inputmode="numeric" min="0" value="${esc(x.q)}" aria-label="數量"><button class="btn sm icon danger" data-act="fldel" data-i="${i}" aria-label="移除這個口味">✕</button></li>`).join('')}</ul>`:''}
+        <div class="toggles"><button data-act="fladd">＋ 加口味</button></div></div>`:''}
       <label class="field"><span>${cfg.methodLab}</span><textarea id="f-method" data-f="method" rows="2">${esc(f.method)}</textarea></label>
       ${(food&&!water)||cfg.suits?`<div class="field"><span>適合對象（可複選）</span><div class="toggles">${['成人','兒童','幼兒'].map(s=>`<button data-act="fs" data-k="${s}" class="${f.suits.includes(s)?'on':''}">${s}</button>`).join('')}</div></div>`:''}
       ${food?'':`<div class="field"><span>需求（全家共用時用來判斷夠不夠分）</span>
@@ -1749,14 +1768,14 @@ body.locked{overflow:hidden}
   }
 
   // ---- tables <-> state ----
-  const ITEM_COLS=['id','cat','sub','name','qty','unit','unitL','kcal','prep','method','suits','owner','loc','exp','checked','size','needType','need','mah','battery','photos'];
+  const ITEM_COLS=['id','cat','sub','name','qty','unit','unitL','kcal','prep','method','suits','owner','loc','exp','checked','size','needType','need','mah','battery','photos','flavors'];
   const strRow=r=>Object.fromEntries(Object.entries(r).map(([k,v])=>[k,v==null?'':String(v)]));
   function toTables(){
     const keys=new Set([...Object.keys(S.details),...Object.keys(S.links),...Object.keys(S.checks).filter(k=>S.checks[k])]);
     const t={
       Members:S.members.map(m=>({id:m.id,name:m.name,birth:m.birth||'',water:m.water,meals:m.meals,kcal:m.kcal,fullName:m.fullName||'',blood:m.blood||'',idno:m.idno||'',phone:m.phone||'',allergy:m.allergy||'',photo:m.photo||''})),
       Contacts:S.contacts.map(c=>({id:c.id,name:c.name,relation:c.relation||'',phone:c.phone||'',note:c.note||'',onCard:c.onCard?'TRUE':''})),
-      Items:S.items.map(it=>{const o={}; ITEM_COLS.forEach(k=>o[k]=it[k]); o.suits=(it.suits||[]).join(','); o.photos=(it.photos||[]).join(','); return o;}),
+      Items:S.items.map(it=>{const o={}; ITEM_COLS.forEach(k=>o[k]=it[k]); o.suits=(it.suits||[]).join(','); o.photos=(it.photos||[]).join(','); o.flavors=hasFl(it)?JSON.stringify(it.flavors):''; return o;}),
       Usage:S.log.map(l=>({id:l.id,time:l.t,itemId:l.itemId||'',name:l.name,qty:l.n,unit:l.unit,by:l.by||''})),
       Wishlist:S.wants.map(w=>({id:w.id,cat:w.cat,name:w.name,qty:w.qty,unit:w.unit,note:w.note||'',budget:w.budget??''})),
       Needs:[...keys].map(k=>{const d=S.details[k]||{}; return {id:k,mode:d.mode||'',current:d.current,target:d.target,unit:d.unit||'',note:d.note||'',links:[...(S.links[k]||[])].join(','),checked:S.checks[k]?'TRUE':''};}),
@@ -1776,7 +1795,7 @@ body.locked{overflow:hidden}
     S.contacts=T('Contacts').map(r=>({id:r.id,name:r.name,relation:r.relation||'',phone:r.phone||'',note:r.note||'',onCard:String(r.onCard).toUpperCase()==='TRUE'}));
     S.items=T('Items').map(r=>{const it={}; ITEM_COLS.forEach(k=>it[k]=r[k]??'');
       ['qty','unitL','kcal','prep'].forEach(k=>it[k]=Number(it[k])||0); ['need','mah','battery'].forEach(k=>it[k]=num(it[k]));
-      it.suits=list(r.suits); it.photos=list(r.photos); it.owner=it.owner||'all'; it.checked=it.checked||fmt(today); return it;});
+      it.suits=list(r.suits); it.photos=list(r.photos); try{it.flavors=r.flavors?JSON.parse(r.flavors):[];}catch(e){it.flavors=[];} if(it.flavors.length)it.qty=flSum(it.flavors); it.owner=it.owner||'all'; it.checked=it.checked||fmt(today); return it;});
     S.log=T('Usage').map(r=>({id:r.id,t:r.time,itemId:r.itemId,name:r.name,n:Number(r.qty)||0,unit:r.unit,by:r.by})).sort((a,b)=>b.t.localeCompare(a.t));
     S.wants=T('Wishlist').map(r=>({id:r.id,cat:r.cat,name:r.name,qty:Number(r.qty)||1,unit:r.unit,note:r.note,budget:r.budget===''||r.budget==null?'':Number(r.budget)||0}));
     S.details={}; S.links={}; S.checks={};
@@ -2049,14 +2068,18 @@ body.locked{overflow:hidden}
       case 'edit': openForm(b.dataset.id); break;
       case 'checked': {const it=S.items.find(x=>x.id===b.dataset.id); it.checked=fmt(today); if(it.battery!=null&&it.battery!=='')it.battery=100; render(); openItem(it.id,true); toast(it.battery===100?`已紀錄「${it.name}」充飽電`:`已標記「${it.name}」今天檢查過`); break;}
       case 'consume': cState={id:b.dataset.id,n:1}; drawConsume(); break;
-      case 'cn': {const it=S.items.find(x=>x.id===cState.id); cState.n=Math.max(1,Math.min(it.qty,cState.n+Number(b.dataset.d))); drawConsume(); break;}
-      case 'cok': {const it=S.items.find(x=>x.id===cState.id); it.qty-=cState.n;
-        const now=new Date(); S.log.unshift({id:uid('U'),t:`${fmt(now)} ${pad(now.getHours())}:${pad(now.getMinutes())}`,itemId:it.id,name:it.name,n:cState.n,unit:it.unit,by:sess?sess.name:''});
+      case 'cfl': cState.fl=Number(b.dataset.i); cState.n=1; drawConsume(); break;
+      case 'cn': {const it=S.items.find(x=>x.id===cState.id), max=hasFl(it)?it.flavors[cState.fl].q:it.qty; cState.n=Math.max(1,Math.min(max,cState.n+Number(b.dataset.d))); drawConsume(); break;}
+      case 'cok': {const it=S.items.find(x=>x.id===cState.id); let lname=it.name;
+        if(hasFl(it)){const x=it.flavors[cState.fl]; x.q=Math.max(0,x.q-cState.n); it.qty=flSum(it.flavors); lname=`${it.name}（${x.n}）`;} else it.qty-=cState.n;
+        const now=new Date(); S.log.unshift({id:uid('U'),t:`${fmt(now)} ${pad(now.getHours())}:${pad(now.getMinutes())}`,itemId:it.id,name:lname,n:cState.n,unit:it.unit,by:sess?sess.name:''});
         render(); openItem(it.id,true); toast(`已扣除：${it.name} −${cState.n} ${it.unit}`); break;}
       case 'fs': {const k=b.dataset.k,s=fState.suits; fState.suits=s.includes(k)?s.filter(x=>x!==k):s.concat(k); drawForm(); break;}
       case 'fdel': {if(!fState.delArm){fState.delArm=true; drawForm(); break;}
         const it=S.items.find(x=>x.id===fState.id); S.items=S.items.filter(x=>x.id!==fState.id);
         Object.values(S.links).forEach(set=>set.delete(fState.id)); closeSheet(); render(); toast(`已刪除「${it.name}」`); break;}
+      case 'fladd': {if(!fState.flavors)fState.flavors=[]; if(!fState.flavors.length&&Number(fState.qty)>0)fState.flavors.push({n:'',q:Number(fState.qty)}); else fState.flavors.push({n:'',q:''}); drawForm(); const el=document.getElementById('fl-n-'+(fState.flavors.length-1)); if(el)el.focus(); break;}
+      case 'fldel': {fState.flavors.splice(Number(b.dataset.i),1); if(!fState.flavors.length)fState.qty=fState.qty; drawForm(); break;}
       case 'fn': fState.needType=b.dataset.k; if(!fState.needType)fState.need=''; drawForm(); break;
       case 'fcover': {const i=Number(b.dataset.i); const [p]=fState.photos.splice(i,1); fState.photos.unshift(p); drawForm(); break;}
       case 'frm': fState.photos.splice(Number(b.dataset.i),1); drawForm(); break;
@@ -2068,6 +2091,7 @@ body.locked{overflow:hidden}
         if(cfg.expReq&&!f.exp&&f.sub!=='生活用水'){toast('請填有效日');break;}
         if(f.needType&&!(Number(f.need)>0)){toast('請填需求數量');break;}
         const num=v=>v===''||v==null?'':Number(v);
+        if(Array.isArray(f.flavors)){f.flavors=f.flavors.map(x=>({n:String(x.n||'').trim(),q:Math.max(0,Math.round(Number(x.q)||0))})).filter(x=>x.n); if(!food||water)f.flavors=[]; if(f.flavors.length)f.qty=flSum(f.flavors);}
         const clean={...f,qty:Number(f.qty)||0,kcal:Number(f.kcal)||0,prep:Number(f.prep)||0,unitL:Number(f.unitL)||0,need:num(f.need),mah:num(f.mah),battery:num(f.battery),loc:f.loc||'未填位置'};
         if(!clean.mah)delete clean.mah; if(clean.battery==='')delete clean.battery; if(!clean.needType){delete clean.needType;delete clean.need;}
         if(water)clean.suits=f.sub==='生活用水'?[]:['成人','兒童','幼兒'];
@@ -2097,6 +2121,7 @@ body.locked{overflow:hidden}
     if(t.dataset.c&&ctState){ctState[t.dataset.c]=t.type==='checkbox'?t.checked:t.value; return;}
     if(e.target.dataset.d&&dState){dState[e.target.dataset.d]=e.target.value;return;}
     if(e.target.dataset.l&&lState){lState.q=e.target.value; drawLink(); const el=document.getElementById('l-q'); el.focus(); el.setSelectionRange(el.value.length,el.value.length); return;}
+    if(t.dataset.fl!=null&&fState&&fState.flavors){const x=fState.flavors[Number(t.dataset.fl)]; x[t.dataset.k]=t.value; const q=document.getElementById('f-qty'); if(q&&q.disabled)q.value=flSum(fState.flavors); return;}
     const k=e.target.dataset.f; if(!k||!fState)return;
     fState[k]=e.target.value;
     if(k==='sub'){ if(fState.cat==='食'&&(fState.sub==='飲用水'||fState.sub==='生活用水')){fState.unit=fState.unit==='包'?'瓶':fState.unit;} drawForm(); return; }
