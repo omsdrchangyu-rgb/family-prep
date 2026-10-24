@@ -471,6 +471,7 @@ body.locked{overflow:hidden}
 .pc-lab{display:block;font-size:5.6pt;color:#5C6977;letter-spacing:.05em;margin-top:.8mm}
 .pc-no{font-family:var(--font-num);font-size:12pt;letter-spacing:.04em}
 .pc-al{background:#FCE9E9;color:#C62E2E;font-weight:700;border-radius:1.2mm;padding:.6mm 1.6mm}
+.pc-al.none{background:#EEF1F4;color:#5C6977}
 .pc ul,.a6-in ul{list-style:none;margin:0;padding:0}
 .pc li,.a6-in li{display:flex;justify-content:space-between;gap:2mm;border-bottom:.2mm solid #E1E6EB;padding:.35mm 0}
 .pc li span small,.a6-in li span small{color:#5C6977;margin-left:1mm}
@@ -1461,7 +1462,7 @@ body.locked{overflow:hidden}
     // ID
     g.fillStyle='#5C6977'; g.font=`600 30px ${F}`; g.fillText('身分證字號',cx,y); y+=62;
     g.fillStyle='#13263A'; g.font=`700 64px ${N}`; g.fillText(d.idno||'—',cx,y); y+=40;
-    if(d.allergy){y+=24; g.font=`700 40px ${F}`; const lines=wrap('過敏：'+d.allergy,CW-152); const h=lines.length*54+36; rr(cx,y,CW-112,h,20); g.fillStyle='#FCE9E9'; g.fill(); g.fillStyle='#C62E2E'; lines.forEach((l,i)=>g.fillText(l,cx+24,y+58+i*54)); y+=h;}
+    {const has=!!d.allergy; y+=24; g.font=`700 40px ${F}`; const lines=wrap('過敏：'+(d.allergy||'無'),CW-152); const h=lines.length*54+36; rr(cx,y,CW-112,h,20); g.fillStyle=has?'#FCE9E9':'#EEF1F4'; g.fill(); g.fillStyle=has?'#C62E2E':'#5C6977'; lines.forEach((l,i)=>g.fillText(l,cx+24,y+58+i*54)); y+=h;}
     const section=(title)=>{y+=56; g.fillStyle='#E1E9F1'; g.fillRect(cx,y,CW-112,4); y+=52; g.fillStyle='#1C3D5A'; g.font=`700 34px ${F}`; g.fillText(title,cx,y); y+=20;};
     const person=(p)=>{y+=62; g.fillStyle='#13263A'; g.font=`700 44px ${F}`; const left=p.name+(p.rel?`（${p.rel}）`:''); const pw=(g.font=`700 52px ${N}`, g.measureText(p.phone).width);
       g.font=`600 42px ${F}`; const ls=fit(left,CW-112-pw-30,42,'600',F); g.font=`600 ${ls}px ${F}`; g.fillText(left,cx,y);
@@ -1500,7 +1501,7 @@ body.locked{overflow:hidden}
   function ccFront(d){return `<div class="pc front"><div class="pc-top"><span>ICE 緊急聯絡卡</span><span class="pc-bt ${d.blood?'':'none'}">${esc(d.blood||'?')}<small>血型</small></span></div>
     <div class="pc-id">${d.photo?`<img src="${d.photo}" alt="">`:''}<div><b class="pc-name">${esc(d.full)}</b><span>${esc(d.nick)}${d.birth?'・'+esc(d.birth):''}</span>
     <span class="pc-lab">身分證字號</span><b class="pc-no">${esc(d.idno||'—')}</b></div></div>
-    ${d.allergy?`<div class="pc-al">過敏：${esc(d.allergy)}</div>`:''}</div>`;}
+    <div class="pc-al ${d.allergy?'':'none'}">過敏：${esc(d.allergy||'無')}</div></div>`;}
   function ccBack(d){return `<div class="pc back">${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,4).map(pPerson).join('')}</ul>`:''}
     ${d.others.length?`<span class="pc-lab">緊急聯絡人</span><ul>${d.others.slice(0,2).map(pPerson).join('')}</ul>`:''}
     ${d.meet.length?`<span class="pc-lab">集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}</ul>`:''}</div>`;}
@@ -1508,7 +1509,7 @@ body.locked{overflow:hidden}
     <div class="a6-head"><span>ICE 緊急聯絡卡</span><span class="pc-bt big ${d.blood?'':'none'}">${esc(d.blood||'?')}<small>血型</small></span></div>
     <div class="pc-id">${d.photo?`<img src="${d.photo}" alt="">`:''}<div><b class="pc-name">${esc(d.full)}</b><span>${esc(d.nick)}${d.birth?'・生日 '+esc(d.birth):''}</span>
       <span class="pc-lab">身分證字號</span><b class="pc-no">${esc(d.idno||'—')}</b></div></div>
-    ${d.allergy?`<div class="pc-al">過敏：${esc(d.allergy)}</div>`:''}
+    <div class="pc-al ${d.allergy?'':'none'}">過敏：${esc(d.allergy||'無')}</div>
     ${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,5).map(pPerson).join('')}</ul>`:''}
     ${d.others.length?`<span class="pc-lab">緊急聯絡人</span><ul>${d.others.slice(0,3).map(pPerson).join('')}</ul>`:''}
     ${d.meet.length?`<span class="pc-lab">約定集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}</ul>`:''}
