@@ -16,13 +16,14 @@ const SESSION_DAYS = 60;                                             // 登入�
 
 // ===== 分頁結構（欄位順序就是試算表的欄位順序）=====
 const TABLES = {
-  Members:   ['id', 'name', 'birth', 'water', 'meals', 'kcal'],
+  Members:   ['id', 'name', 'birth', 'water', 'meals', 'kcal', 'fullName', 'blood', 'idno', 'phone', 'allergy', 'photo'],
   Items:     ['id', 'cat', 'sub', 'name', 'qty', 'unit', 'unitL', 'kcal', 'prep', 'method', 'suits', 'owner', 'loc',
               'exp', 'checked', 'size', 'needType', 'need', 'mah', 'battery', 'photos', 'updatedAt', 'updatedBy'],
   Usage:     ['id', 'time', 'itemId', 'name', 'qty', 'unit', 'by'],
   Wishlist:  ['id', 'cat', 'name', 'qty', 'unit', 'note'],
   Needs:     ['id', 'mode', 'current', 'target', 'unit', 'note', 'links', 'checked'],
-  Scenarios: ['id', 'steps'],
+  Scenarios: ['id', 'steps', 'group', 'title', 'sum', 'needs'],
+  Contacts:  ['id', 'name', 'relation', 'phone', 'note', 'onCard'],
   Plan:      ['id', 'value'],
   Settings:  ['id', 'value'],
   Photos:    ['id', 'thumb']
@@ -81,10 +82,35 @@ function doGet() {
   return json_({ ok: true, app: '家庭防災庫' });
 }
 
+/** 新版程式加了欄位或分頁時，自動補上（不動既有資料） */
+function ensureSchema_() {
+  const cache = CacheService.getScriptCache();
+  const sig = Object.keys(TABLES).map(k => k + ':' + TABLES[k].length).join('|');
+  if (cache.get('schema') === sig) return;
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  Object.keys(TABLES).forEach(name => {
+    let sh = ss.getSheetByName(name);
+    if (!sh) { sh = ss.insertSheet(name); sh.setFrozenRows(1); }
+    const cols = TABLES[name];
+    const lastCol = Math.max(1, sh.getLastColumn());
+    const head = sh.getRange(1, 1, 1, lastCol).getDisplayValues()[0];
+    cols.forEach(c => {
+      if (head.indexOf(c) < 0) {
+        const at = head.filter(Boolean).length + 1;
+        sh.getRange(1, at).setValue(c).setFontWeight('bold');
+        sh.getRange(1, at, sh.getMaxRows(), 1).setNumberFormat('@');
+        head[at - 1] = c;
+      }
+    });
+  });
+  cache.put('schema', sig, 21600);
+}
+
 function doPost(e) {
   let req;
   try { req = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: '格式錯誤' }); }
   try {
+    ensureSchema_();
     switch (req.action) {
       case 'loginGoogle':   return json_(loginGoogle_(req.credential));
       case 'loginPassword': return json_(loginPassword_(req.password));
@@ -93,7 +119,7 @@ function doPost(e) {
     const sess = getSession_(req.session);
     if (!sess) return json_({ ok: false, error: 'AUTH', message: '登入已過期，請重新登入' });
     switch (req.action) {
-      case 'load':   return json_(Object.assign({ ok: true, role: sess.role, who: sess.name }, loadAll_()));
+      case 'load':   return json_(Object.assign({ ok: true, role: sess.role, who: sess.name }, loadAll_(sess.role)));
       case 'photo':  return json_({ ok: true, data: getPhoto_(req.id) });
     }
     if (sess.role !== 'editor') return json_({ ok: false, error: 'READONLY', message: '唯讀模式不能修改' });
@@ -158,7 +184,7 @@ function endSession_(token) {
 }
 
 // ===== 讀寫 =====
-function loadAll_() {
+function loadAll_(role) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const out = { tables: {} };
   Object.keys(TABLES).forEach(name => {
@@ -172,8 +198,15 @@ function loadAll_() {
       const o = {}; head.forEach((h, i) => { if (h) o[h] = r[i]; }); return o;
     });
   });
+  // 唯讀身分看不到完整身分證字號
+  if (role !== 'editor') (out.tables.Members || []).forEach(m => { m.idno = maskId_(m.idno); });
   out.serverTime = new Date().toISOString();
   return out;
+}
+
+function maskId_(s) {
+  s = String(s || '');
+  return s.length < 6 ? (s ? '******' : '') : s.slice(0, 3) + '****' + s.slice(-3);
 }
 
 function sync_(changes, sess) {

@@ -418,6 +418,92 @@ body.locked{overflow:hidden}
 .pw-row input{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:9px 10px;font-size:16px}
 .login-msg{font-size:14px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--signal) 18%,var(--surface));border:1px solid color-mix(in srgb,var(--signal) 55%,transparent)}
 .login-err{font-size:14px;color:var(--t-exp);min-height:1.4em}
+
+/* family profiles */
+.fam{gap:12px}
+.famlist,.clist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.famlist li,.clist li{border-top:1px solid var(--line)}
+.famlist li:first-child,.clist li:first-child{border-top:0}
+.famlist button,.clist button{width:100%;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;border:0;background:none;padding:9px 0;text-align:left;color:var(--ink)}
+.clist button{grid-template-columns:minmax(0,1fr) auto}
+.av{width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;overflow:hidden;font-size:18px}
+.av img{width:100%;height:100%;object-fit:cover}
+.av.lg{width:88px;height:88px;border-radius:20px;font-size:32px}
+.fm{display:flex;flex-direction:column;min-width:0}
+.fm b{font-size:16px}
+.fm small,.clist small{font-size:12px;color:var(--muted);display:block}
+.fm small.warn{color:var(--t-3)}
+.bt{min-width:44px;height:30px;padding:0 8px;border-radius:8px;background:var(--t-exp);color:#fff;font-family:var(--font-num);font-weight:700;font-size:17px;display:grid;place-items:center}
+.bt.none{background:var(--surface-2);color:var(--muted);border:1px dashed var(--line)}
+.clist b{font-size:15px}
+.clist .ph{font-family:var(--font-num);font-size:17px;font-weight:600;white-space:nowrap}
+.fam-sec{border-top:1px dashed var(--line);padding-top:10px;display:flex;flex-direction:column;gap:8px}
+.fam-sec h4{margin:0;font-size:14px}
+.fam-acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.fam-out{display:grid;grid-template-columns:1fr 1fr;gap:8px;border-top:1px dashed var(--line);padding-top:12px}
+.m-photo{display:flex;align-items:center;gap:14px}
+.m-photo label.btn{cursor:pointer}
+.eneeds{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.eneeds li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px;align-items:center}
+.eneeds .tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.eneeds input{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:6px 8px;font-size:14px;min-width:0;width:100%}
+.eneeds .ord{display:flex;gap:4px}
+.eneeds .btn.icon{width:30px;height:30px;padding:0;font-size:13px}
+.wall-out{display:flex;flex-direction:column;gap:10px;align-items:center}
+.wall-out img{width:min(260px,70vw);border-radius:22px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.wall-acts{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+
+/* printable ID cards (shared by preview and print) */
+.pc,.a6-in{font-family:var(--font-body);color:#13263A;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pc{width:85.6mm;height:54mm;box-sizing:border-box;padding:3mm 3.5mm;border:.3mm solid #C9D2DC;border-radius:3mm;overflow:hidden;font-size:7.2pt;line-height:1.3;display:flex;flex-direction:column;gap:1.4mm}
+.pc-top,.a6-head{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:7pt;letter-spacing:.06em;color:#5C6977;border-bottom:.8mm solid #F5B800;padding-bottom:1mm}
+.pc-bt{background:#C62E2E;color:#fff;border-radius:1.5mm;padding:.4mm 2mm;font-family:var(--font-num);font-size:12pt;line-height:1.1;display:flex;flex-direction:column;align-items:center}
+.pc-bt small{font-family:var(--font-body);font-size:5pt;font-weight:500;letter-spacing:0}
+.pc-bt.big{font-size:22pt;padding:1mm 4mm}
+.pc-bt.none{background:#E1E6EB;color:#5C6977}
+.pc-bt.big small{font-size:7pt}
+.pc-id{display:flex;gap:2.5mm;align-items:flex-start}
+.pc-id img{width:16mm;height:20mm;object-fit:cover;border-radius:1.5mm;flex:0 0 auto}
+.pc-id > div{display:flex;flex-direction:column;min-width:0}
+.pc-name{font-size:13pt;line-height:1.15}
+.pc-lab{display:block;font-size:5.6pt;color:#5C6977;letter-spacing:.05em;margin-top:.8mm}
+.pc-no{font-family:var(--font-num);font-size:12pt;letter-spacing:.04em}
+.pc-al{background:#FCE9E9;color:#C62E2E;font-weight:700;border-radius:1.2mm;padding:.6mm 1.6mm}
+.pc ul,.a6-in ul{list-style:none;margin:0;padding:0}
+.pc li,.a6-in li{display:flex;justify-content:space-between;gap:2mm;border-bottom:.2mm solid #E1E6EB;padding:.35mm 0}
+.pc li span small,.a6-in li span small{color:#5C6977;margin-left:1mm}
+.pc li b,.a6-in li b{font-family:var(--font-num);white-space:nowrap}
+.pc-meet li b{font-family:var(--font-body);white-space:normal;text-align:right}
+.pc.back{gap:.4mm;font-size:6.6pt}
+.ccpair{display:flex;align-items:stretch;break-inside:avoid}
+.ccpair .fold{width:0;border-left:.3mm dashed #98A6B4}
+.a6{width:105mm;height:148.5mm;box-sizing:border-box;padding:7mm;break-inside:avoid}
+.a6-in{height:100%;box-sizing:border-box;border:.4mm solid #C9D2DC;border-radius:4mm;padding:5mm;font-size:11pt;line-height:1.4;display:flex;flex-direction:column;gap:1.6mm;overflow:hidden}
+.a6-head{font-size:9pt}
+.a6 .pc-id img{width:26mm;height:32mm}
+.a6 .pc-name{font-size:20pt}
+.a6 .pc-no{font-size:17pt}
+.a6 .pc-lab{font-size:8pt;margin-top:2mm}
+.a6 li{padding:.8mm 0}
+.a6 .pc-al{font-size:12pt;padding:1.2mm 2.4mm}
+/* on-screen preview */
+.pprev{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px;overflow:auto;max-height:52vh}
+.pprev .ppage{display:flex;flex-direction:column;gap:4mm;margin-bottom:6mm}
+.pprev .ppage.a6-page{flex-direction:row;flex-wrap:wrap;gap:3mm}
+.pprev .a6{padding:0}
+.pprev.cc .ccpair{transform-origin:top left}
+#printArea{display:none}
+@media print{
+  @page{size:A4;margin:0}
+  body.printing{background:#fff!important;padding:0!important}
+  body.printing > *:not(#printArea){display:none!important}
+  body.printing::before{display:none!important}
+  body.printing #printArea{display:block}
+  #printArea .ppage{width:210mm;height:297mm;box-sizing:border-box;break-after:page;overflow:hidden}
+  #printArea .cc-page{padding:12mm 19mm;display:flex;flex-direction:column;gap:3mm}
+  #printArea .a6-page{display:grid;grid-template-columns:105mm 105mm;grid-auto-rows:148.5mm;
+    background:linear-gradient(#bbb,#bbb) center/0.2mm 100% no-repeat,linear-gradient(#bbb,#bbb) center/100% 0.2mm no-repeat}
+}
 </style>
 
 <header class="top">
@@ -495,9 +581,9 @@ body.locked{overflow:hidden}
   const S={
     cat:'食', sub:'全部', tier:null, offline:false, rotOpen:false, hyg:2, goBag:3,
     members:[
-      {id:'dad', name:'爸爸', birth:'1988-05-01', kcal:2000, water:3, meals:3},
-      {id:'mom', name:'媽媽', birth:'1989-08-01', kcal:1600, water:3, meals:3},
-      {id:'son1',name:'哥哥', birth:'2018-03-01', kcal:1550, water:3, meals:3},
+      {id:'dad', name:'爸爸', birth:'1988-05-01', kcal:2000, water:3, meals:3, fullName:'王大明', blood:'O', idno:'A123456789', phone:'0912-000-111', allergy:'盤尼西林'},
+      {id:'mom', name:'媽媽', birth:'1989-08-01', kcal:1600, water:3, meals:3, fullName:'林小美', blood:'A', idno:'B223456789', phone:'0912-000-222'},
+      {id:'son1',name:'哥哥', birth:'2018-03-01', kcal:1550, water:3, meals:3, fullName:'王小安', blood:'O', idno:'A134567890'},
       {id:'son2',name:'弟弟', birth:'2021-06-01', kcal:1400, water:3, meals:3},
       {id:'girl',name:'妹妹', birth:'2024-04-01', kcal:1150, water:3, meals:3}
     ],
@@ -563,7 +649,8 @@ body.locked{overflow:hidden}
     reserve:{mode:'manual',current:50000,target:100000,unit:'元',note:'先以 3 個月固定支出（房租、薪資、基本耗材）估算，請改成實際數字。'},
     mask:{mode:'auto',current:'',target:50,unit:'片',note:''}
   };
-  S.plan={meet1:'',wait1:'1 小時',meet2:'',final:'',phone:'',contact:''};
+  S.plan={meet1:'住家旁的國小操場',wait1:'1 小時',meet2:'區公所前廣場',final:'',phone:'0912-000-111',contact:''};
+  S.contacts=[{id:'C1',name:'王阿公',relation:'爺爺',phone:'04-2200-0000',note:'台中',onCard:true},{id:'C2',name:'陳舅舅',relation:'外縣市聯絡人',phone:'0933-000-333',note:'高雄',onCard:true}];
   S.wants=[
     {id:'B001',cat:'醫藥',name:'口服電解質粉',qty:10,unit:'包',note:'藥局，成人兒童通用款'},
     {id:'B002',cat:'生存',name:'淨水錠',qty:1,unit:'盒',note:'戶外用品店'},
@@ -653,7 +740,7 @@ body.locked{overflow:hidden}
       const ready=SCEN.filter(sc=>{const r=readiness(sc);return r.ok===r.total;}).length;
       document.getElementById('days').innerHTML=`
         <div class="days-top"><p class="label">應變準備度</p></div>
-        <div class="n">${ready}/${SCEN.length}<span>個情境準備齊全</span></div>
+        <div class="n">${ready}/${SCEN.length}<span>個情境齊全</span></div>
         <div class="big-cap">點情境看怎麼做；缺的東西可以直接加入待購</div>`;
       return;
     }
@@ -1011,21 +1098,40 @@ body.locked{overflow:hidden}
   const M=(key,label,x={})=>({key,label,manual:true,...x});
   const FOOD=/./;
 
-  const SCEN=[
-    {id:'quake',g:'第一時間',title:'地震後第一小時',sum:'確認安全、關總開關、決定留守或撤離',steps:[
-      '搖晃時趴下、掩護、穩住，遠離窗戶與高櫃，不要往外跑。',
-      '停止搖晃後先穿鞋，再確認每個人有沒有受傷。',
+  const SCEN_DEFAULT=[
+    {id:'quakeNow',g:'第一時間',title:'地震當下',sum:'趴下、掩護、穩住，不往外衝',steps:[
+      '趴下、掩護、穩住：躲到堅固桌子下，抓住桌腳；旁邊沒有桌子就靠牆蹲低，用手或包包護住頭頸。',
+      '遠離窗戶、玻璃、高櫃和吊燈。',
+      '在床上：留在床上，用枕頭護住頭頸。',
+      '在廚房：離開爐火與熱鍋，搖晃停止後再關火。',
+      '不要在搖晃中往外跑、不搭電梯、不走樓梯。',
+      '在戶外：遠離建築物、招牌、電線桿；開車時慢慢靠邊停，留在車內。',
+      '搖晃停止後，看「地震後」。'],
+     needs:[M('quakeDrill','全家演練過「趴下、掩護、穩住」'),M('furniture','高櫃與書櫃已固定在牆上'),A('light','照明',/頭燈|手電筒/),M('bedShoes','每人床邊有鞋子與手電筒')]},
+    {id:'quake',g:'第一時間',title:'地震後',sum:'確認安全、關總開關、決定留守或撤離',steps:[
+      '先穿鞋，再確認每個人有沒有受傷。',
       '關閉瓦斯與電源總開關；聞到瓦斯味不要開燈、不要點火。',
       '打開門確保出口，把每人的避難包放到門邊。',
       '用收音機或官方帳號確認災情，不轉傳未經證實的訊息。',
-      '房屋有明顯裂縫、傾斜或起火就撤離（看「決定撤離」）；否則在家避難（看「停水停電在家」）。',
+      '隨時準備餘震，再搖時一樣趴下、掩護、穩住。',
+      '房屋有明顯裂縫、傾斜或起火就撤離（看「房子無法居住」與「決定撤離」）；否則在家避難（看「停水停電在家」）。',
       '撥 1991 留言報平安，把電話線路留給緊急使用。'],
-     needs:[A('light','照明',/頭燈|手電筒/),A('radio','收音機',/收音機/),E('whistle','每人求救哨',/哨/),A('firstaid','急救包',/急救包/)]},
+     needs:[A('light','照明',/頭燈|手電筒/),A('radio','收音機',/收音機/),E('whistle','每人求救哨',/哨/),A('firstaid','急救包',/急救包/),M('gasValve','全家知道瓦斯與電源總開關的位置')]},
+    {id:'fire',g:'第一時間',title:'火災逃生',sum:'小火快逃，濃煙關門',steps:[
+      '大喊「失火了」讓全家知道，不收東西，直接逃。',
+      '開門前先摸門把：不燙就開一條縫看有沒有煙；沒煙就往下逃到一樓出口，出去後隨手關門。',
+      '門把很燙或門外有濃煙：不要開門、不要穿越濃煙。關門，用毛巾或衣物塞住門縫，退到離火最遠、有窗戶的房間或陽台。',
+      '在窗邊打 119，說清楚地址、幾樓、幾個人，揮動顏色明顯的衣物求救。',
+      '樓梯遇到煙不要往上跑（煙往上的速度比人快），也不要硬衝，改找其他水平路線。',
+      '不搭電梯；不要躲進浴室（塑膠門會熔化、門下有通風口、通常沒有對外窗）。',
+      '濕毛巾擋不住一氧化碳，不要用塑膠袋套頭。'],
+     needs:[M('smokeAlarm','每個房間都有住宅用火災警報器（住警器）'),A('extinguisher','滅火器',/滅火器/,null,{buy:B('住宅用滅火器','生存',1,'支')}),M('fireRoutes','家裡兩條逃生路線，全家都走過'),A('light','照明',/頭燈|手電筒/)],
+     src:'依據消防署「小火快逃，濃煙關門」：<a href="https://udn.com/news/story/7320/4648415" target="_blank" rel="noopener">聯合新聞網整理</a>'},
     {id:'lost',g:'第一時間',title:'家人走散',sum:'原地、哨音、集合點、1991',plan:true,steps:[
       '孩子：留在原地，或找穿制服的人（警察、消防員、店員）幫忙，不跟陌生人走。',
       '大人：先回到最後一起待的地方，找 10 分鐘。',
       '吹哨三短聲；聽到家人的哨音就原地等待。',
-      '依「我們的計畫」的順序前往集合點，到了就等，時間到再往下一個。',
+      '依「約定集合點」的順序前往，到了就等，時間到再往下一個（識別卡和桌布上都有）。',
       '撥 1991，輸入約定電話留言：人在哪、是否平安、接下來去哪。',
       '手機有網路時用 LINE 安全通報回報平安。'],
      needs:[E('whistle','每人求救哨',/哨/),E('meetcard','每人集合點卡',/集合點/),C('phone1991','1991 約定電話',planSet('phone')),A('walkie','對講機',/對講機/,null,{buy:B('對講機','生存',2,'支')})]},
@@ -1046,6 +1152,15 @@ body.locked{overflow:hidden}
      needs:[C('food3',()=>`食物與水至少 ${S.goBag} 天`,()=>foodDays(S.goBag)(),FOOD,'食'),
        C('hygwater','生活用水',()=>{const c=calc(S.items,S.members);return {ok:c.hygDays>=1,note:`可撐 ${r1(c.hygDays)} 天`};},/儲水桶/),
        A('toilet','移動式馬桶',/馬桶/),C('bags','凝固劑便袋',covOk(/便袋/),/便袋/),C('power','行動電源有電',charged,/行動電源/,'生存'),A('gas','卡式爐瓦斯',/瓦斯/)]},
+    {id:'uninhabitable',g:'第一時間',title:'房子無法居住',sum:'帶包離開、找收容所、記錄損壞',plan:true,steps:[
+      '看到明顯傾斜、樑柱裂開、瓦斯味或火災，帶避難包立刻離開，不回頭拿東西。',
+      '建築物被貼上紅色（危險）或黃色（注意）標示時，依標示不要進入或限制進入。',
+      '先到集合點與家人會合，再決定去收容所或親友家。',
+      '收容所由區公所視災情開設，出發前先用收音機、區公所或 1999 確認哪裡有開。',
+      '離開前或安全時，拍下房屋內外損壞的照片，之後申請災損救助與保險理賠用。',
+      '門上留字條：全家是否平安、去了哪裡、聯絡電話。',
+      '有家人受傷或失聯，向收容所登記並通報警消。'],
+     needs:[A('docs','證件影本',/證件/),A('cash','現金',/現金/),M('insuranceCopy','房屋與保險文件影本（或雲端備份）'),A('blanket','保暖毯',/保暖毯/),M('shelterKnown','知道區公所與最近的收容所位置')]},
     {id:'injured',g:'途中狀況',title:'有人受傷無法移動',sum:'止血、分工、分配避難包',injured:true,steps:[
       '大量出血先直接加壓止血。',
       '不確定有沒有傷到脊椎時，不要移動傷者。',
@@ -1087,6 +1202,24 @@ body.locked{overflow:hidden}
       '拿出熟悉的東西：安撫娃娃、繪本、小玩具。',
       '不讓孩子一直看災難畫面與新聞。'],
      needs:[A('comfort','安撫娃娃',/安撫/),A('toys','繪本或玩具',/./,'樂')]},
+    {id:'warWhen',g:'長期與戰時',title:'戰爭爆發：什麼時候逃',sum:'先就地避難，有明確理由再移動',steps:[
+      '原則是先就地避難：空襲中、夜間或交戰附近都不要移動。',
+      '跟著官方指示走：手機國家級警報、村里廣播、收音機；只信官方帳號與可信媒體。',
+      '出現以下情況才考慮離開：政府發布疏散、住家受損無法居住、住家緊鄰可能被攻擊的目標（機場、港口、軍營、發電廠等）。',
+      '決定要走，就趁道路還沒壅塞時出發，白天移動，先確定目的地與路線。',
+      '出發前：加滿油、帶避難包與藥品、手機與行動電源充飽、門上留字條。',
+      '任何「國家戰敗、政府投降」的訊息都是假訊息，不要因為這種消息慌忙逃離。'],
+     needs:[M('fuelHalf','車子油箱平常保持半滿以上'),C('power','行動電源有電',charged,/行動電源/,'生存'),A('radio','收音機',/收音機/),C('food3',()=>`食物與水至少 ${S.goBag} 天`,()=>foodDays(S.goBag)(),FOOD,'食')],
+     src:'依據 2025《臺灣全民安全指引》：<a href="https://news.tvbs.com.tw/life/3056699" target="_blank" rel="noopener">TVBS 報導</a>'},
+    {id:'warWhere',g:'長期與戰時',title:'戰爭爆發：逃去哪裡',sum:'近：避難處所；中：收容所；遠：外縣市親友',plan:true,steps:[
+      '近（空襲當下）：最近的地下室、堅固建築或沒有窗戶的房間；跟著黃色的防空避難標示走。',
+      '平時先用「警政服務」App 的防空疏散避難專區查好住家、診所、孩子學校附近的避難處所，截圖存在手機裡。',
+      '中（住家不能待）：區公所開設的收容所，出發前先確認有沒有開。',
+      '遠（需要離開台中）：「約定集合點」裡的最終目標，例如外縣市親友家；路線避開機場、港口、軍營等設施。',
+      '每一站都先聯絡外縣市聯絡人，讓他知道全家在哪裡。',
+      '移動中保持低調：不拍攝、不轉傳軍隊動態。'],
+     needs:[M('shelterScreens','已截圖住家、診所、學校附近的防空避難處所'),C('finalSet','最終目標已設定',planSet('final')),M('relativeAgreed','已和最終目標的親友說好')],
+     src:'避難處所查詢：<a href="https://www.cna.com.tw/news/asoc/202208040297.aspx" target="_blank" rel="noopener">中央社：警政服務 App 防空避難專區</a>'},
     {id:'war',g:'長期與戰時',title:'戰爭爆發：家庭',sum:'空襲警報、資訊判斷、存糧 3–7 天',steps:[
       '聽到空襲警報：到最近的地下室、堅固建築或沒有窗戶的房間；來不及就趴低掩護、遠離窗戶。',
       '解除警報後注意掉落物與二次攻擊，等官方資訊再移動。',
@@ -1109,6 +1242,281 @@ body.locked{overflow:hidden}
   ];
   const GROUPS=['第一時間','途中狀況','長期與戰時'];
   const labOf=nd=>typeof nd.label==='function'?nd.label():nd.label;
+  // ================= scenarios: editable model =================
+  const LIB={};
+  SCEN_DEFAULT.forEach(sc=>sc.needs.forEach(nd=>{if(!LIB[nd.key])LIB[nd.key]=nd;}));
+  const cloneScen=sc=>({...sc,steps:[...sc.steps],needs:[...sc.needs]});
+  let SCEN=SCEN_DEFAULT.map(cloneScen);
+  S.scenHidden=new Set();
+  // built-in needs (from the default scenarios) keep their rule; only needs the user created are 'manual'/'items'
+  const needSpec=nd=>LIB[nd.key]&&!nd.custom
+    ?{k:nd.key,t:'lib',l:labOf(nd)===labOf(LIB[nd.key])?'':labOf(nd)}
+    :{k:nd.key,t:nd.manual?'manual':'items',l:labOf(nd)};
+  function needFromSpec(sp){
+    if(sp.t==='lib'&&LIB[sp.k])return sp.l&&sp.l!==labOf(LIB[sp.k])?{...LIB[sp.k],label:sp.l}:LIB[sp.k];
+    if(sp.t==='manual')return M(sp.k,sp.l,{custom:true});
+    return A(sp.k,sp.l,null,null,{custom:true});
+  }
+  function applyScenRows(rows,order,hidden){
+    SCEN=SCEN_DEFAULT.map(cloneScen);
+    rows.forEach(r=>{
+      let sc=SCEN.find(s=>s.id===r.id);
+      if(!sc){if(!r.title)return; sc={id:r.id,g:r.group||GROUPS[0],title:r.title,sum:r.sum||'',steps:[],needs:[],custom:true}; SCEN.push(sc);}
+      if(r.steps)sc.steps=r.steps.split('\n').filter(Boolean);
+      if(r.title)sc.title=r.title; if(r.sum!=null&&r.title)sc.sum=r.sum; if(r.group)sc.g=r.group;
+      if(r.needs){try{sc.needs=JSON.parse(r.needs).map(needFromSpec);}catch(e){}}
+      sc.edited=true;
+    });
+    S.scenHidden=new Set(hidden);
+    SCEN=SCEN.filter(sc=>!S.scenHidden.has(sc.id));
+    if(order.length){const pos=id=>{const i=order.indexOf(id);return i<0?1e6:i;}; const base=SCEN.map(s=>s.id); SCEN.sort((a,b)=>pos(a.id)-pos(b.id)||base.indexOf(a.id)-base.indexOf(b.id));}
+  }
+  function moveScen(id,dir){
+    const sc=SCEN.find(s=>s.id===id), same=SCEN.filter(s=>s.g===sc.g), k=same.indexOf(sc), other=same[k+dir];
+    if(!other)return false;
+    const i=SCEN.indexOf(sc), j=SCEN.indexOf(other); SCEN[i]=other; SCEN[j]=sc; S.scenOrderTouched=true; return true;
+  }
+
+  let eState=null;
+  function openScenEdit(id,isNew){
+    const sc=isNew?{id:uid('S'),g:GROUPS[0],title:'',sum:'',steps:[],needs:[]}:SCEN.find(s=>s.id===id);
+    eState={id:sc.id,isNew:!!isNew,title:sc.title,sum:sc.sum,g:sc.g,steps:sc.steps.join('\n'),
+      needs:sc.needs.map(nd=>({orig:nd,spec:needSpec(nd),l:labOf(nd)})),delArm:false};
+    drawScenEdit(false);
+  }
+  function drawScenEdit(keep=true){
+    const f=eState, sc=SCEN.find(s=>s.id===f.id);
+    const same=sc?SCEN.filter(s=>s.g===sc.g):[], k=sc?same.indexOf(sc):-1;
+    openSheet(`<h2>${f.isNew?'新增情境':'編輯情境'}</h2>
+      <label class="field"><span>標題</span><input id="e-title" data-e="title" value="${esc(f.title)}" placeholder="例：颱風停電"></label>
+      <label class="field"><span>一句話重點</span><input id="e-sum" data-e="sum" value="${esc(f.sum)}" placeholder="例：先固定門窗、備好照明"></label>
+      <label class="field"><span>分組</span><select id="e-g" data-e="g">${GROUPS.map(g=>`<option ${f.g===g?'selected':''}>${g}</option>`).join('')}</select></label>
+      ${f.isNew?'':`<div class="field"><span>在「${esc(sc.g)}」裡的位置</span><div class="toggles"><button data-act="emove" data-d="-1" ${k<=0?'disabled':''}>↑ 往前</button><button data-act="emove" data-d="1" ${k<0||k>=same.length-1?'disabled':''}>↓ 往後</button></div></div>`}
+      <label class="field"><span>怎麼做（一行一個步驟）</span><textarea id="e-steps" data-e="steps" rows="8">${esc(f.steps)}</textarea></label>
+      <div class="field"><span>準備好了嗎（檢查項目）</span>
+        <ul class="eneeds">${f.needs.map((n,i)=>`<li>
+          <span class="tag">${n.spec.t==='lib'?((n.orig||LIB[n.spec.k]).manual?'手動勾選':'自動判斷'):n.spec.t==='manual'?'手動勾選':'連結品項'}</span>
+          <input id="en-${i}" data-en="${i}" value="${esc(n.l)}" aria-label="項目名稱">
+          <span class="ord"><button class="btn sm icon" data-act="enmove" data-i="${i}" data-d="-1" aria-label="往上" ${i===0?'disabled':''}>↑</button><button class="btn sm icon" data-act="enmove" data-i="${i}" data-d="1" aria-label="往下" ${i===f.needs.length-1?'disabled':''}>↓</button><button class="btn sm icon danger" data-act="endel" data-i="${i}" aria-label="移除">✕</button></span></li>`).join('')||'<li class="cat-empty">還沒有檢查項目</li>'}</ul>
+        <div class="toggles"><button data-act="enadd" data-k="manual">＋ 手動勾選項目</button><button data-act="enadd" data-k="items">＋ 連結品項的項目</button></div>
+        <div class="hint">手動勾選：自己確認後打勾（例如「全家演練過」）。連結品項：存檔後在情境裡按「連結品項」，選好的庫存有貨就算備妥。</div></div>
+      <div class="sheet-actions">${f.isNew?'':`<button class="btn danger" data-act="edel">${f.delArm?'再按一次確認刪除':'刪除情境'}</button>`}
+        <div class="right"><button class="btn" data-act="${f.isNew?'close':'scen'}" data-id="${f.id}">取消</button><button class="btn primary" data-act="eok">儲存</button></div></div>`,'編輯情境',keep);
+  }
+  function saveScenEdit(){
+    const f=eState;
+    if(!f.title.trim()){toast('請填標題');return false;}
+    const needs=f.needs.filter(n=>n.l.trim()).map(n=>{
+      if(n.spec.t==='lib'){const o=n.orig||LIB[n.spec.k]; return n.l===labOf(o)?o:{...o,label:n.l};}
+      return n.spec.t==='manual'?M(n.spec.k,n.l.trim(),{custom:true}):A(n.spec.k,n.l.trim(),null,null,{custom:true});
+    });
+    let sc=SCEN.find(s=>s.id===f.id);
+    if(!sc){sc={id:f.id,custom:true,needs:[],steps:[]}; SCEN.push(sc);}
+    Object.assign(sc,{title:f.title.trim(),sum:f.sum.trim(),g:f.g,steps:f.steps.split('\n').map(x=>x.trim()).filter(Boolean),needs,edited:true});
+    return true;
+  }
+
+  // ================= family profiles =================
+  S.contacts=S.contacts||[];
+  const BLOODS=['','A','B','O','AB','A Rh−','B Rh−','O Rh−','AB Rh−'];
+  const fullOf=m=>m.fullName||m.name;
+  function famIssues(m){
+    const miss=[];
+    if(!m.fullName)miss.push('全名'); if(!m.blood)miss.push('血型'); if(!m.idno)miss.push('身分證');
+    if(!m.birth)miss.push('生日'); if(cat(m)==='成人'&&!m.phone)miss.push('手機');
+    return miss;
+  }
+  function famReady(){
+    const items=[...S.members.map(m=>famIssues(m).length===0),!!S.plan.meet1,!!S.plan.final,!!S.plan.phone,S.contacts.length>0];
+    return {ok:items.filter(Boolean).length,total:items.length};
+  }
+  function memberAvatar(m,cls='av'){
+    const p=m.photo?psrc(m.photo):'';
+    return `<span class="${cls}">${p?`<img src="${p}" alt="">`:esc((m.name||'?').slice(0,1))}</span>`;
+  }
+  function renderFamily(){
+    const fr=famReady(), ro=S.offline;
+    return `<div class="plan fam">
+      <div class="blk-h"><h3 style="margin:0;font-size:16px">家人資料與識別卡</h3><span class="rd ${fr.ok===fr.total?'ok':'miss'}">${fr.ok}/${fr.total}</span></div>
+      <ul class="famlist">${S.members.map(m=>{const miss=famIssues(m);
+        return `<li><button data-act="medit" data-id="${m.id}">${memberAvatar(m)}
+          <span class="fm"><b>${esc(fullOf(m))}</b><small>${esc(m.name)}${m.birth?'・'+esc(ageTxt(m)):''}${m.phone?'・'+esc(m.phone):''}</small>
+          ${miss.length?`<small class="warn">缺：${miss.join('、')}</small>`:''}</span>
+          <span class="bt ${m.blood?'':'none'}">${esc(m.blood||'?')}</span></button></li>`;}).join('')}</ul>
+      <div class="fam-acts"><button class="btn sm" data-act="madd" ${ro?'disabled':''}>＋ 新增家人</button></div>
+      <div class="fam-sec"><h4>緊急聯絡人</h4>
+        ${S.contacts.length?`<ul class="clist">${S.contacts.map(c=>`<li><button data-act="cedit" data-id="${c.id}"><span><b>${esc(c.name)}</b><small>${esc(c.relation||'')}${c.note?'・'+esc(c.note):''}${c.onCard?'':'・不印在卡上'}</small></span><span class="ph">${esc(c.phone||'')}</span></button></li>`).join('')}</ul>`:'<div class="cat-empty">還沒有聯絡人，例如外縣市親友、爺爺奶奶、外公外婆</div>'}
+        <div class="fam-acts"><button class="btn sm" data-act="cadd" ${ro?'disabled':''}>＋ 新增聯絡人</button></div></div>
+      <div class="fam-sec"><h4>約定集合點</h4>${planRoute()}
+        <dl class="plan-kv"><dt>1991 約定電話</dt><dd class="${S.plan.phone?'':'empty'}">${esc(S.plan.phone||'尚未填寫')}</dd></dl>
+        <div class="fam-acts"><button class="btn sm" data-act="plan" ${ro?'disabled':''}>${ICON.pencil} 填寫集合點</button></div></div>
+      <div class="fam-out"><button class="btn primary" data-act="wall">產生手機桌布</button><button class="btn" data-act="cards">列印識別卡</button></div>
+    </div>`;
+  }
+  let mState=null;
+  function openMember2(id,isNew){
+    const m=isNew?{id:uid('M'),name:'',fullName:'',birth:'',blood:'',idno:'',phone:'',allergy:'',photo:'',water:3,meals:3,kcal:2000}:mem(id);
+    mState={...m,isNew:!!isNew,delArm:false};
+    drawMember(false);
+  }
+  function drawMember(keep=true){
+    const f=mState, ro=S.offline;
+    const dis=ro?'disabled':'';
+    openSheet(`<h2>${f.isNew?'新增家人':esc(fullOf(f))}</h2>${ro?'<div class="sub">唯讀模式，身分證字號只顯示部分</div>':''}
+      <div class="m-photo">${memberAvatar(f,'av lg')}
+        ${ro?'':`<div class="toggles"><label class="btn sm" for="m-file">${f.photo?'換照片':'加照片'}<input type="file" id="m-file" accept="image/*" data-mphoto="1" hidden></label>${f.photo?'<button class="btn sm ghost" data-act="mphotorm">移除照片</button>':''}</div>`}</div>
+      <div class="grid2">
+        <label class="field"><span>稱呼（兩個字）</span><input id="m-name" data-m="name" value="${esc(f.name)}" placeholder="爸爸" ${dis}></label>
+        <label class="field"><span>全名</span><input id="m-fullName" data-m="fullName" value="${esc(f.fullName)}" ${dis}></label>
+        <label class="field"><span>生日</span><input id="m-birth" data-m="birth" type="date" value="${esc(f.birth)}" ${dis}></label>
+        <label class="field"><span>血型</span><select id="m-blood" data-m="blood" ${dis}>${BLOODS.map(b=>`<option value="${b}" ${f.blood===b?'selected':''}>${b||'未填'}</option>`).join('')}</select></label>
+        <label class="field"><span>身分證字號</span><input id="m-idno" data-m="idno" value="${esc(f.idno)}" autocapitalize="characters" ${dis}></label>
+        <label class="field"><span>手機</span><input id="m-phone" data-m="phone" type="tel" value="${esc(f.phone)}" placeholder="0912-345-678" ${dis}></label>
+      </div>
+      <label class="field"><span>過敏（藥物、食物）</span><input id="m-allergy" data-m="allergy" value="${esc(f.allergy)}" placeholder="例：盤尼西林、花生；沒有就空白" ${dis}></label>
+      <div class="sheet-actions">${!f.isNew&&!ro&&S.members.length>1?`<button class="btn danger" data-act="mdel">${f.delArm?'再按一次確認刪除':'刪除'}</button>`:''}
+        <div class="right"><button class="btn" data-act="close">${ro?'關閉':'取消'}</button>${ro?'':'<button class="btn primary" data-act="mok">儲存</button>'}</div></div>`,'家人資料',keep);
+  }
+  let ctState=null;
+  function openContact(id){
+    const c=id?S.contacts.find(x=>x.id===id):{id:uid('C'),name:'',relation:'',phone:'',note:'',onCard:true};
+    ctState={...c,isNew:!id,delArm:false}; drawContact(false);
+  }
+  function drawContact(keep=true){
+    const f=ctState, ro=S.offline, dis=ro?'disabled':'';
+    openSheet(`<h2>${f.isNew?'新增聯絡人':'聯絡人'}</h2>
+      <div class="grid2">
+        <label class="field"><span>姓名</span><input id="c-name" data-c="name" value="${esc(f.name)}" ${dis}></label>
+        <label class="field"><span>關係</span><input id="c-relation" data-c="relation" value="${esc(f.relation)}" placeholder="外縣市親友、爺爺" ${dis}></label>
+        <label class="field"><span>電話</span><input id="c-phone" data-c="phone" type="tel" value="${esc(f.phone)}" ${dis}></label>
+        <label class="field"><span>備註</span><input id="c-note" data-c="note" value="${esc(f.note)}" placeholder="例：高雄" ${dis}></label>
+      </div>
+      <label class="switch"><input type="checkbox" id="c-onCard" data-c="onCard" ${f.onCard?'checked':''} ${dis}> 印在識別卡和桌布上</label>
+      <div class="sheet-actions">${!f.isNew&&!ro?`<button class="btn danger" data-act="cdel">${f.delArm?'再按一次確認刪除':'刪除'}</button>`:''}
+        <div class="right"><button class="btn" data-act="close">${ro?'關閉':'取消'}</button>${ro?'':'<button class="btn primary" data-act="ctok">儲存</button>'}</div></div>`,'聯絡人',keep);
+  }
+
+  // ---- card data ----
+  function cardData(m){
+    const fam=S.members.filter(x=>x.id!==m.id&&x.phone).map(x=>({name:fullOf(x),rel:x.name,phone:x.phone}));
+    const others=S.contacts.filter(c=>c.onCard&&c.phone).map(c=>({name:c.name,rel:c.relation,phone:c.phone}));
+    const meet=[S.plan.meet1&&{k:'集合點 1',v:S.plan.meet1+(S.plan.wait1?`（等 ${S.plan.wait1}）`:'')},S.plan.meet2&&{k:'集合點 2',v:S.plan.meet2},S.plan.final&&{k:'最終目標',v:S.plan.final}].filter(Boolean);
+    return {m,full:fullOf(m),nick:m.name,blood:m.blood||'',idno:m.idno||'',birth:m.birth||'',allergy:m.allergy||'',photo:m.photo?pfull(m.photo):'',fam,others,meet,p1991:S.plan.phone||''};
+  }
+
+  // ---- wallpaper (canvas) ----
+  const loadImg=src=>new Promise(res=>{if(!src)return res(null); const i=new Image(); i.onload=()=>res(i); i.onerror=()=>res(null); i.src=src;});
+  async function drawWallpaper(m){
+    const d=cardData(m), W=1179, H=2556, c=document.createElement('canvas'); c.width=W; c.height=H;
+    const g=c.getContext('2d'), F='"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif', N='"Barlow Condensed","PingFang TC",sans-serif';
+    try{await document.fonts.ready;}catch(e){}
+    g.fillStyle='#13263A'; g.fillRect(0,0,W,H);
+    // subtle hazard stripe above the card, below the clock area
+    g.save(); g.beginPath(); g.rect(0,780,W,26); g.clip(); g.fillStyle='#F5B800'; g.fillRect(0,780,W,26);
+    g.fillStyle='#13263A'; for(let x=-40;x<W+40;x+=56){g.beginPath(); g.moveTo(x,780); g.lineTo(x+26,780); g.lineTo(x-0,806); g.lineTo(x-26,806); g.closePath(); g.fill();} g.restore();
+    const X=64, CW=W-128; let y=850;
+    const rr=(x,y,w,h,r)=>{g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath();};
+    const fit=(t,max,size,weight,font)=>{let s=size; do{g.font=`${weight} ${s}px ${font}`; if(g.measureText(t).width<=max)break; s-=2;}while(s>20); return s;};
+    const wrap=(t,max)=>{const out=[]; let line=''; for(const ch of t){if(g.measureText(line+ch).width>max&&line){out.push(line); line=ch;} else line+=ch;} if(line)out.push(line); return out;};
+    // card
+    const cardTop=y; const CH=2330-cardTop; rr(X,cardTop,CW,CH,44); g.fillStyle='#FFFFFF'; g.fill();
+    let cx=X+56; y=cardTop+64;
+    g.fillStyle='#5C6977'; g.font=`600 34px ${F}`; g.fillText('ICE 緊急聯絡卡',cx,y+20);
+    y+=58;
+    const ph=await loadImg(d.photo); let nameX=cx;
+    if(ph){const s=190; g.save(); rr(cx,y,s,s,30); g.clip(); const k=Math.max(s/ph.width,s/ph.height); g.drawImage(ph,cx+(s-ph.width*k)/2,y+(s-ph.height*k)/2,ph.width*k,ph.height*k); g.restore(); nameX=cx+s+40;}
+    // blood badge
+    const bx=X+CW-56-170, by=y; rr(bx,by,170,190,28); g.fillStyle=d.blood?'#C62E2E':'#D8DEE5'; g.fill();
+    g.fillStyle=d.blood?'#FFFFFF':'#5C6977'; g.textAlign='center'; g.font=`600 30px ${F}`; g.fillText('血型',bx+85,by+52);
+    const bs=fit(d.blood||'?',150,96,'700',N); g.font=`700 ${bs}px ${N}`; g.fillText(d.blood||'?',bx+85,by+150); g.textAlign='left';
+    const nameMax=bx-24-nameX; const ns=fit(d.full,nameMax,104,'800',F); g.fillStyle='#13263A'; g.font=`800 ${ns}px ${F}`; g.fillText(d.full,nameX,y+100);
+    g.fillStyle='#5C6977'; g.font=`500 40px ${F}`; g.fillText([d.nick,d.birth?`生日 ${d.birth}`:''].filter(Boolean).join('・'),nameX,y+164);
+    y+=ph?230:210;
+    // ID
+    g.fillStyle='#5C6977'; g.font=`600 30px ${F}`; g.fillText('身分證字號',cx,y); y+=62;
+    g.fillStyle='#13263A'; g.font=`700 64px ${N}`; g.fillText(d.idno||'—',cx,y); y+=40;
+    if(d.allergy){y+=24; g.font=`700 40px ${F}`; const lines=wrap('過敏：'+d.allergy,CW-152); const h=lines.length*54+36; rr(cx,y,CW-112,h,20); g.fillStyle='#FCE9E9'; g.fill(); g.fillStyle='#C62E2E'; lines.forEach((l,i)=>g.fillText(l,cx+24,y+58+i*54)); y+=h;}
+    const section=(title)=>{y+=56; g.fillStyle='#E1E9F1'; g.fillRect(cx,y,CW-112,4); y+=52; g.fillStyle='#1C3D5A'; g.font=`700 34px ${F}`; g.fillText(title,cx,y); y+=20;};
+    const person=(p)=>{y+=62; g.fillStyle='#13263A'; g.font=`700 44px ${F}`; const left=p.name+(p.rel?`（${p.rel}）`:''); const pw=(g.font=`700 52px ${N}`, g.measureText(p.phone).width);
+      g.font=`600 42px ${F}`; const ls=fit(left,CW-112-pw-30,42,'600',F); g.font=`600 ${ls}px ${F}`; g.fillText(left,cx,y);
+      g.textAlign='right'; g.font=`700 52px ${N}`; g.fillText(p.phone,X+CW-56,y+2); g.textAlign='left';};
+    if(d.fam.length){section('家人'); d.fam.slice(0,5).forEach(person);}
+    if(d.others.length){section('緊急聯絡人'); d.others.slice(0,3).forEach(person);}
+    if(d.meet.length||d.p1991){section('約定集合點');
+      g.font=`600 34px ${F}`; const LW=Math.max(...[...d.meet.map(r=>r.k),d.p1991?'1991 報平安':''].map(t=>g.measureText(t).width))+28;
+      d.meet.forEach(r=>{y+=58; g.fillStyle='#5C6977'; g.font=`600 34px ${F}`; g.fillText(r.k,cx,y); g.fillStyle='#13263A'; g.font=`600 40px ${F}`; const ls=wrap(r.v,CW-112-LW); ls.slice(0,2).forEach((l,i)=>g.fillText(l,cx+LW,y+i*50)); y+=(Math.min(2,ls.length)-1)*50;});
+      if(d.p1991){y+=58; g.fillStyle='#5C6977'; g.font=`600 34px ${F}`; g.fillText('1991 報平安',cx,y); g.fillStyle='#13263A'; g.font=`700 46px ${N}`; g.fillText(d.p1991,cx+LW,y+2);}}
+    if(y>2290){g.fillStyle='#5C6977'; g.font=`600 26px ${F}`;}
+    g.fillStyle='#98A6B4'; g.font=`500 30px ${F}`; g.textAlign='center'; g.fillText('撿到這支手機，請聯絡上面的家人',W/2,2400); g.textAlign='left';
+    return c;
+  }
+  async function openWallpapers(){
+    openSheet(`<h2>手機桌布</h2><div class="sub">選一位家人產生桌布。存到照片後，到「設定 → 背景圖片」設為鎖定畫面。</div>
+      <div class="pick">${S.members.map(m=>`<button data-act="wgen" data-id="${m.id}">${esc(m.name)}</button>`).join('')}</div>
+      <div id="wallOut" class="wall-out"><div class="cat-empty">上方點選家人</div></div>
+      <div class="sheet-actions"><span></span><button class="btn primary" data-act="close">關閉</button></div>`,'手機桌布');
+  }
+  async function genWallpaper(id){
+    const m=mem(id), out=document.getElementById('wallOut'); if(!out)return;
+    document.querySelectorAll('[data-act=wgen]').forEach(b=>b.classList.toggle('on',b.dataset.id===id));
+    out.innerHTML='<div class="cat-empty">產生中…</div>';
+    const cv=await drawWallpaper(m);
+    cv.toBlob(blob=>{
+      if(!blob){out.innerHTML='<div class="cat-empty">產生失敗</div>';return;}
+      const url=URL.createObjectURL(blob), file=new File([blob],`緊急聯絡卡-${m.name}.png`,{type:'image/png'});
+      const canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
+      out.innerHTML=`<img src="${url}" alt="${esc(m.name)}的桌布"><div class="wall-acts">${canShare?'<button class="btn primary" data-act="wshare">儲存到照片</button>':''}<span class="hint">${canShare?'按「儲存到照片」→「儲存影像」。':'長按圖片 →「加入照片」或「儲存影像」。'}</span></div>`;
+      out._file=file;
+    },'image/png');
+  }
+
+  // ---- printable cards ----
+  const pPerson=p=>`<li><span>${esc(p.name)}${p.rel?`<small>${esc(p.rel)}</small>`:''}</span><b>${esc(p.phone)}</b></li>`;
+  function ccFront(d){return `<div class="pc front"><div class="pc-top"><span>ICE 緊急聯絡卡</span><span class="pc-bt ${d.blood?'':'none'}">${esc(d.blood||'?')}<small>血型</small></span></div>
+    <div class="pc-id">${d.photo?`<img src="${d.photo}" alt="">`:''}<div><b class="pc-name">${esc(d.full)}</b><span>${esc(d.nick)}${d.birth?'・'+esc(d.birth):''}</span>
+    <span class="pc-lab">身分證字號</span><b class="pc-no">${esc(d.idno||'—')}</b></div></div>
+    ${d.allergy?`<div class="pc-al">過敏：${esc(d.allergy)}</div>`:''}</div>`;}
+  function ccBack(d){return `<div class="pc back">${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,4).map(pPerson).join('')}</ul>`:''}
+    ${d.others.length?`<span class="pc-lab">緊急聯絡人</span><ul>${d.others.slice(0,2).map(pPerson).join('')}</ul>`:''}
+    ${d.meet.length||d.p1991?`<span class="pc-lab">集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}${d.p1991?`<li><span>1991</span><b>${esc(d.p1991)}</b></li>`:''}</ul>`:''}</div>`;}
+  function a6Card(d){return `<div class="a6"><div class="a6-in">
+    <div class="a6-head"><span>ICE 緊急聯絡卡</span><span class="pc-bt big ${d.blood?'':'none'}">${esc(d.blood||'?')}<small>血型</small></span></div>
+    <div class="pc-id">${d.photo?`<img src="${d.photo}" alt="">`:''}<div><b class="pc-name">${esc(d.full)}</b><span>${esc(d.nick)}${d.birth?'・生日 '+esc(d.birth):''}</span>
+      <span class="pc-lab">身分證字號</span><b class="pc-no">${esc(d.idno||'—')}</b></div></div>
+    ${d.allergy?`<div class="pc-al">過敏：${esc(d.allergy)}</div>`:''}
+    ${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,5).map(pPerson).join('')}</ul>`:''}
+    ${d.others.length?`<span class="pc-lab">緊急聯絡人</span><ul>${d.others.slice(0,3).map(pPerson).join('')}</ul>`:''}
+    ${d.meet.length||d.p1991?`<span class="pc-lab">約定集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}${d.p1991?`<li><span>1991 報平安</span><b>${esc(d.p1991)}</b></li>`:''}</ul>`:''}
+  </div></div>`;}
+  let pState=null;
+  function openCards(){pState={fmt:'cc',sel:new Set(S.members.map(m=>m.id))}; drawCards(false);}
+  function cardsHtml(){
+    const ms=S.members.filter(m=>pState.sel.has(m.id)).map(cardData);
+    if(pState.fmt==='cc'){const pages=[]; for(let i=0;i<ms.length;i+=5)pages.push(ms.slice(i,i+5));
+      return pages.map(p=>`<div class="ppage cc-page">${p.map(d=>`<div class="ccpair">${ccFront(d)}<i class="fold"></i>${ccBack(d)}</div>`).join('')}</div>`).join('');}
+    const pages=[]; for(let i=0;i<ms.length;i+=4)pages.push(ms.slice(i,i+4));
+    return pages.map(p=>`<div class="ppage a6-page">${p.map(a6Card).join('')}</div>`).join('');
+  }
+  function drawCards(keep=true){
+    openSheet(`<h2>列印識別卡</h2>
+      <div class="field"><span>格式</span><div class="toggles">
+        <button data-act="pfmt" data-k="cc" class="${pState.fmt==='cc'?'on':''}">雙面・信用卡大小</button>
+        <button data-act="pfmt" data-k="a6" class="${pState.fmt==='a6'?'on':''}">單面・A6</button></div>
+        <div class="hint">${pState.fmt==='cc'?'A4 一張 5 人。每人一組正反面，剪下後沿中間虛線對摺再護貝（85.6 × 54 mm）。':'A4 一張 4 人，沿中線裁成 4 張 A6（105 × 148 mm）。列印時縮放選 100%、不要「符合頁面」。'}</div></div>
+      <div class="field"><span>要印誰</span><div class="pick">${S.members.map(m=>`<button data-act="psel" data-id="${m.id}" class="${pState.sel.has(m.id)?'on':''}">${esc(m.name)}</button>`).join('')}</div></div>
+      <div class="pprev ${pState.fmt}">${cardsHtml()}</div>
+      <div class="sheet-actions"><button class="btn" data-act="close">關閉</button><button class="btn primary" data-act="pgo" ${pState.sel.size?'':'disabled'}>列印</button></div>`,'列印識別卡',keep);
+  }
+  function doPrint(){
+    let el=document.getElementById('printArea'); if(!el){el=document.createElement('div'); el.id='printArea'; document.body.appendChild(el);}
+    el.className='print-'+pState.fmt; el.innerHTML=cardsHtml();
+    document.body.classList.add('printing');
+    const done=()=>{document.body.classList.remove('printing'); window.removeEventListener('afterprint',done);};
+    window.addEventListener('afterprint',done);
+    try{window.print();}catch(e){}
+    setTimeout(()=>{if(document.body.classList.contains('printing')&&!window.matchMedia('print').matches){toast(DEMO?'範例頁面不能列印，請在正式版的手機或電腦上列印':'若沒有出現列印視窗，請用瀏覽器選單的「列印」');}},1500);
+  }
+
   // related items = items matching the need's rule + items linked by hand
   function related(nd){
     const auto=nd.re?S.items.filter(it=>(!nd.cat||it.cat===nd.cat)&&nd.re.test(it.name)):[];
@@ -1131,24 +1539,20 @@ body.locked{overflow:hidden}
     return nd.test();
   }
   function readiness(sc){const r=sc.needs.map(nd=>needState(sc,nd)); return {ok:r.filter(x=>x.ok).length,total:r.length};}
-  const PLAN_F=[['meet1','第一集合點'],['wait1','在第一集合點等'],['meet2','第二集合點'],['final','最終目標'],['phone','1991 約定電話'],['contact','外縣市聯絡人']];
+  const PLAN_F=[['meet1','第一集合點'],['wait1','在第一集合點等'],['meet2','第二集合點'],['final','最終目標'],['phone','1991 約定電話']];
   function planReady(){const k=['meet1','meet2','final','phone'];return {ok:k.filter(x=>S.plan[x]).length,total:k.length};}
   function planRoute(){
     const stop=(v,lab,extra)=>v?`<span class="stop">${esc(v)}${extra?`<small>${esc(extra)}</small>`:''}</span>`:`<span class="stop empty">${lab}未填</span>`;
     return `<div class="plan-route">${stop(S.plan.meet1,'第一集合點',S.plan.wait1?'等 '+S.plan.wait1:'')}<span class="arr">→</span>${stop(S.plan.meet2,'第二集合點')}<span class="arr">→</span>${stop(S.plan.final,'最終目標')}</div>`;
   }
   function renderResp(){
-    const pr=planReady();
+    const ro=S.offline;
     document.getElementById('resp').innerHTML=`
-      <div class="plan">
-        <div class="blk-h"><h3 style="margin:0;font-size:16px">我們的計畫</h3><span class="rd ${pr.ok===pr.total?'ok':'miss'}">${pr.ok}/${pr.total}</span></div>
-        ${planRoute()}
-        <dl class="plan-kv"><dt>1991 約定電話</dt><dd class="${S.plan.phone?'':'empty'}">${esc(S.plan.phone||'尚未填寫')}</dd><dt>外縣市聯絡人</dt><dd class="${S.plan.contact?'':'empty'}">${esc(S.plan.contact||'尚未填寫')}</dd></dl>
-        <div style="display:flex;justify-content:flex-end"><button class="btn sm" data-act="plan" ${S.offline?'disabled':''}>${ICON.pencil} 填寫</button></div>
-      </div>
+      ${renderFamily()}
       ${GROUPS.map(g=>`<div class="sgroup"><h3>${g}</h3>${SCEN.filter(s=>s.g===g).map(sc=>{const r=readiness(sc);
-        return `<button class="scen" data-act="scen" data-id="${sc.id}"><span><b>${esc(sc.title)}</b><small>${esc(sc.sum)}</small></span><span class="rd ${r.ok===r.total?'ok':'miss'}">${r.ok}/${r.total}</span></button>`;}).join('')}</div>`).join('')}
-      <p class="src">內容為一般原則，不能取代醫療專業判斷與官方指示。步驟可以在每個情境裡修改成你們家的版本。</p>`;
+        return `<button class="scen" data-act="scen" data-id="${sc.id}"><span><b>${esc(sc.title)}</b><small>${esc(sc.sum)}</small></span><span class="rd ${r.total&&r.ok===r.total?'ok':'miss'}">${r.ok}/${r.total}</span></button>`;}).join('')||'<div class="cat-empty">這組沒有情境</div>'}</div>`).join('')}
+      <div class="fam-acts"><button class="btn" data-act="snew" ${ro?'disabled':''}>＋ 新增情境</button></div>
+      <p class="src">內容為一般原則，不能取代醫療專業判斷與官方指示。每個情境都可以按鉛筆改成你們家的版本。</p>`;
   }
   function splitBag(m){
     const own=S.items.filter(it=>it.owner===m.id&&it.qty>0), keep=[], give=[];
@@ -1196,7 +1600,7 @@ body.locked{overflow:hidden}
     const wn=wantNames();
     const r=readiness(sc);
     let extra='';
-    if(sc.plan)extra+=`<div class="blk"><div class="blk-h"><h3>我們的計畫</h3><button class="btn sm icon" data-act="plan" aria-label="填寫計畫" ${S.offline?'disabled':''}>${ICON.pencil}</button></div>${planRoute()}<div class="src">1991 約定電話：${esc(S.plan.phone||'尚未填寫')}</div></div>`;
+    if(sc.plan)extra+=`<div class="blk"><div class="blk-h"><h3>約定集合點</h3><button class="btn sm icon" data-act="plan" aria-label="填寫集合點" ${S.offline?'disabled':''}>${ICON.pencil}</button></div>${planRoute()}<div class="src">1991 約定電話：${esc(S.plan.phone||'尚未填寫')}</div></div>`;
     if(sc.injured){
       const m=mem(S.injured), sp=splitBag(m);
       const li=l=>l.length?l.map(([it,q])=>`<li><span>${esc(it.name)}</span><span>${q} ${esc(it.unit)}</span></li>`).join(''):'<li><span style="color:var(--muted)">沒有</span></li>';
@@ -1207,7 +1611,7 @@ body.locked{overflow:hidden}
     }
     openSheet(`<h2>${esc(sc.title)}</h2><div class="sub">${esc(sc.sum)}</div>
       ${extra}
-      <div class="blk"><div class="blk-h"><h3>怎麼做</h3><button class="btn sm icon" data-act="sedit" data-id="${sc.id}" aria-label="修改步驟" ${S.offline?'disabled':''}>${ICON.pencil}</button></div>
+      <div class="blk"><div class="blk-h"><h3>怎麼做</h3><button class="btn sm" data-act="sedit" data-id="${sc.id}" ${S.offline?'disabled':''}>${ICON.pencil} 編輯情境</button></div>
         <ol class="steps">${sc.steps.map(t=>`<li>${esc(t)}</li>`).join('')}</ol></div>
       <div class="blk"><div class="blk-h"><h3>準備好了嗎</h3><span class="rd ${r.ok===r.total?'ok':'miss'}">${r.ok}/${r.total}</span></div>
         <div class="hint">點任一項展開：看相關品項、加處理細節或設定目標數量。</div>
@@ -1256,14 +1660,8 @@ body.locked{overflow:hidden}
           return `<li><label class="lk"><input type="checkbox" data-act="ltog" data-id="${it.id}" ${au||lState.sel.has(it.id)?'checked':''} ${au?'disabled':''}> ${esc(it.name)}${au?'<span class="shared">自動</span>':''}</label><span class="q">${it.qty}<small>${esc(it.unit)}</small></span></li>`;}).join('')}</ul></div>`;}).join('')||'<div class="empty">找不到符合的品項</div>'}
       <div class="sheet-actions"><button class="btn" data-act="scen" data-id="${lState.scId}">取消</button><button class="btn primary" data-act="lok">儲存</button></div>`,'連結品項');
   }
-  function openScenEdit(id){
-    const sc=SCEN.find(s=>s.id===id);
-    openSheet(`<h2>修改步驟</h2><div class="sub">${esc(sc.title)}・一行一個步驟</div>
-      <label class="field"><span>步驟</span><textarea id="s-steps" rows="12">${esc(sc.steps.join('\n'))}</textarea></label>
-      <div class="sheet-actions"><button class="btn" data-act="scen" data-id="${sc.id}">取消</button><button class="btn primary" data-act="sok" data-id="${sc.id}">儲存</button></div>`,'修改步驟');
-  }
   function openPlan(){
-    openSheet(`<h2>我們的計畫</h2><div class="sub">走散或撤離時全家照這個走。路線圖與轉角標註在下一階段加入。</div>
+    openSheet(`<h2>約定集合點</h2><div class="sub">走散或撤離時全家照這個順序走，也會印在識別卡和桌布上。</div>
       ${PLAN_F.map(([k,l])=>`<label class="field"><span>${l}</span><input id="p-${k}" data-pf="${k}" value="${esc(S.plan[k])}" placeholder="${{meet1:'例：住家附近的國小操場',wait1:'例：1 小時',meet2:'例：區公所前廣場',final:'例：外縣市親友家',phone:'例：家裡市話或爸爸手機',contact:'例：外縣市親友的電話'}[k]}"></label>`).join('')}
       <div class="sheet-actions"><button class="btn" data-act="${S.ret?'scen':'close'}" data-id="${S.ret||''}">取消</button><button class="btn primary" data-act="pok">儲存</button></div>`,'我們的計畫');
   }
@@ -1320,14 +1718,15 @@ body.locked{overflow:hidden}
   function toTables(){
     const keys=new Set([...Object.keys(S.details),...Object.keys(S.links),...Object.keys(S.checks).filter(k=>S.checks[k])]);
     const t={
-      Members:S.members.map(m=>({id:m.id,name:m.name,birth:m.birth||'',water:m.water,meals:m.meals,kcal:m.kcal})),
+      Members:S.members.map(m=>({id:m.id,name:m.name,birth:m.birth||'',water:m.water,meals:m.meals,kcal:m.kcal,fullName:m.fullName||'',blood:m.blood||'',idno:m.idno||'',phone:m.phone||'',allergy:m.allergy||'',photo:m.photo||''})),
+      Contacts:S.contacts.map(c=>({id:c.id,name:c.name,relation:c.relation||'',phone:c.phone||'',note:c.note||'',onCard:c.onCard?'TRUE':''})),
       Items:S.items.map(it=>{const o={}; ITEM_COLS.forEach(k=>o[k]=it[k]); o.suits=(it.suits||[]).join(','); o.photos=(it.photos||[]).join(','); return o;}),
       Usage:S.log.map(l=>({id:l.id,time:l.t,itemId:l.itemId||'',name:l.name,qty:l.n,unit:l.unit,by:l.by||''})),
       Wishlist:S.wants.map(w=>({id:w.id,cat:w.cat,name:w.name,qty:w.qty,unit:w.unit,note:w.note||''})),
       Needs:[...keys].map(k=>{const d=S.details[k]||{}; return {id:k,mode:d.mode||'',current:d.current,target:d.target,unit:d.unit||'',note:d.note||'',links:[...(S.links[k]||[])].join(','),checked:S.checks[k]?'TRUE':''};}),
-      Scenarios:SCEN.filter(s=>s.edited).map(s=>({id:s.id,steps:s.steps.join('\n')})),
+      Scenarios:SCEN.filter(s=>s.edited).map(s=>({id:s.id,steps:s.steps.join('\n'),group:s.g,title:s.title,sum:s.sum||'',needs:JSON.stringify(s.needs.map(needSpec))})),
       Plan:Object.entries(S.plan).map(([k,v])=>({id:k,value:v})),
-      Settings:[{id:'hyg',value:S.hyg},{id:'goBag',value:S.goBag}]
+      Settings:[{id:'hyg',value:S.hyg},{id:'goBag',value:S.goBag},{id:'scenOrder',value:S.scenOrderTouched?SCEN.map(x=>x.id).join(','):(S.scenOrderRaw||'')},{id:'scenHidden',value:[...S.scenHidden].join(',')}]
     };
     Object.keys(t).forEach(n=>t[n]=t[n].map(strRow));
     return t;
@@ -1336,7 +1735,9 @@ body.locked{overflow:hidden}
   const list=v=>String(v||'').split(',').map(x=>x.trim()).filter(Boolean);
   function hydrate(t){
     const T=n=>t[n]||[];
-    S.members=T('Members').map(r=>({id:r.id,name:r.name,birth:r.birth||'',water:Number(r.water)||0,meals:Number(r.meals)||0,kcal:Number(r.kcal)||0}));
+    S.members=T('Members').map(r=>({id:r.id,name:r.name,birth:r.birth||'',water:Number(r.water)||0,meals:Number(r.meals)||0,kcal:Number(r.kcal)||0,
+      fullName:r.fullName||'',blood:r.blood||'',idno:r.idno||'',phone:r.phone||'',allergy:r.allergy||'',photo:r.photo||''}));
+    S.contacts=T('Contacts').map(r=>({id:r.id,name:r.name,relation:r.relation||'',phone:r.phone||'',note:r.note||'',onCard:String(r.onCard).toUpperCase()==='TRUE'}));
     S.items=T('Items').map(r=>{const it={}; ITEM_COLS.forEach(k=>it[k]=r[k]??'');
       ['qty','unitL','kcal','prep'].forEach(k=>it[k]=Number(it[k])||0); ['need','mah','battery'].forEach(k=>it[k]=num(it[k]));
       it.suits=list(r.suits); it.photos=list(r.photos); it.owner=it.owner||'all'; it.checked=it.checked||fmt(today); return it;});
@@ -1348,7 +1749,9 @@ body.locked{overflow:hidden}
       const l=list(r.links); if(l.length)S.links[r.id]=new Set(l);
       if(String(r.checked).toUpperCase()==='TRUE')S.checks[r.id]=true;
     });
-    T('Scenarios').forEach(r=>{const sc=SCEN.find(s=>s.id===r.id); if(sc&&r.steps){sc.steps=r.steps.split('\n').filter(Boolean); sc.edited=true;}});
+    const setv=k=>(T('Settings').find(r=>r.id===k)||{}).value||'';
+    S.scenOrderRaw=setv('scenOrder'); S.scenOrderTouched=false;
+    applyScenRows(T('Scenarios'),list(S.scenOrderRaw),list(setv('scenHidden')));
     S.plan={meet1:'',wait1:'1 小時',meet2:'',final:'',phone:'',contact:''};
     T('Plan').forEach(r=>{S.plan[r.id]=r.value;});
     T('Settings').forEach(r=>{if(r.id==='hyg')S.hyg=Number(r.value)||0; if(r.id==='goBag')S.goBag=Number(r.value)||3;});
@@ -1386,6 +1789,11 @@ body.locked{overflow:hidden}
         S.thumbs[r.id]=pendingThumb[p]||''; fullCache[r.id]=p; idb.set('full_'+r.id,p).catch(()=>{});
         it.photos[i]=r.id;
       }
+    }
+    for(const m of S.members){
+      if(!m.photo||!m.photo.startsWith('data:'))continue;
+      const p=m.photo, r=await api('upload',{full:p,thumb:pendingThumb[p]||'',name:'成員-'+m.name});
+      S.thumbs[r.id]=pendingThumb[p]||''; fullCache[r.id]=p; idb.set('full_'+r.id,p).catch(()=>{}); m.photo=r.id;
     }
   }
   async function doSync(){
@@ -1498,7 +1906,7 @@ body.locked{overflow:hidden}
   async function boot(){
     if(DEMO){render(); setPill(); return;}
     const t=document.getElementById('offlineToggle'); if(t)t.closest('label').hidden=true;
-    S.members=[]; S.items=[]; S.log=[]; S.wants=[]; S.details={}; S.links={}; S.checks={};
+    S.members=[]; S.items=[]; S.log=[]; S.wants=[]; S.details={}; S.links={}; S.checks={}; S.contacts=[];
     S.plan={meet1:'',wait1:'1 小時',meet2:'',final:'',phone:'',contact:''};
     sess=readSession();
     let cache=null; try{cache=await idb.get('data');}catch(e){}
@@ -1555,7 +1963,40 @@ body.locked{overflow:hidden}
         if(d.target===''&&!d.note)delete S.details[nd.key]; else S.details[nd.key]=d;
         S.openNeeds.add(dState.scId+':'+dState.i); renderDays(); renderResp(); openScen(dState.scId); toast('已儲存'); break;}
       case 'sedit': openScenEdit(b.dataset.id); break;
-      case 'sok': {const sc=SCEN.find(s=>s.id===b.dataset.id); const v=document.getElementById('s-steps').value.split('\n').map(x=>x.trim()).filter(Boolean); if(v.length){sc.steps=v; sc.edited=true;} openScen(sc.id); toast('步驟已更新'); break;}
+      case 'snew': openScenEdit(null,true); break;
+      case 'emove': {if(moveScen(eState.id,Number(b.dataset.d))){eState.g=SCEN.find(s=>s.id===eState.id).g; drawScenEdit();} break;}
+      case 'enmove': {const i=Number(b.dataset.i), j=i+Number(b.dataset.d), a=eState.needs; if(a[j]){[a[i],a[j]]=[a[j],a[i]]; drawScenEdit();} break;}
+      case 'endel': eState.needs.splice(Number(b.dataset.i),1); drawScenEdit(); break;
+      case 'enadd': {const k=uid('n'); eState.needs.push({orig:null,spec:{k,t:b.dataset.k,l:''},l:''}); drawScenEdit(); const el=document.getElementById('en-'+(eState.needs.length-1)); if(el)el.focus(); break;}
+      case 'edel': {if(!eState.delArm){eState.delArm=true; drawScenEdit(); break;}
+        const id=eState.id; if(SCEN_DEFAULT.some(d=>d.id===id))S.scenHidden.add(id); SCEN=SCEN.filter(s=>s.id!==id); S.scenOrderTouched=true;
+        closeSheet(); S.ret=null; render(); toast('已刪除情境'); break;}
+      case 'eok': {if(saveScenEdit()){render(); openScen(eState.id); toast('情境已儲存');} break;}
+      case 'medit': openMember2(b.dataset.id); break;
+      case 'madd': openMember2(null,true); break;
+      case 'mphotorm': mState.photo=''; drawMember(); break;
+      case 'mok': {const f=mState; if(!f.name.trim()){toast('請填稱呼');break;}
+        if(f.idno&&!/^[A-Z][0-9A-Z][0-9]{8}$/.test(f.idno.trim().toUpperCase())&&!confirmOnce('idfmt'))break;
+        const rec={id:f.id,name:f.name.trim(),fullName:f.fullName.trim(),birth:f.birth,blood:f.blood,idno:f.idno.trim().toUpperCase(),phone:f.phone.trim(),allergy:f.allergy.trim(),photo:f.photo,water:f.water,meals:f.meals,kcal:f.kcal};
+        if(f.isNew)S.members.push(rec); else Object.assign(mem(f.id),rec);
+        closeSheet(); render(); toast('已儲存'); break;}
+      case 'mdel': {if(!mState.delArm){mState.delArm=true; drawMember(); break;}
+        S.members=S.members.filter(m=>m.id!==mState.id); S.items.forEach(it=>{if(it.owner===mState.id)it.owner='all';});
+        if(S.injured===mState.id&&S.members[0])S.injured=S.members[0].id; closeSheet(); render(); toast('已刪除'); break;}
+      case 'cadd': openContact(null); break;
+      case 'cedit': openContact(b.dataset.id); break;
+      case 'ctok': {const f=ctState; if(!f.name.trim()){toast('請填姓名');break;}
+        const rec={id:f.id,name:f.name.trim(),relation:f.relation.trim(),phone:f.phone.trim(),note:f.note.trim(),onCard:!!f.onCard};
+        if(f.isNew)S.contacts.push(rec); else Object.assign(S.contacts.find(c=>c.id===f.id),rec);
+        closeSheet(); render(); toast('已儲存'); break;}
+      case 'cdel': {if(!ctState.delArm){ctState.delArm=true; drawContact(); break;} S.contacts=S.contacts.filter(c=>c.id!==ctState.id); closeSheet(); render(); toast('已刪除'); break;}
+      case 'wall': openWallpapers(); break;
+      case 'wgen': genWallpaper(b.dataset.id); break;
+      case 'wshare': {const f=document.getElementById('wallOut')._file; if(f&&navigator.share)navigator.share({files:[f]}).catch(()=>{}); break;}
+      case 'cards': openCards(); break;
+      case 'pfmt': pState.fmt=b.dataset.k; drawCards(); break;
+      case 'psel': {const id=b.dataset.id; pState.sel.has(id)?pState.sel.delete(id):pState.sel.add(id); drawCards(); break;}
+      case 'pgo': doPrint(); break;
       case 'plan': openPlan(); break;
       case 'pok': {PLAN_F.forEach(([k])=>{S.plan[k]=document.getElementById('p-'+k).value.trim();}); render(); if(S.ret)openScen(S.ret); else closeSheet(); toast('計畫已儲存'); break;}
       case 'edit': openForm(b.dataset.id); break;
@@ -1599,7 +2040,14 @@ body.locked{overflow:hidden}
     }
     if(!DEMO&&sess&&S.role==='editor'&&synced&&diff().n)scheduleSync();
   });
+  const _once={};
+  function confirmOnce(k){if(_once[k])return true; _once[k]=true; toast('身分證字號格式看起來不對，確認無誤再按一次儲存'); return false;}
   document.addEventListener('input',e=>{
+    const t=e.target;
+    if(t.dataset.e&&eState){eState[t.dataset.e]=t.value; return;}
+    if(t.dataset.en!=null&&eState){eState.needs[Number(t.dataset.en)].l=t.value; return;}
+    if(t.dataset.m&&mState){mState[t.dataset.m]=t.value; return;}
+    if(t.dataset.c&&ctState){ctState[t.dataset.c]=t.type==='checkbox'?t.checked:t.value; return;}
     if(e.target.dataset.d&&dState){dState[e.target.dataset.d]=e.target.value;return;}
     if(e.target.dataset.l&&lState){lState.q=e.target.value; drawLink(); const el=document.getElementById('l-q'); el.focus(); el.setSelectionRange(el.value.length,el.value.length); return;}
     const k=e.target.dataset.f; if(!k||!fState)return;
@@ -1609,6 +2057,8 @@ body.locked{overflow:hidden}
       if(el){ if(p>0&&kc>0){el.hidden=false;el.textContent=`每 100 ml 水換 ${Math.round(kc/p*100)} kcal`;} else el.hidden=true; }}
   });
   document.addEventListener('change',e=>{
+    if(e.target.dataset.c==='onCard'&&ctState){ctState.onCard=e.target.checked; return;}
+    if(e.target.dataset.mphoto&&e.target.files.length&&mState){const st=mState; (async()=>{try{const full=await resizeImg(e.target.files[0],1200,.85), th=await resizeImg(e.target.files[0],240,.7); pendingThumb[full]=th; st.photo=full; if(mState===st)drawMember();}catch(err){toast(err.message);}})(); return;}
     if(!e.target.dataset.fphoto||!e.target.files.length||!fState)return;
     const files=[...e.target.files], st=fState;
     (async()=>{let ok=0;
