@@ -1235,13 +1235,14 @@ body.locked{overflow:hidden}
      src:'依據 2025《臺灣全民安全指引》：<a href="https://news.tvbs.com.tw/life/3056699" target="_blank" rel="noopener">TVBS 報導</a>'},
     {id:'warWhere',g:'長期與戰時',title:'戰爭爆發：逃去哪裡',sum:'近：避難處所；中：收容所；遠：外縣市親友',plan:true,steps:[
       '近（空襲當下）：最近的地下室、堅固建築或沒有窗戶的房間；跟著黃色的防空避難標示走。',
-      '平時先用「警政服務」App 的防空疏散避難專區查好住家、診所、孩子學校附近的避難處所，截圖存在手機裡。',
+      '平時先用「警政服務」App 的防空疏散避難專區，和「消防防災 e 點通」App 的地圖，查好住家、診所、孩子學校附近的避難處所並截圖。兩個 App 的資料可能不一致，兩邊都看，以較近、較確定的為準。',
+      '「消防防災 e 點通」可以下載離線地圖（避難處所、救護站、物資發放點、醫院），沒網路也能看，平時就先下載好。',
       '中（住家不能待）：區公所開設的收容所，出發前先確認有沒有開。',
       '遠（需要離開台中）：「約定集合點」裡的最終目標，例如外縣市親友家；路線避開機場、港口、軍營等設施。',
       '每一站都先聯絡外縣市聯絡人，讓他知道全家在哪裡。',
       '移動中保持低調：不拍攝、不轉傳軍隊動態。'],
-     needs:[M('shelterScreens','已截圖住家、診所、學校附近的防空避難處所'),C('finalSet','最終目標已設定',planSet('final')),M('relativeAgreed','已和最終目標的親友說好')],
-     src:'避難處所查詢：<a href="https://www.cna.com.tw/news/asoc/202208040297.aspx" target="_blank" rel="noopener">中央社：警政服務 App 防空避難專區</a>'},
+     needs:[M('shelterScreens','已截圖住家、診所、學校附近的防空避難處所'),M('eApp','全家手機都裝了消防防災 e 點通，並下載離線地圖'),C('finalSet','最終目標已設定',planSet('final')),M('relativeAgreed','已和最終目標的親友說好')],
+     src:'避難處所查詢：<a href="https://www.cna.com.tw/news/asoc/202208040297.aspx" target="_blank" rel="noopener">中央社：警政服務 App 防空避難專區</a>；<a href="https://udn.com/news/story/7266/9653845" target="_blank" rel="noopener">聯合新聞網：消防防災 e 點通離線地圖與資料不同步</a>'},
     {id:'war',g:'長期與戰時',title:'戰爭爆發：家庭',sum:'空襲警報、資訊判斷、存糧 3–7 天',steps:[
       '聽到空襲警報：到最近的地下室、堅固建築或沒有窗戶的房間；來不及就趴低掩護、遠離窗戶。',
       '解除警報後注意掉落物與二次攻擊，等官方資訊再移動。',
