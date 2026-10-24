@@ -1,5 +1,5 @@
 // 家庭防災庫 service worker：讓沒有網路時也能打開
-const CACHE = 'family-prep-2026.10.24-7';
+const CACHE = 'family-prep-2026.10.24-8';
 const SHELL = ['./', 'index.html', 'config.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
