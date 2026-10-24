@@ -465,7 +465,7 @@ body.locked{overflow:hidden}
 .pc-bt.none{background:#E1E6EB;color:#5C6977}
 .pc-bt.big small{font-size:7pt}
 .pc-id{display:flex;gap:2.5mm;align-items:flex-start}
-.pc-id img{width:16mm;height:20mm;object-fit:cover;border-radius:1.5mm;flex:0 0 auto}
+.pc-id img{width:16mm;height:20mm;object-fit:cover;border-radius:2.6mm;flex:0 0 auto;box-sizing:border-box;border:.7mm solid #fff;box-shadow:0 0 0 .35mm #1C3D5A,0 0 0 1.1mm #F5B800;margin:1.1mm}
 .pc-id > div{display:flex;flex-direction:column;min-width:0}
 .pc-name{font-size:13pt;line-height:1.15}
 .pc-lab{display:block;font-size:5.6pt;color:#5C6977;letter-spacing:.05em;margin-top:.8mm}
@@ -482,7 +482,7 @@ body.locked{overflow:hidden}
 .a6{width:105mm;height:148.5mm;box-sizing:border-box;padding:7mm;break-inside:avoid}
 .a6-in{height:100%;box-sizing:border-box;border:.4mm solid #C9D2DC;border-radius:4mm;padding:5mm;font-size:11pt;line-height:1.4;display:flex;flex-direction:column;gap:1.6mm;overflow:hidden}
 .a6-head{font-size:9pt}
-.a6 .pc-id img{width:26mm;height:32mm}
+.a6 .pc-id img{width:26mm;height:32mm;border-radius:4mm;border-width:1mm;box-shadow:0 0 0 .5mm #1C3D5A,0 0 0 1.6mm #F5B800;margin:1.6mm}
 .a6 .pc-name{font-size:20pt}
 .a6 .pc-no{font-size:17pt}
 .a6 .pc-lab{font-size:8pt;margin-top:2mm}
@@ -1446,14 +1446,18 @@ body.locked{overflow:hidden}
     g.fillStyle='#5C6977'; g.font=`600 34px ${F}`; g.fillText('ICE 緊急聯絡卡',cx,y+20);
     y+=58;
     const ph=await loadImg(d.photo); let nameX=cx;
-    if(ph){const s=190; g.save(); rr(cx,y,s,s,30); g.clip(); const k=Math.max(s/ph.width,s/ph.height); g.drawImage(ph,cx+(s-ph.width*k)/2,y+(s-ph.height*k)/2,ph.width*k,ph.height*k); g.restore(); nameX=cx+s+40;}
+    if(ph){const s=190, o=14;
+      rr(cx-o,y-o,s+2*o,s+2*o,48); g.fillStyle='#F5B800'; g.fill();
+      rr(cx-o+5,y-o+5,s+2*o-10,s+2*o-10,43); g.fillStyle='#1C3D5A'; g.fill();
+      rr(cx-3,y-3,s+6,s+6,38); g.fillStyle='#FFFFFF'; g.fill();
+      g.save(); rr(cx+4,y+4,s-8,s-8,32); g.clip(); const k=Math.max((s-8)/ph.width,(s-8)/ph.height); g.drawImage(ph,cx+4+(s-8-ph.width*k)/2,y+4+(s-8-ph.height*k)/2,ph.width*k,ph.height*k); g.restore(); nameX=cx+s+48;}
     // blood badge
     const bx=X+CW-56-170, by=y; rr(bx,by,170,190,28); g.fillStyle=d.blood?'#C62E2E':'#D8DEE5'; g.fill();
     g.fillStyle=d.blood?'#FFFFFF':'#5C6977'; g.textAlign='center'; g.font=`600 30px ${F}`; g.fillText('血型',bx+85,by+52);
     const bs=fit(d.blood||'?',150,96,'700',N); g.font=`700 ${bs}px ${N}`; g.fillText(d.blood||'?',bx+85,by+150); g.textAlign='left';
     const nameMax=bx-24-nameX; const ns=fit(d.full,nameMax,104,'800',F); g.fillStyle='#13263A'; g.font=`800 ${ns}px ${F}`; g.fillText(d.full,nameX,y+100);
     g.fillStyle='#5C6977'; g.font=`500 40px ${F}`; g.fillText([d.nick,d.birth?`生日 ${d.birth}`:''].filter(Boolean).join('・'),nameX,y+164);
-    y+=ph?230:210;
+    y+=ph?262:210;
     // ID
     g.fillStyle='#5C6977'; g.font=`600 30px ${F}`; g.fillText('身分證字號',cx,y); y+=62;
     g.fillStyle='#13263A'; g.font=`700 64px ${N}`; g.fillText(d.idno||'—',cx,y); y+=40;
