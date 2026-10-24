@@ -408,7 +408,70 @@ li.open > div > .nd-wrap{grid-template-rows:1fr;opacity:1}
 .pick button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .src{font-size:12px;color:var(--muted)}
 .src a{color:var(--accent)}
-body.resp .fab{display:none}
+body.resp .fab,body.stock .fab{display:none}
+/* 盤點 */
+.lc{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.lc-h{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 4px}
+.lc-t{flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:0;background:none;padding:8px 6px;text-align:left;font:inherit;color:var(--ink)}
+.lc-t b{font-size:17px}
+.lc-t small{color:var(--muted);font-size:13px}
+.lc-t .chev{transition:transform .2s;flex:0 0 auto}
+.lc-t[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.lc-b{border-top:1px solid var(--line);padding:4px 12px 10px}
+.lc-sub{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 2px}
+.lc-sub h4{margin:0;font-size:14px;color:var(--accent)}
+.lc-sub h4 small{color:var(--muted);font-weight:400;margin-left:6px}
+.lc-list{list-style:none;margin:0;padding:0}
+.lc-list li{border-top:1px solid var(--line)}
+.lc-list li:first-child{border-top:0}
+.lc-list button{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;border:0;background:none;padding:8px 0;text-align:left;font:inherit;color:var(--ink)}
+.lc-list .nm{font-weight:600;min-width:0}
+.lc-list .nm small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.lc-list .q{font-family:var(--font-num);font-size:18px;font-weight:700;text-align:right}
+.lc-list .q small{font-family:var(--font-body);font-size:11px;color:var(--muted);font-weight:400;margin-left:2px}
+.lc-list .ex{grid-column:1/-1;display:flex;gap:6px;align-items:center}
+.lc-none{font-size:13px;color:var(--muted);padding:6px 0}
+.lc-un li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,46%);gap:8px;align-items:center;padding:8px 0}
+.lc-un select{width:100%;min-width:0}
+.stock-acts{display:flex;gap:8px;justify-content:flex-end}
+.locedit{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.locedit > li{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface-2)}
+.locrow{display:flex;gap:6px;align-items:center}
+.locrow input{flex:1;min-width:0}
+.locrow .btn.icon{width:34px;height:34px;padding:0;flex:0 0 auto}
+.lockids{list-style:none;margin:8px 0 0;padding:0 0 0 14px;display:flex;flex-direction:column;gap:6px;border-left:2px solid var(--line)}
+/* 盤點清單（列印） */
+.il{font-family:var(--font-body);color:#13263A;background:#fff;font-size:10.5pt;line-height:1.35}
+.il-h{display:flex;justify-content:space-between;align-items:flex-end;gap:4mm;border-bottom:.8mm solid #F5B800;padding-bottom:1.5mm;margin-bottom:2mm}
+.il-h b{font-size:1.5em}
+.il-h span{font-size:.8em;color:#5C6977;text-align:right}
+.il h3{font-size:1.05em;margin:3mm 0 1mm;color:#1C3D5A;break-after:avoid}
+.il table{width:100%;border-collapse:collapse}
+.il th{font-size:.75em;color:#5C6977;font-weight:600;text-align:left;border-bottom:.3mm solid #98A6B4;padding:.8mm 1mm}
+.il td{border-bottom:.2mm solid #D5DCE3;padding:1.2mm 1mm;vertical-align:top}
+.il tr{break-inside:avoid}
+.il td.ck{width:5mm}.il td.ck i{display:inline-block;width:3.6mm;height:3.6mm;border:.35mm solid #13263A;border-radius:.6mm;vertical-align:-.5mm}
+.il td small{display:block;color:#5C6977;font-size:.8em}
+.il td.q,.il th.q{text-align:right;white-space:nowrap}
+.il td.e,.il th.e{white-space:nowrap;width:1%}
+.il td.e.bad{color:#C62E2E;font-weight:700}
+.il .none{color:#98A6B4;font-size:.85em;padding:1mm}
+.il.a6{font-size:8.6pt}
+.ilprev{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px;max-height:46vh;overflow:auto}
+.ilprev .il{padding:4mm;border-radius:6px}
+#printArea.print-list .il{padding:0}
+/* 裁切 */
+.crop{position:fixed;inset:0;z-index:60;background:rgba(10,20,30,.82);display:flex;align-items:center;justify-content:center;padding:16px}
+.crop-box{background:var(--surface);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center;max-width:100%}
+.crop-box h3{margin:0;font-size:16px;align-self:flex-start}
+.crop-stage{position:relative;touch-action:none;border-radius:10px;overflow:hidden;background:#000;cursor:grab}
+.crop-stage canvas{display:block}
+.crop-stage::after{content:'';position:absolute;inset:0;border:2px solid #F5B800;border-radius:10px;pointer-events:none;
+  background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 33.3% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 66.6% 0/1px 100% no-repeat,
+  linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 0 33.3%/100% 1px no-repeat,linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 0 66.6%/100% 1px no-repeat}
+.crop-zoom{width:100%}
+.crop-acts{display:flex;gap:8px;width:100%;justify-content:space-between}
+.f-photo .crp{position:absolute;right:4px;bottom:4px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(19,38,58,.78);color:#fff;font-size:13px;line-height:26px;padding:0}
 @media (max-width:400px){.split{grid-template-columns:1fr}}
 
 /* login + account */
@@ -464,6 +527,7 @@ body.locked{overflow:hidden}
 .wall-out img{width:min(260px,70vw);border-radius:22px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .wall-acts{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
 
+[hidden]{display:none!important}
 /* printable ID cards (shared by preview and print) */
 .pc,.a6-in{font-family:var(--font-body);color:#13263A;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .pc{width:85.6mm;height:54mm;box-sizing:border-box;padding:3mm 3.5mm;border:.3mm solid #C9D2DC;border-radius:3mm;overflow:hidden;font-size:7.2pt;line-height:1.3;display:flex;flex-direction:column;gap:1.4mm}
@@ -527,6 +591,7 @@ body.locked{overflow:hidden}
   body.printing #printArea{display:block}
   #printArea .ppage{width:210mm;height:297mm;box-sizing:border-box;break-after:page;overflow:hidden}
   #printArea .cc-page{padding:12mm 19mm;display:flex;flex-direction:column;gap:3mm}
+  #printArea.print-list{display:block}
   #printArea .a6-page{display:grid;grid-template-columns:105mm 105mm;grid-auto-rows:148.5mm;
     background:linear-gradient(#bbb,#bbb) center/0.2mm 100% no-repeat,linear-gradient(#bbb,#bbb) center/100% 0.2mm no-repeat}
 }
@@ -562,6 +627,7 @@ body.locked{overflow:hidden}
     <div class="seg" role="tablist" aria-label="模式">
       <button role="tab" data-act="mode" data-k="prep" aria-selected="true">整備</button>
       <button role="tab" data-act="mode" data-k="resp" aria-selected="false">應變</button>
+      <button role="tab" data-act="mode" data-k="stock" aria-selected="false">盤點</button>
     </div>
   </div>
   <nav class="rail" id="rail" aria-label="大類"></nav>
@@ -575,6 +641,7 @@ body.locked{overflow:hidden}
 
   <section id="wish" class="wsec" hidden></section>
   <section id="resp" class="wsec" hidden></section>
+  <section id="stock" class="wsec" hidden></section>
 
   <section id="inv" style="display:flex;flex-direction:column;gap:10px">
     <div class="sec-head"><h2 id="invTitle"></h2><small id="invCount"></small></div>
@@ -608,6 +675,10 @@ body.locked{overflow:hidden}
   const daysTo=s=>Math.round((parse(s)-today)/86400000);
   const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const r1=n=>isFinite(n)?(Math.round(n*10)/10):0;
+  const LOC_DEFAULT=[
+    {id:'cab',name:'防災櫃',kids:[{id:'cab1',name:'第一層'},{id:'cab2',name:'第二層'},{id:'cab3',name:'第三層'},{id:'cab4',name:'第四層'}]},
+    {id:'bag',name:'逃難包',kids:[]},
+    {id:'etc',name:'其他',kids:['床邊','書房','隨身包','廁所','藥櫃'].map((n,i)=>({id:'etc'+(i+1),name:n}))}];
   const ICON={
     pencil:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M14 6l4 4"/></svg>',
     sliders:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
@@ -692,6 +763,12 @@ body.locked{overflow:hidden}
   I({id:'E005',cat:'生存',sub:'火源',name:'卡式爐瓦斯罐',qty:6,unit:'罐',exp:addDays(900),loc:'陽台',method:'通風處使用，遠離火源存放。'});
   I({id:'E006',cat:'生存',sub:'工具',name:'多功能工具刀',qty:1,unit:'把',owner:'dad',loc:'爸爸避難包'});
   S.log=[{t:addDays(-6)+' 20:15',name:'杯麵',n:2,unit:'杯'},{t:addDays(-20)+' 09:02',name:'鮪魚罐頭',n:3,unit:'罐'}];
+  S.locOpen=new Set(); S.ctOpen=false;
+  // ---- storage locations (two levels) ----
+  S.locs=JSON.parse(JSON.stringify(LOC_DEFAULT));
+  S.locs[1].kids=[{id:'bagmed',name:'醫藥小包'},{id:'bagdoc',name:'證件小包'},{id:'bagkid',name:'孩子小包'}];
+  {const map={'客廳儲藏櫃':'cab2','廚房上櫃':'cab1','廚房下櫃':'cab3','浴室':'etc4','浴室櫃':'etc4','醫藥箱':'etc5','爸爸避難包':'bag','媽媽避難包':'bagdoc','哥哥避難包':'bagkid','妹妹避難包':'bagkid','各人避難包':'bag','玄關抽屜':'etc3'};
+   S.items.forEach(it=>{it.loc=map[it.loc]||'';});}
   S.mode='prep'; S.injured='dad'; S.checks={}; S.openNeeds=new Set(); S.links={}; S.ret=null;
   S.details={
     cash:{mode:'manual',current:10000,target:20000,unit:'元',note:'分兩份放：爸爸包、媽媽包各一份。以百元鈔和硬幣為主，停電時無法刷卡。'},
@@ -775,6 +852,182 @@ body.locked{overflow:hidden}
   }
   const NECK={meals:'餐數',kcal:'熱量',water:'飲用水'};
 
+
+  // ================= 位置與盤點 =================
+  const MEM_RATIO=4/5, ITEM_RATIO=1;
+  function locFind(id){if(!id)return null; for(const t of S.locs){if(t.id===id)return {top:t,sub:null}; const k=t.kids.find(x=>x.id===id); if(k)return {top:t,sub:k};} return null;}
+  function locLabel(id){const f=locFind(id); return !f?'未指定位置':f.sub?`${f.top.name}・${f.sub.name}`:f.top.name;}
+  function locOptions(sel){
+    return `<option value="" ${locFind(sel)?'':'selected'}>未指定</option>`+S.locs.map(t=>`<optgroup label="${esc(t.name)}"><option value="${t.id}" ${sel===t.id?'selected':''}>${esc(t.name)}（直接放）</option>${t.kids.map(k=>`<option value="${k.id}" ${sel===k.id?'selected':''}>${esc(t.name)}・${esc(k.name)}</option>`).join('')}</optgroup>`).join('');
+  }
+  const locSort=(a,b)=>CATS.indexOf(a.cat)-CATS.indexOf(b.cat)||a.name.localeCompare(b.name,'zh-Hant');
+  const itemsAt=id=>S.items.filter(it=>it.loc===id).sort(locSort);
+  const itemsUnder=t=>S.items.filter(it=>it.loc===t.id||t.kids.some(k=>k.id===it.loc));
+  const flTxt=it=>hasFl(it)?it.flavors.filter(x=>Number(x.q)>0).map(x=>`${x.n} ${x.q}`).join('・'):'';
+  function stockRows(list){
+    if(!list.length)return '<div class="lc-none">沒有品項</div>';
+    return `<ul class="lc-list">${list.map(it=>`<li><button data-act="open" data-id="${it.id}"><span class="nm">${esc(it.name)}${flTxt(it)?`<small>${esc(flTxt(it))}</small>`:''}</span><span class="q">${it.qty}<small>${esc(it.unit)}</small></span>${it.exp||['chk'].includes(tierOf(it))?`<span class="ex">${tierChip(it)}</span>`:''}</button></li>`).join('')}</ul>`;
+  }
+  function renderStock(){
+    const el=document.getElementById('stock'), ro=S.offline;
+    const un=S.items.filter(it=>!locFind(it.loc)).sort(locSort);
+    el.innerHTML=`<div class="stock-acts"><button class="btn sm" data-act="locedit" ${ro?'disabled':''}>${ICON.pencil} 管理位置</button></div>
+      ${un.length?`<div class="lc"><div class="lc-h"><span class="lc-t"><b>未指定位置</b><small>${un.length} 項・選一個位置就會歸位</small></span></div>
+        <div class="lc-b"><ul class="lc-list lc-un">${un.map(it=>`<li><span class="nm">${esc(it.name)}<small>${esc(it.cat)}・${it.qty} ${esc(it.unit)}</small></span><select data-locset="${it.id}" aria-label="${esc(it.name)}的位置" ${ro?'disabled':''}>${locOptions('')}</select></li>`).join('')}</ul></div></div>`:''}
+      ${S.locs.map(t=>{const open=S.locOpen.has(t.id), all=itemsUnder(t), direct=itemsAt(t.id);
+        return `<div class="lc"><div class="lc-h"><button class="lc-t" data-act="locfold" data-id="${t.id}" aria-expanded="${open}">${ICON.chev}<b>${esc(t.name)}</b><small>${all.length} 項${t.kids.length?`・${t.kids.length} 個子位置`:''}</small></button><button class="btn sm" data-act="invout" data-id="${t.id}">清單</button></div>
+          ${open?`<div class="lc-b">
+            ${direct.length||!t.kids.length?`${t.kids.length?`<div class="lc-sub"><h4>直接放在${esc(t.name)}<small>${direct.length} 項</small></h4></div>`:''}${stockRows(direct)}`:''}
+            ${t.kids.map(k=>{const l=itemsAt(k.id); return `<div class="lc-sub"><h4>${esc(k.name)}<small>${l.length} 項</small></h4><button class="btn sm ghost" data-act="invout" data-id="${k.id}">清單</button></div>${stockRows(l)}`;}).join('')}
+          </div>`:''}</div>`;}).join('')}`;
+  }
+  // ---- location editor ----
+  let lcState=null;
+  function openLocEdit(){lcState=JSON.parse(JSON.stringify(S.locs)); drawLocEdit(false);}
+  function drawLocEdit(keep=true){
+    const mv=(t,k,i,n)=>`<button class="btn icon sm" data-act="lcmv" data-t="${t}" ${k!=null?`data-k="${k}"`:''} data-d="-1" ${i===0?'disabled':''} aria-label="往上">↑</button><button class="btn icon sm" data-act="lcmv" data-t="${t}" ${k!=null?`data-k="${k}"`:''} data-d="1" ${i===n-1?'disabled':''} aria-label="往下">↓</button>`;
+    const cnt=id=>S.items.filter(it=>it.loc===id).length;
+    openSheet(`<h2>管理位置</h2><div class="sub">兩層：大位置（例如防災櫃）底下可以再分子位置（第一層、某個小包）。刪掉的位置，裡面的品項會變成「未指定」。</div>
+      <ul class="locedit">${lcState.map((t,ti)=>`<li>
+        <div class="locrow"><input data-lct="${ti}" value="${esc(t.name)}" placeholder="大位置名稱" aria-label="大位置名稱">${mv(ti,null,ti,lcState.length)}<button class="btn icon sm danger" data-act="lcdel" data-t="${ti}" aria-label="刪除${esc(t.name)}">✕</button></div>
+        ${cnt(t.id)?`<div class="hint">直接放在這裡的品項 ${cnt(t.id)} 項</div>`:''}
+        <ul class="lockids">${t.kids.map((k,ki)=>`<li class="locrow"><input data-lct="${ti}" data-lck="${ki}" value="${esc(k.name)}" placeholder="子位置名稱" aria-label="子位置名稱">${mv(ti,ki,ki,t.kids.length)}<button class="btn icon sm danger" data-act="lcdel" data-t="${ti}" data-k="${ki}" aria-label="刪除${esc(k.name)}">✕</button></li>`).join('')}
+          <li><button class="btn sm ghost" data-act="lcadk" data-t="${ti}">＋ 子位置</button></li></ul></li>`).join('')}</ul>
+      <div class="fam-acts"><button class="btn sm" data-act="lcadd">＋ 新增大位置</button></div>
+      <div class="sheet-actions"><button class="btn" data-act="close">取消</button><button class="btn primary" data-act="lcok">儲存</button></div>`,'管理位置',keep);
+  }
+  function saveLocEdit(){
+    const clean=lcState.map(t=>({id:t.id,name:t.name.trim(),kids:t.kids.map(k=>({id:k.id,name:k.name.trim()})).filter(k=>k.name)})).filter(t=>t.name);
+    if(!clean.length){toast('至少要有一個位置');return;}
+    S.locs=clean; let n=0; S.items.forEach(it=>{if(it.loc&&!locFind(it.loc)){it.loc=''; n++;}});
+    closeSheet(); render(); toast(n?`位置已儲存，${n} 項變成未指定`:'位置已儲存');
+  }
+  // ---- 盤點清單：列印 / 圖片 ----
+  let ioState=null;
+  function invSections(id){
+    const f=locFind(id); if(!f)return {title:'',secs:[]};
+    if(f.sub)return {title:`${f.top.name}・${f.sub.name}`,secs:[{h:'',items:itemsAt(f.sub.id)}]};
+    const t=f.top, secs=[];
+    const direct=itemsAt(t.id); if(direct.length||!t.kids.length)secs.push({h:t.kids.length?`直接放在${t.name}`:'',items:direct});
+    t.kids.forEach(k=>secs.push({h:k.name,items:itemsAt(k.id)}));
+    return {title:t.name,secs};
+  }
+  const expTxt=it=>it.exp||'';
+  function invHtml(id,fmt){
+    const {title,secs}=invSections(id), n=secs.reduce((a,x)=>a+x.items.length,0);
+    return `<div class="il ${fmt}"><div class="il-h"><b>${esc(title)}</b><span>${n} 項・列印 ${fmt==='a6'?'':''}${fmt_(today)}<br>盤點日期：＿＿＿＿＿　盤點人：＿＿＿</span></div>
+      ${secs.map(sec=>`${sec.h?`<h3>${esc(sec.h)}</h3>`:''}${sec.items.length?`<table><thead><tr><th></th><th>品名</th><th class="q">應有</th><th class="e">有效期限</th></tr></thead><tbody>${sec.items.map(it=>{const bad=it.exp&&['exp','3'].includes(tierOf(it));
+        return `<tr><td class="ck"><i></i></td><td>${esc(it.name)}${flTxt(it)?`<small>${esc(flTxt(it))}</small>`:''}</td><td class="q">${it.qty} ${esc(it.unit)}</td><td class="e ${bad?'bad':''}">${esc(expTxt(it))||'—'}</td></tr>`;}).join('')}</tbody></table>`:'<div class="none">沒有品項</div>'}`).join('')}</div>`;
+  }
+  const fmt_=d=>fmt(d);
+  function openInvOut(id){ioState={id,fmt:(ioState&&ioState.fmt)||'a5'}; drawInvOut(false);}
+  function drawInvOut(keep=true){
+    openSheet(`<h2>盤點清單</h2><div class="sub">${esc(locLabel(ioState.id))}${locFind(ioState.id)&&!locFind(ioState.id).sub&&locFind(ioState.id).top.kids.length?'・包含所有子位置':''}</div>
+      <div class="field"><span>列印紙張</span><div class="toggles"><button data-act="ifmt" data-k="a5" class="${ioState.fmt==='a5'?'on':''}">A5</button><button data-act="ifmt" data-k="a6" class="${ioState.fmt==='a6'?'on':''}">A6</button></div>
+        <div class="hint">列印時紙張選 ${ioState.fmt.toUpperCase()}；用 A4 紙印的話，縮放選「符合頁面」。</div></div>
+      <div class="ilprev">${invHtml(ioState.id,ioState.fmt)}</div>
+      <div id="wallOut" class="wall-out"></div>
+      <div class="sheet-actions"><button class="btn" data-act="iimg">存成圖片</button><button class="btn primary" data-act="iprint">列印</button></div>`,'盤點清單',keep);
+  }
+  function printInv(){
+    let el=document.getElementById('printArea'); if(!el){el=document.createElement('div'); el.id='printArea'; document.body.appendChild(el);}
+    el.className='print-list'; el.innerHTML=invHtml(ioState.id,ioState.fmt);
+    let st=document.getElementById('pageSize'); if(!st){st=document.createElement('style'); st.id='pageSize'; document.head.appendChild(st);}
+    st.textContent=`@media print{@page{size:${ioState.fmt==='a6'?'105mm 148mm':'148mm 210mm'};margin:${ioState.fmt==='a6'?6:9}mm}}`;
+    document.body.classList.add('printing');
+    const done=()=>{document.body.classList.remove('printing'); window.removeEventListener('afterprint',done);};
+    window.addEventListener('afterprint',done);
+    try{window.print();}catch(e){}
+    setTimeout(()=>{if(document.body.classList.contains('printing')&&!window.matchMedia('print').matches){toast(DEMO?'範例頁面不能列印，請在正式版的手機或電腦上列印':'若沒有出現列印視窗，請用瀏覽器選單的「列印」');}},1500);
+  }
+  function genInvImage(){
+    const {title,secs}=invSections(ioState.id), n=secs.reduce((a,x)=>a+x.items.length,0);
+    const W=1080, P=56, F='"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif', N='"Barlow Condensed","PingFang TC",sans-serif';
+    const c=document.createElement('canvas'), g=c.getContext('2d');
+    const rows=[]; secs.forEach(sec=>{if(sec.h)rows.push({h:sec.h}); if(!sec.items.length)rows.push({none:true}); sec.items.forEach(it=>rows.push({it}));});
+    const hOf=r=>r.h?92:r.none?60:(flTxt(r.it)?104:76);
+    const H=P+150+rows.reduce((a,r)=>a+hOf(r),0)+P+40;
+    c.width=W; c.height=H;
+    const draw=()=>{
+      g.fillStyle='#FFFFFF'; g.fillRect(0,0,W,H);
+      let y=P;
+      g.fillStyle='#13263A'; g.font=`800 60px ${F}`; g.fillText(title,P,y+56);
+      g.fillStyle='#5C6977'; g.font=`500 30px ${F}`; g.textAlign='right'; g.fillText(`${n} 項・${fmt(today)}`,W-P,y+52); g.textAlign='left';
+      y+=84; g.fillStyle='#F5B800'; g.fillRect(P,y,W-2*P,8); y+=30;
+      g.fillStyle='#5C6977'; g.font=`600 26px ${F}`; g.fillText('品名',P+64,y+10); g.textAlign='right'; g.fillText('應有',W-P-250,y+10); g.fillText('有效期限',W-P,y+10); g.textAlign='left'; y+=36;
+      rows.forEach(r=>{const h=hOf(r);
+        if(r.h){g.fillStyle='#1C3D5A'; g.font=`700 38px ${F}`; g.fillText(r.h,P,y+64);}
+        else if(r.none){g.fillStyle='#98A6B4'; g.font=`500 30px ${F}`; g.fillText('沒有品項',P+64,y+42);}
+        else{const it=r.it, bad=it.exp&&['exp','3'].includes(tierOf(it));
+          g.strokeStyle='#13263A'; g.lineWidth=4; g.strokeRect(P+4,y+22,36,36);
+          g.fillStyle='#13263A'; g.font=`600 36px ${F}`; let nm=it.name; while(g.measureText(nm).width>W-2*P-64-420&&nm.length>2)nm=nm.slice(0,-2)+'…'; g.fillText(nm,P+64,y+52);
+          if(flTxt(it)){g.fillStyle='#5C6977'; g.font=`500 26px ${F}`; let t=flTxt(it); while(g.measureText(t).width>W-2*P-64-420&&t.length>2)t=t.slice(0,-2)+'…'; g.fillText(t,P+64,y+88);}
+          g.textAlign='right'; g.fillStyle='#13263A'; g.font=`700 40px ${N}`; g.fillText(`${it.qty}`,W-P-290,y+54); g.font=`500 28px ${F}`; g.fillText(it.unit,W-P-250,y+52);
+          g.fillStyle=bad?'#C62E2E':'#13263A'; g.font=`${bad?700:500} 32px ${N}`; g.fillText(it.exp||'—',W-P,y+52); g.textAlign='left';
+          g.fillStyle='#E1E6EB'; g.fillRect(P,y+h-2,W-2*P,2);}
+        y+=h;});
+      g.fillStyle='#98A6B4'; g.font=`500 24px ${F}`; g.fillText('家庭防災庫・盤點清單',P,H-P+10);
+    };
+    (async()=>{try{await document.fonts.ready;}catch(e){} draw();
+      const out=document.getElementById('wallOut'); if(!out)return;
+      c.toBlob(blob=>{if(!blob){toast('產生失敗');return;}
+        const url=URL.createObjectURL(blob), file=new File([blob],`盤點-${title}.png`,{type:'image/png'});
+        const canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
+        out.innerHTML=`<img src="${url}" alt="${esc(title)}盤點清單" style="width:min(320px,80vw);border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.18)"><div class="wall-acts">${canShare?'<button class="btn primary" data-act="wshare">儲存到照片</button>':''}<span class="hint">${canShare?'按「儲存到照片」→「儲存影像」。':'長按圖片 →「加入照片」或「儲存影像」。'}</span></div>`;
+        out._file=file; out.scrollIntoView({behavior:'smooth',block:'nearest'});
+      },'image/png');})();
+  }
+
+  // ================= 照片裁切 =================
+  async function photoData(p){
+    if(!p)return ''; if(p.startsWith('data:'))return p; if(fullCache[p])return fullCache[p];
+    try{let d=await idb.get('full_'+p).catch(()=>null); if(!d&&S.online&&!DEMO){d=(await api('photo',{id:p})).data;} if(d){fullCache[p]=d; return d;}}catch(e){}
+    return '';
+  }
+  function cropImage(src,ratio,title,allowSkip){return new Promise(resolve=>{
+    const img=new Image();
+    img.onerror=()=>resolve(null);
+    img.onload=()=>{
+      let srcC=document.createElement('canvas'); srcC.width=img.width; srcC.height=img.height; srcC.getContext('2d').drawImage(img,0,0);
+      const SW=Math.min(300,window.innerWidth-64), SH=Math.round(SW/ratio), dpr=window.devicePixelRatio||1;
+      const ov=document.createElement('div'); ov.className='crop';
+      ov.innerHTML=`<div class="crop-box" role="dialog" aria-label="裁切照片"><h3>${esc(title||'裁切照片')}</h3><div class="crop-stage" style="width:${SW}px;height:${SH}px"><canvas width="${SW*dpr}" height="${SH*dpr}" style="width:${SW}px;height:${SH}px"></canvas></div>
+        <input type="range" class="crop-zoom" min="1" max="4" step="0.01" value="1" aria-label="縮放">
+        <div class="hint">拖曳移動，雙指或拉桿縮放</div>
+        <div class="crop-acts"><button class="btn" data-c="cancel">${allowSkip?'不裁切':'取消'}</button><button class="btn" data-c="rot">↻ 旋轉</button><button class="btn primary" data-c="ok">完成</button></div></div>`;
+      document.body.appendChild(ov);
+      const cv=ov.querySelector('canvas'), g=cv.getContext('2d'), zr=ov.querySelector('.crop-zoom'), stage=ov.querySelector('.crop-stage');
+      let z=1, cx=SW/2, cy=SH/2;
+      const base=()=>Math.max(SW/srcC.width,SH/srcC.height);
+      const clamp=()=>{const k=base()*z, w=srcC.width*k, h=srcC.height*k; cx=Math.min(w/2,Math.max(SW-w/2,cx)); cy=Math.min(h/2,Math.max(SH-h/2,cy));};
+      const paint=(ctx,f)=>{const k=base()*z*f, w=srcC.width*k, h=srcC.height*k; ctx.imageSmoothingQuality='high'; ctx.drawImage(srcC,cx*f-w/2,cy*f-h/2,w,h);};
+      const draw=()=>{clamp(); g.setTransform(1,0,0,1,0,0); g.fillStyle='#000'; g.fillRect(0,0,cv.width,cv.height); paint(g,dpr);};
+      const setZ=(nz,px=SW/2,py=SH/2)=>{nz=Math.min(4,Math.max(1,nz)); cx=px-(px-cx)*nz/z; cy=py-(py-cy)*nz/z; z=nz; zr.value=z; draw();};
+      draw();
+      const pts=new Map(); let last=null;
+      const pos=e=>{const r=stage.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top};};
+      stage.addEventListener('pointerdown',e=>{stage.setPointerCapture(e.pointerId); pts.set(e.pointerId,pos(e)); last=null;});
+      stage.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return; const p=pos(e), prev=pts.get(e.pointerId); pts.set(e.pointerId,p);
+        if(pts.size===1){cx+=p.x-prev.x; cy+=p.y-prev.y; draw();}
+        else if(pts.size===2){const [a,b]=[...pts.values()], d=Math.hypot(a.x-b.x,a.y-b.y), m={x:(a.x+b.x)/2,y:(a.y+b.y)/2}; if(last){setZ(z*d/last.d,m.x,m.y); cx+=m.x-last.m.x; cy+=m.y-last.m.y; draw();} last={d,m};}});
+      const up=e=>{pts.delete(e.pointerId); last=null;};
+      stage.addEventListener('pointerup',up); stage.addEventListener('pointercancel',up);
+      stage.addEventListener('wheel',e=>{e.preventDefault(); const p=pos(e); setZ(z*(e.deltaY<0?1.08:1/1.08),p.x,p.y);},{passive:false});
+      zr.addEventListener('input',()=>setZ(Number(zr.value)));
+      const finish=v=>{ov.remove(); resolve(v);};
+      ov.addEventListener('click',e=>{const b=e.target.closest('[data-c]'); if(!b)return; e.stopPropagation();
+        if(b.dataset.c==='cancel')finish(null);
+        if(b.dataset.c==='rot'){const r=document.createElement('canvas'); r.width=srcC.height; r.height=srcC.width; const rg=r.getContext('2d'); rg.translate(r.width,0); rg.rotate(Math.PI/2); rg.drawImage(srcC,0,0); srcC=r; z=1; zr.value=1; cx=SW/2; cy=SH/2; draw();}
+        if(b.dataset.c==='ok'){
+          const OW=ratio>=1?1200:960, OH=Math.round(OW/ratio), f=OW/SW;
+          const o=document.createElement('canvas'); o.width=OW; o.height=OH; const og=o.getContext('2d'); og.fillStyle='#fff'; og.fillRect(0,0,OW,OH); paint(og,f);
+          const t=document.createElement('canvas'), TW=240, TH=Math.round(TW/ratio); t.width=TW; t.height=TH; const tg=t.getContext('2d'); tg.imageSmoothingQuality='high'; tg.drawImage(o,0,0,TW,TH);
+          finish({full:o.toDataURL('image/jpeg',.85),thumb:t.toDataURL('image/jpeg',.72)});
+        }});
+    };
+    img.src=src;
+  });}
+
   // ---- render ----
   function renderRail(){
     document.getElementById('rail').innerHTML=CATS.map(k=>{
@@ -785,6 +1038,14 @@ body.locked{overflow:hidden}
   function renderDays(){
     const who=`<div class="people"><p class="label">看每個人分到的資源</p>
         <div class="who">${S.members.map(m=>`<button data-act="member" data-id="${m.id}">${esc(m.name)}</button>`).join('')}</div></div>`;
+    if(S.mode==='stock'){
+      const un=S.items.filter(it=>!locFind(it.loc)).length;
+      document.getElementById('days').innerHTML=`
+        <div class="days-top"><p class="label">盤點・依存放位置檢視</p></div>
+        <div class="n">${S.items.length-un}/${S.items.length}<span>項已歸位</span></div>
+        <div class="big-cap">${un?`${un} 項還沒指定位置・`:''}每個位置都能印成 A5／A6 清單或存成圖片</div>`;
+      return;
+    }
     if(S.mode==='resp'){
       const ready=SCEN.filter(sc=>{const r=readiness(sc);return r.ok===r.total;}).length;
       document.getElementById('days').innerHTML=`
@@ -832,7 +1093,7 @@ body.locked{overflow:hidden}
     t.innerHTML=`<span><b>輪替清單</b><small>${its.length} 項 1 年內到期${S.cat==='食'?'，換新後排進日常吃掉':'，記得補新'}</small></span>${ICON.chev}`;
     p.hidden=!S.rotOpen;
     p.innerHTML=`<ul class="rot">${its.map(it=>{const d=daysTo(it.exp),[,cls]=TIER[tierOf(it)];
-      return `<li><span>${esc(it.name)}<span class="loc">・${esc(it.loc)}</span></span><span class="q">${it.qty} ${esc(it.unit)}</span><span class="d ${cls}">${d<0?`過期 ${-d} 天`:`剩 ${d} 天`}</span></li>`;}).join('')}</ul>`;
+      return `<li><span>${esc(it.name)}<span class="loc">・${esc(locLabel(it.loc))}</span></span><span class="q">${it.qty} ${esc(it.unit)}</span><span class="d ${cls}">${d<0?`過期 ${-d} 天`:`剩 ${d} 天`}</span></li>`;}).join('')}</ul>`;
   }
   function qtyBlock(it){
     if(isWater(it))return `${r1(it.qty*it.unitL)}<small>公升・${it.qty} ${esc(it.unit)}</small>`;
@@ -852,24 +1113,26 @@ body.locked{overflow:hidden}
     if(!its.length){el.innerHTML=`<div class="empty">這個條件下沒有品項${S.offline?'':'。點右下「新增品項」加入。'}</div>`;return;}
     el.innerHTML=its.map(it=>`<button class="item ${tierOf(it)==='exp'?'expired':''}" data-act="open" data-id="${it.id}">
         <span class="thumb">${it.photos.length?`<img src="${psrc(it.photos[0])}" alt="">`:esc(it.name.slice(0,1))}</span>
-        <span class="body"><span class="name">${esc(it.name)}${hasFl(it)?`<span class="flc">${it.flavors.length} 種口味</span>`:''}</span>${tierChip(it)}<span class="loc">${ICON.pin}<span>${esc(it.loc)}</span></span></span>
+        <span class="body"><span class="name">${esc(it.name)}${hasFl(it)?`<span class="flc">${it.flavors.length} 種口味</span>`:''}</span>${tierChip(it)}<span class="loc">${ICON.pin}<span>${esc(locLabel(it.loc))}</span></span></span>
         <span class="qty">${qtyBlock(it)}</span></button>`).join('');
   }
   function renderLog(){
     document.getElementById('log').innerHTML=S.log.length?S.log.slice(0,6).map(l=>`<li><span>${esc(l.name)} −${l.n} ${esc(l.unit)}</span><span class="when">${esc(l.t.slice(5))}</span></li>`).join(''):'<li>還沒有消耗紀錄</li>';
   }
   function render(){
-    const resp=S.mode==='resp', wish=!resp&&S.cat==='待購';
-    document.body.classList.toggle('resp',resp);
+    const resp=S.mode==='resp', stock=S.mode==='stock', wish=!resp&&!stock&&S.cat==='待購';
+    document.body.classList.toggle('resp',resp); document.body.classList.toggle('stock',stock);
     document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-selected',b.dataset.k===S.mode));
-    document.getElementById('rail').hidden=resp;
-    document.getElementById('inv').hidden=resp||wish;
-    document.getElementById('logCard').hidden=resp||wish;
+    document.getElementById('rail').hidden=resp||stock;
+    document.getElementById('inv').hidden=resp||wish||stock;
+    document.getElementById('logCard').hidden=resp||wish||stock;
+    document.getElementById('stock').hidden=!stock;
     document.getElementById('wish').hidden=!wish;
     document.getElementById('resp').hidden=!resp;
     document.getElementById('fab').textContent=wish?'＋ 新增待購':'＋ 新增品項';
     renderRail(); renderDays();
     if(resp){renderResp();return;}
+    if(stock){renderStock();return;}
     if(wish){renderWish();return;}
     renderTiers();renderRotation();renderItems();renderLog();
   }
@@ -894,7 +1157,7 @@ body.locked{overflow:hidden}
       const list=inCat(S.cat).map(it=>({it,why:attention(it)})).filter(x=>x.why.length);
       openSheet(`<h2>${CFG[S.cat].title}：${list.length} 項要處理</h2>
         <div class="sub">列出已過期、3 個月內到期、超過 6 個月沒檢查、電量低於 50%，以及全家共用但不夠分的品項。</div>
-        ${list.length?`<ul class="att">${list.map(({it,why})=>`<li><span>${esc(it.name)}<span style="color:var(--muted);font-size:12px">・${esc(it.loc)}</span></span><span class="why c-3">${why.map(esc).join('・')}</span></li>`).join('')}</ul>`:'<div class="empty">全部就緒</div>'}
+        ${list.length?`<ul class="att">${list.map(({it,why})=>`<li><span>${esc(it.name)}<span style="color:var(--muted);font-size:12px">・${esc(locLabel(it.loc))}</span></span><span class="why c-3">${why.map(esc).join('・')}</span></li>`).join('')}</ul>`:'<div class="empty">全部就緒</div>'}
         <ul class="notes"><li>「不夠分」依品項設定的需求計算：每人需要幾個，或每人每天用幾個（可用天數低於避難包目標 ${S.goBag} 天就提醒）。</li></ul>
         <div class="sheet-actions"><span></span><button class="btn primary" data-act="close">知道了</button></div>`,'要處理的品項');
       return;
@@ -992,7 +1255,7 @@ body.locked{overflow:hidden}
     const chkLab=it.battery!=null&&it.battery!==''?'上次充電':'最後檢查日';
     openSheet(`
       <div class="d-head">
-        <div class="d-title"><h2>${esc(it.name)}</h2><div class="loc">${esc(it.loc)}・${esc(owner)}</div></div>
+        <div class="d-title"><h2>${esc(it.name)}</h2><div class="loc">${esc(locLabel(it.loc))}・${esc(owner)}</div></div>
         <div class="d-qty"><div class="n">${qty}</div>${tierChip(it)}</div>
       </div>
       <div class="d-photos">
@@ -1042,7 +1305,7 @@ body.locked{overflow:hidden}
     const inp=(k,lab,type,extra='')=>`<label class="field"><span>${lab}</span><input id="f-${k}" data-f="${k}" ${type?`type="${type}"`:''} value="${esc(f[k]??'')}" ${extra}></label>`;
     openSheet(`<h2>${f.id?'編輯品項':f.fromWant?'買到了：補上資料':'新增品項'}</h2><div class="sub">大類：${f.cat}${f.fromWant?'・填好有效日與存放位置後移進庫存':''}</div>
       <div class="field"><span>照片（點一張設為列表縮圖）</span>
-        <div class="f-photos">${f.photos.map((p,i)=>`<div class="f-photo ${i===0?'cover':''}"><button class="pick" data-act="fcover" data-i="${i}" aria-label="設為縮圖"><img src="${psrc(p)}" alt=""></button>${i===0?'<span class="badge">縮圖</span>':''}<button class="rm" data-act="frm" data-i="${i}" aria-label="移除照片">✕</button></div>`).join('')}
+        <div class="f-photos">${f.photos.map((p,i)=>`<div class="f-photo ${i===0?'cover':''}"><button class="pick" data-act="fcover" data-i="${i}" aria-label="設為縮圖"><img src="${psrc(p)}" alt=""></button>${i===0?'<span class="badge">縮圖</span>':''}<button class="rm" data-act="frm" data-i="${i}" aria-label="移除照片">✕</button><button class="crp" data-act="fcrop" data-i="${i}" aria-label="裁切這張照片">✂</button></div>`).join('')}
           <label class="f-add" for="f-files">＋<br>加照片<input type="file" id="f-files" accept="image/*" multiple data-fphoto="1"></label></div></div>
       <div class="grid2">
         <label class="field"><span>子類</span><select id="f-sub" data-f="sub">${cfg.subs.map(s=>`<option ${f.sub===s?'selected':''}>${s}</option>`).join('')}</select></label>
@@ -1066,7 +1329,7 @@ body.locked{overflow:hidden}
         ${f.needType?`<input id="f-need" data-f="need" type="number" step="0.1" inputmode="decimal" value="${esc(f.need)}" placeholder="數量" style="margin-top:6px">`:''}</div>`}
       <div class="grid2">
         <label class="field"><span>歸屬</span><select id="f-owner" data-f="owner"><option value="all" ${f.owner==='all'?'selected':''}>全家共用</option>${S.members.map(m=>`<option value="${m.id}" ${f.owner===m.id?'selected':''}>${esc(m.name)}</option>`).join('')}</select></label>
-        ${inp('loc','存放位置','','placeholder="客廳儲藏櫃、某人避難包"')}
+        <label class="field"><span>存放位置</span><select id="f-loc" data-f="loc">${locOptions(f.loc)}</select></label>
       </div>
       <div class="sheet-actions">${f.id?`<button class="btn danger" data-act="fdel">${f.delArm?'再按一次確認刪除':'刪除品項'}</button>`:''}<div class="right"><button class="btn" data-act="${f.id?'back':'close'}" data-id="${f.id||''}">取消</button><button class="btn primary" data-act="fok">${f.id?'儲存':f.fromWant?'移進庫存':'新增'}</button></div></div>`,f.id?'編輯品項':f.fromWant?'買到了：補上資料':'新增品項',keep);
   }
@@ -1411,9 +1674,9 @@ body.locked{overflow:hidden}
           ${miss.length?`<small class="warn">缺：${miss.join('、')}</small>`:''}</span>
           <span class="bt ${m.blood?'':'none'}">${esc(m.blood||'?')}</span></button></li>`;}).join('')}</ul>
       <div class="fam-acts"><button class="btn sm" data-act="madd" ${ro?'disabled':''}>＋ 新增家人</button></div>
-      <div class="fam-sec"><h4>緊急聯絡人</h4>
-        ${S.contacts.length?`<ul class="clist">${S.contacts.map(c=>`<li><button data-act="cedit" data-id="${c.id}"><span><b>${esc(c.name)}</b><small>${esc(c.kin?kinOptions().find(o=>o[0]===c.kin)[1]:(c.relation||''))}${c.note?'・'+esc(c.note):''}${c.onCard?'':'・不印在卡上'}</small></span><span class="ph">${esc(c.phone||'')}</span></button></li>`).join('')}</ul>`:'<div class="cat-empty">還沒有聯絡人，例如外縣市親友、爺爺奶奶、外公外婆</div>'}
-        <div class="fam-acts"><button class="btn sm" data-act="cadd" ${ro?'disabled':''}>＋ 新增聯絡人</button></div></div>
+      <div class="fam-sec"><button class="rot-toggle" data-act="ctfold" aria-expanded="${!!S.ctOpen}"><span><b>緊急聯絡人</b><small>${S.contacts.length} 位${S.contacts.length?'・'+S.contacts.slice(0,3).map(c=>esc(c.name)).join('、')+(S.contacts.length>3?'…':''):''}</small></span>${ICON.chev}</button>
+        ${S.ctOpen?`<div class="rot-panel" style="padding-top:8px">${S.contacts.length?`<ul class="clist">${S.contacts.map(c=>`<li><button data-act="cedit" data-id="${c.id}"><span><b>${esc(c.name)}</b><small>${esc(c.kin?kinOptions().find(o=>o[0]===c.kin)[1]:(c.relation||''))}${c.note?'・'+esc(c.note):''}${c.onCard?'':'・不印在卡上'}</small></span><span class="ph">${esc(c.phone||'')}</span></button></li>`).join('')}</ul>`:'<div class="cat-empty">還沒有聯絡人，例如外縣市親友、爺爺奶奶、外公外婆</div>'}
+        <div class="fam-acts"><button class="btn sm" data-act="cadd" ${ro?'disabled':''}>＋ 新增聯絡人</button></div></div>`:''}</div>
       <div class="fam-sec"><h4>約定集合點</h4>${planRoute()}
         <div class="fam-acts"><button class="btn sm" data-act="plan" ${ro?'disabled':''}>${ICON.pencil} 填寫集合點</button></div></div>
       <div class="fam-out"><button class="btn primary" data-act="wall">產生手機桌布</button><button class="btn" data-act="cards">列印識別卡</button></div>
@@ -1430,7 +1693,7 @@ body.locked{overflow:hidden}
     const dis=ro?'disabled':'';
     openSheet(`<h2>${f.isNew?'新增家人':esc(fullOf(f))}</h2>${ro?'<div class="sub">唯讀模式，身分證字號只顯示部分</div>':''}
       <div class="m-photo">${memberAvatar(f,'av lg')}
-        ${ro?'':`<div class="toggles"><label class="btn sm" for="m-file">${f.photo?'換照片':'加照片'}<input type="file" id="m-file" accept="image/*" data-mphoto="1" hidden></label>${f.photo?'<button class="btn sm ghost" data-act="mphotorm">移除照片</button>':''}</div>`}</div>
+        ${ro?'':`<div class="toggles"><label class="btn sm" for="m-file">${f.photo?'換照片':'加照片'}<input type="file" id="m-file" accept="image/*" data-mphoto="1" hidden></label>${f.photo?'<button class="btn sm" data-act="mcrop">調整裁切</button><button class="btn sm ghost" data-act="mphotorm">移除照片</button>':''}</div>`}</div>
       <div class="grid2">
         <label class="field"><span>稱呼（兩個字）</span><input id="m-name" data-m="name" value="${esc(f.name)}" placeholder="爸爸" ${dis}></label>
         <label class="field"><span>全名</span><input id="m-fullName" data-m="fullName" value="${esc(f.fullName)}" ${dis}></label>
@@ -1651,6 +1914,7 @@ body.locked{overflow:hidden}
   }
   function doPrint(){
     let el=document.getElementById('printArea'); if(!el){el=document.createElement('div'); el.id='printArea'; document.body.appendChild(el);}
+    {const ps=document.getElementById('pageSize'); if(ps)ps.textContent='';}
     el.className='print-'+pState.fmt; el.innerHTML=cardsHtml();
     el.classList.add('measuring'); try{fitCards(el);}catch(e){} el.classList.remove('measuring');
     document.body.classList.add('printing');
@@ -1726,7 +1990,7 @@ body.locked{overflow:hidden}
       const rel=related(nd), d=S.details[nd.key]||{};
       body=`<div class="nd-wrap" ${open?'':'inert'}><div class="nd-in"><div class="nd-body">
         <div class="nd-sec"><span class="lab">相關品項</span>
-          ${rel.length?`<ul class="rel">${rel.map(({it,auto})=>`<li><button data-act="nitem" data-id="${it.id}" data-scen="${sc.id}"><span class="t">${esc(it.name)}${auto?'':'<span class="shared">手動</span>'}</span><span class="m">${ICON.pin}${esc(it.loc)}</span></button><span class="q">${isWater(it)?r1(it.qty*it.unitL)+' L':it.qty+' '+esc(it.unit)}</span>${['exp','3','chk'].includes(tierOf(it))?tierChip(it):''}</li>`).join('')}</ul>`
+          ${rel.length?`<ul class="rel">${rel.map(({it,auto})=>`<li><button data-act="nitem" data-id="${it.id}" data-scen="${sc.id}"><span class="t">${esc(it.name)}${auto?'':'<span class="shared">手動</span>'}</span><span class="m">${ICON.pin}${esc(locLabel(it.loc))}</span></button><span class="q">${isWater(it)?r1(it.qty*it.unitL)+' L':it.qty+' '+esc(it.unit)}</span>${['exp','3','chk'].includes(tierOf(it))?tierChip(it):''}</li>`).join('')}</ul>`
             :'<div class="cat-empty">還沒有相關品項</div>'}</div>
         ${d.note?`<div class="nd-sec"><span class="lab">處理細節</span><div class="nd-note">${esc(d.note)}</div></div>`:''}
         <div class="nd-acts">
@@ -1795,7 +2059,7 @@ body.locked{overflow:hidden}
     const nd=findNeed(lState.scId,lState.i);
     const autoIds=new Set(related(nd).filter(r=>r.auto).map(r=>r.it.id));
     const q=lState.q.trim();
-    const its=S.items.filter(it=>!q||it.name.includes(q)||it.loc.includes(q));
+    const its=S.items.filter(it=>!q||it.name.includes(q)||locLabel(it.loc).includes(q));
     openSheet(`<h2>連結品項</h2><div class="sub">${esc(labOf(nd))}・勾選和這一項有關的庫存</div>
       <input id="l-q" data-l="q" value="${esc(lState.q)}" placeholder="搜尋名稱或位置" style="border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:9px 10px;font-size:15px;width:100%">
       ${CATS.map(c=>{const l=its.filter(it=>it.cat===c); if(!l.length)return '';
@@ -1869,7 +2133,7 @@ body.locked{overflow:hidden}
       Needs:[...keys].map(k=>{const d=S.details[k]||{}; return {id:k,mode:d.mode||'',current:d.current,target:d.target,unit:d.unit||'',note:d.note||'',links:[...(S.links[k]||[])].join(','),checked:S.checks[k]?'TRUE':''};}),
       Scenarios:SCEN.filter(s=>s.edited).map(s=>({id:s.id,steps:s.steps.join('\n'),group:s.g,title:s.title,sum:s.sum||'',needs:JSON.stringify(s.needs.map(needSpec))})),
       Plan:Object.entries(S.plan).map(([k,v])=>({id:k,value:v})),
-      Settings:[{id:'hyg',value:S.hyg},{id:'goBag',value:S.goBag},{id:'scenOrder',value:S.scenOrderTouched?SCEN.map(x=>x.id).join(','):(S.scenOrderRaw||'')},{id:'scenHidden',value:[...S.scenHidden].join(',')}]
+      Settings:[{id:'hyg',value:S.hyg},{id:'goBag',value:S.goBag},{id:'scenOrder',value:S.scenOrderTouched?SCEN.map(x=>x.id).join(','):(S.scenOrderRaw||'')},{id:'scenHidden',value:[...S.scenHidden].join(',')},{id:'locs',value:JSON.stringify(S.locs)}]
     };
     Object.keys(t).forEach(n=>t[n]=t[n].map(strRow));
     return t;
@@ -1897,6 +2161,8 @@ body.locked{overflow:hidden}
     applyScenRows(T('Scenarios'),list(S.scenOrderRaw),list(setv('scenHidden')));
     S.plan={meet1:'',wait1:'1 小時',meet2:'',final:'',phone:'',contact:''};
     T('Plan').forEach(r=>{S.plan[r.id]=r.value;});
+    try{const L=JSON.parse(setv('locs')||'null'); S.locs=Array.isArray(L)&&L.length?L:JSON.parse(JSON.stringify(LOC_DEFAULT));}catch(e){S.locs=JSON.parse(JSON.stringify(LOC_DEFAULT));}
+    S.items.forEach(it=>{if(!locFind(it.loc))it.loc='';});
     T('Settings').forEach(r=>{if(r.id==='hyg')S.hyg=Number(r.value)||0; if(r.id==='goBag')S.goBag=Number(r.value)||3;});
     if(t.Photos)T('Photos').forEach(r=>{S.thumbs[r.id]=r.thumb;});
     if(!mem(S.injured)&&S.members[0])S.injured=S.members[0].id;
@@ -2169,6 +2435,20 @@ body.locked{overflow:hidden}
       case 'fladd': {if(!fState.flavors)fState.flavors=[]; if(!fState.flavors.length&&Number(fState.qty)>0)fState.flavors.push({n:'',q:Number(fState.qty)}); else fState.flavors.push({n:'',q:''}); drawForm(); const el=document.getElementById('fl-n-'+(fState.flavors.length-1)); if(el)el.focus(); break;}
       case 'fldel': {fState.flavors.splice(Number(b.dataset.i),1); if(!fState.flavors.length)fState.qty=fState.qty; drawForm(); break;}
       case 'fn': fState.needType=b.dataset.k; if(!fState.needType)fState.need=''; drawForm(); break;
+      case 'fcrop': {const i=Number(b.dataset.i), st=fState; (async()=>{const src=await photoData(st.photos[i]); if(!src){toast('照片還沒載入，請連上網路後再試');return;} const r=await cropImage(src,ITEM_RATIO,'重新裁切'); if(!r)return; pendingThumb[r.full]=r.thumb; st.photos[i]=r.full; if(fState===st)drawForm();})(); break;}
+      case 'mcrop': {const st=mState; (async()=>{const src=await photoData(st.photo); if(!src){toast('照片還沒載入，請連上網路後再試');return;} const r=await cropImage(src,MEM_RATIO,'重新裁切'); if(!r)return; pendingThumb[r.full]=r.thumb; st.photo=r.full; if(mState===st)drawMember();})(); break;}
+      case 'ctfold': S.ctOpen=!S.ctOpen; renderResp(); break;
+      case 'locfold': {const id=b.dataset.id; S.locOpen.has(id)?S.locOpen.delete(id):S.locOpen.add(id); renderStock(); break;}
+      case 'locedit': openLocEdit(); break;
+      case 'lcadd': lcState.push({id:uid('L'),name:'',kids:[]}); drawLocEdit(); break;
+      case 'lcadk': lcState[Number(b.dataset.t)].kids.push({id:uid('L'),name:''}); drawLocEdit(); break;
+      case 'lcmv': {const t=Number(b.dataset.t), k=b.dataset.k, d=Number(b.dataset.d); const arr=k==null?lcState:lcState[t].kids, i=k==null?t:Number(k), j=i+d; if(j<0||j>=arr.length)break; [arr[i],arr[j]]=[arr[j],arr[i]]; drawLocEdit(); break;}
+      case 'lcdel': {const t=Number(b.dataset.t), k=b.dataset.k; if(k==null)lcState.splice(t,1); else lcState[t].kids.splice(Number(k),1); drawLocEdit(); break;}
+      case 'lcok': saveLocEdit(); break;
+      case 'invout': openInvOut(b.dataset.id); break;
+      case 'ifmt': ioState.fmt=b.dataset.k; drawInvOut(); break;
+      case 'iprint': printInv(); break;
+      case 'iimg': genInvImage(); break;
       case 'fcover': {const i=Number(b.dataset.i); const [p]=fState.photos.splice(i,1); fState.photos.unshift(p); drawForm(); break;}
       case 'frm': fState.photos.splice(Number(b.dataset.i),1); drawForm(); break;
       case 'fok': {
@@ -2180,7 +2460,7 @@ body.locked{overflow:hidden}
         if(f.needType&&!(Number(f.need)>0)){toast('請填需求數量');break;}
         const num=v=>v===''||v==null?'':Number(v);
         if(Array.isArray(f.flavors)){f.flavors=f.flavors.map(x=>({n:String(x.n||'').trim(),q:Math.max(0,Math.round(Number(x.q)||0))})).filter(x=>x.n); if(!food||water)f.flavors=[]; if(f.flavors.length)f.qty=flSum(f.flavors);}
-        const clean={...f,qty:Number(f.qty)||0,kcal:Number(f.kcal)||0,prep:Number(f.prep)||0,unitL:Number(f.unitL)||0,need:num(f.need),mah:num(f.mah),battery:num(f.battery),loc:f.loc||'未填位置'};
+        const clean={...f,qty:Number(f.qty)||0,kcal:Number(f.kcal)||0,prep:Number(f.prep)||0,unitL:Number(f.unitL)||0,need:num(f.need),mah:num(f.mah),battery:num(f.battery),loc:f.loc||''};
         if(!clean.mah)delete clean.mah; if(clean.battery==='')delete clean.battery; if(!clean.needType){delete clean.needType;delete clean.need;}
         if(water)clean.suits=f.sub==='生活用水'?[]:['成人','兒童','幼兒'];
         if(f.id){const i=S.items.findIndex(x=>x.id===f.id); S.items[i]=clean; render(); openItem(f.id); toast('已儲存');}
@@ -2203,6 +2483,8 @@ body.locked{overflow:hidden}
   function confirmOnce(k){if(_once[k])return true; _once[k]=true; toast('身分證字號格式看起來不對，確認無誤再按一次儲存'); return false;}
   document.addEventListener('input',e=>{
     const t=e.target;
+    if(t.dataset.lct!=null&&lcState){const o=t.dataset.lck!=null?lcState[Number(t.dataset.lct)].kids[Number(t.dataset.lck)]:lcState[Number(t.dataset.lct)]; o.name=t.value; return;}
+    if(t.dataset.locset){const it=S.items.find(x=>x.id===t.dataset.locset); if(it){it.loc=t.value; renderStock(); toast('已指定：'+locLabel(it.loc)); if(!DEMO&&sess&&S.role==='editor'&&synced&&diff().n)scheduleSync();} return;}
     if(t.dataset.e&&eState){eState[t.dataset.e]=t.value; return;}
     if(t.dataset.en!=null&&eState){eState.needs[Number(t.dataset.en)].l=t.value; return;}
     if(t.dataset.m&&mState){mState[t.dataset.m]=t.value; if(t.dataset.m==='role')drawMember(); return;}
@@ -2218,11 +2500,12 @@ body.locked{overflow:hidden}
   });
   document.addEventListener('change',e=>{
     if(e.target.dataset.c==='onCard'&&ctState){ctState.onCard=e.target.checked; return;}
-    if(e.target.dataset.mphoto&&e.target.files.length&&mState){const st=mState; (async()=>{try{const full=await resizeImg(e.target.files[0],1200,.85), th=await resizeImg(e.target.files[0],240,.7); pendingThumb[full]=th; st.photo=full; if(mState===st)drawMember();}catch(err){toast(err.message);}})(); return;}
+    if(e.target.dataset.mphoto&&e.target.files.length&&mState){const st=mState, file=e.target.files[0]; e.target.value=''; (async()=>{try{const raw=await resizeImg(file,2000,.9), r=await cropImage(raw,MEM_RATIO,'家人照片'); if(!r)return; pendingThumb[r.full]=r.thumb; st.photo=r.full; if(mState===st)drawMember();}catch(err){toast(err.message);}})(); return;}
     if(!e.target.dataset.fphoto||!e.target.files.length||!fState)return;
     const files=[...e.target.files], st=fState;
     (async()=>{let ok=0;
-      for(const f of files){try{const full=await resizeImg(f,1600,.82), th=await resizeImg(f,240,.65); pendingThumb[full]=th; st.photos.push(full); ok++;}catch(err){toast(err.message);}}
+      e.target.value='';
+      for(let i=0;i<files.length;i++){const f=files[i]; try{const raw=await resizeImg(f,2000,.9), r=await cropImage(raw,ITEM_RATIO,files.length>1?`品項照片 ${i+1}/${files.length}`:'品項照片',true); const out=r||{full:await resizeImg(f,1600,.82),thumb:await resizeImg(f,240,.65)}; pendingThumb[out.full]=out.thumb; st.photos.push(out.full); ok++;}catch(err){toast(err.message);}}
       if(fState===st){drawForm(); toast(`已加入 ${ok} 張，按儲存後上傳`);}})();
   });
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
