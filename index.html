@@ -83,7 +83,8 @@ body.offline .pill{background:color-mix(in srgb,var(--signal) 30%,transparent);c
 .rail button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .offline-banner{display:none;max-width:560px;margin:0 auto;width:100%;font-size:13px;padding:8px 12px;border-radius:10px;
   background:color-mix(in srgb,var(--signal) 18%,var(--surface));border:1px solid color-mix(in srgb,var(--signal) 55%,transparent)}
-body.offline .offline-banner{display:block}
+body.offline .offline-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.offline-banner .btn{flex:0 0 auto;background:var(--surface)}
 
 /* days */
 .days{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:14px}
@@ -402,7 +403,8 @@ body.resp .fab{display:none}
 @media (max-width:400px){.split{grid-template-columns:1fr}}
 
 /* login + account */
-button.pill{border:0;cursor:pointer;font:inherit;font-size:12px}
+button.pill{border:0;cursor:pointer;font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:4px}
+button.pill::after{content:'';width:5px;height:5px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);opacity:.7}
 body.locked{overflow:hidden}
 .login{position:fixed;inset:0;z-index:40;background:var(--bg);overflow:auto;
   padding:calc(24px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
@@ -1718,7 +1720,7 @@ body.locked{overflow:hidden}
   // ---- session ----
   let sess=null;
   const readSession=()=>{try{return JSON.parse(localStorage.getItem('fp-session')||sessionStorage.getItem('fp-session')||'null');}catch(e){return null;}};
-  const saveSession=(s,remember)=>{sess=s; try{(remember?localStorage:sessionStorage).setItem('fp-session',JSON.stringify(s));}catch(e){}};
+  const saveSession=(s,remember)=>{s.remember=!!remember; sess=s; try{(remember?localStorage:sessionStorage).setItem('fp-session',JSON.stringify(s));}catch(e){}};
   const clearSession=()=>{sess=null; try{localStorage.removeItem('fp-session');sessionStorage.removeItem('fp-session');}catch(e){}};
 
   async function api(action,data={}){
@@ -1790,6 +1792,7 @@ body.locked{overflow:hidden}
   }
   async function saveCache(){
     if(DEMO)return;
+    if(sess&&sess.remember===false)return;   // 借來的裝置：不在手機上留資料
     try{await idb.set('data',{tables:toTables(),synced,lastSync:S.lastSync,role:S.role}); await idb.set('thumbs',S.thumbs);}catch(e){}
   }
 
@@ -1862,7 +1865,12 @@ body.locked{overflow:hidden}
     S.offline=!(S.online&&S.role==='editor');
     document.body.classList.toggle('offline',S.offline);
     const b=document.querySelector('.offline-banner');
-    if(b)b.textContent=!S.online?`離線中：顯示 ${hm(S.lastSync)} 的資料，不能修改。恢復網路後會自動更新。`:'唯讀模式：用家庭密碼登入，可以查看但不能修改。';
+    if(b){
+      const out=`<button class="btn sm" data-act="logout">${sess?'登出，改用 Google 登入':'回登入頁'}</button>`;
+      b.innerHTML=!S.online
+        ?`<span>離線中：顯示 ${hm(S.lastSync)} 的資料，不能修改。恢復網路後會自動更新。</span>${sess?'':out}`
+        :`<span>唯讀模式：用家庭密碼登入，可以查看但不能修改。</span>${out}`;
+    }
     setPill();
   }
 
@@ -1911,7 +1919,7 @@ body.locked{overflow:hidden}
         <dt>連線</dt><dd>${S.online?'在線':'離線'}</dd><dt>最後同步</dt><dd>${hm(S.lastSync)}</dd>
         ${pend?`<dt>未同步</dt><dd class="empty">${pend} 項</dd>`:''}${syncErr?`<dt>錯誤</dt><dd class="empty">${esc(syncErr)}</dd>`:''}</dl>
       <div class="hint">試算表是唯一的正本；這台手機存的是最後一次同步的副本，沒網路時可以查看。</div>
-      <div class="sheet-actions"><button class="btn" data-act="logout">${sess?'登出':'回登入頁'}</button>
+      <div class="sheet-actions"><button class="btn" data-act="logout">${sess?(S.role==='editor'?'登出':'登出，改用 Google 登入'):'回登入頁'}</button>
         <div class="right"><button class="btn" data-act="close">關閉</button><button class="btn primary" data-act="resync" ${sess?'':'disabled'}>立即同步</button></div></div>`,'帳號與同步');
   }
   async function logout(){
