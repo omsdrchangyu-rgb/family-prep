@@ -487,8 +487,7 @@ body.locked{overflow:hidden}
 .pc li b,.a6-in li b{font-family:var(--font-num);white-space:nowrap}
 .pc-meet li span{white-space:nowrap;flex:0 0 auto;color:#5C6977}
 .pc-meet li b{font-family:var(--font-body);white-space:normal;text-align:right}
-.pc-meet li.msub span{padding-left:1.2em}
-.pc-meet li.msub span::before{content:'↳ ';color:#98A6B4}
+.pc-meet li.msub span{padding-left:1em}
 .pc>*,.a6-in>*{flex-shrink:0}
 .ccpair>.pc,.ccpair>.fold,.pprev .a6{flex:0 0 auto}
 .pc.back{gap:.3mm;font-size:6.3pt;line-height:1.22}
@@ -498,16 +497,19 @@ body.locked{overflow:hidden}
 .ccpair .fold{width:0;border-left:.3mm dashed #98A6B4}
 .a6{width:105mm;height:148.5mm;box-sizing:border-box;padding:7mm;break-inside:avoid}
 .a6-in{height:100%;box-sizing:border-box;border:.4mm solid #C9D2DC;border-radius:4mm;padding:5mm;font-size:11pt;line-height:1.4;display:flex;flex-direction:column;gap:1.6mm;overflow:hidden}
-.a6-head{font-size:9pt}
-.a6 .pc-id img{width:26mm;height:32mm;border-radius:4mm;border-width:1mm;box-shadow:0 0 0 .5mm #1C3D5A,0 0 0 1.6mm #F5B800;margin:1.6mm}
+.a6-head{font-size:.82em}
+.a6 .pc-bt.big{font-size:2.4em}
+.a6 .pc-bt.big small{font-size:.32em}
+.a6 .pc-id img{width:7.4em;height:9.2em;border-radius:1em;border-width:.26em;box-shadow:0 0 0 .13em #1C3D5A,0 0 0 .4em #F5B800;margin:.4em}
 .a6 .pc-name{font-size:1.8em}
 .a6 .pc-no{font-size:1.5em}
 .a6 .pc-lab{font-size:.72em;margin-top:1.6mm}
 .a6 li{padding:.6mm 0}
 .a6 .pc-al{font-size:1.05em;padding:1mm 2.4mm}
 /* on-screen preview */
-.pprev{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px;overflow:auto;max-height:52vh}
-.pprev .ppage{display:flex;flex-direction:column;gap:4mm;margin-bottom:6mm}
+.pprev{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px;overflow:auto;max-height:52vh;box-sizing:border-box;width:100%;max-width:100%;min-width:0;contain:inline-size}
+.pprev .ppage{display:flex;flex-direction:column;gap:4mm;transform-origin:0 0}
+.pprev .pwrap{overflow:hidden;margin-bottom:12px}
 .pprev .ppage.a6-page{flex-direction:row;flex-wrap:wrap;gap:3mm}
 .pprev .a6{padding:0}
 .pprev .ppage{width:max-content}
@@ -630,8 +632,8 @@ body.locked{overflow:hidden}
     members:[
       {id:'dad', name:'爸爸', birth:'1988-05-01', kcal:2000, water:3, meals:3, fullName:'王大明', blood:'O', idno:'A123456789', phone:'0912-000-111', allergy:'盤尼西林'},
       {id:'mom', name:'媽媽', birth:'1989-08-01', kcal:1600, water:3, meals:3, fullName:'林小美', blood:'A', idno:'B223456789', phone:'0912-000-222'},
-      {id:'son1',name:'哥哥', birth:'2018-03-01', kcal:1550, water:3, meals:3, fullName:'王小安', blood:'O', idno:'A134567890', school:'和平國小'},
-      {id:'son2',name:'弟弟', birth:'2021-06-01', kcal:1400, water:3, meals:3, school:'小太陽幼兒園'},
+      {id:'son1',name:'哥哥', birth:'2018-03-01', kcal:1550, water:3, meals:3, fullName:'王小安', blood:'O', idno:'A134567890', school:'和平國小', pickup:'在診所的人'},
+      {id:'son2',name:'弟弟', birth:'2021-06-01', kcal:1400, water:3, meals:3, school:'小太陽幼兒園', pickup:'在家的人'},
       {id:'girl',name:'妹妹', birth:'2024-04-01', kcal:1150, water:3, meals:3}
     ],
     items:[]
@@ -1438,7 +1440,8 @@ body.locked{overflow:hidden}
         <label class="field"><span>手機</span><input id="m-phone" data-m="phone" type="tel" value="${esc(f.phone)}" placeholder="0912-345-678" ${dis}></label>
       </div>
       <label class="field"><span>在家中的身分（決定卡片上「配偶」「父母」怎麼顯示）</span><select id="m-role" data-m="role" ${dis}>${ROLES.map(([k,l])=>`<option value="${k}" ${roleOf(f)===k?'selected':''}>${l}</option>`).join('')}</select></label>
-      ${roleOf(f)==='child'?`<label class="field"><span>學校（災害時原地等待的地方，只印在自己和爸媽的卡上）</span><input id="m-school" data-m="school" value="${esc(f.school||'')}" placeholder="例：和平國小、小太陽幼兒園；還沒上學就空白" ${dis}></label>`:''}
+      ${roleOf(f)==='child'?`<label class="field"><span>學校（災害時原地等待的地方，只印在自己和爸媽的卡上）</span><input id="m-school" data-m="school" value="${esc(f.school||'')}" placeholder="例：和平國小、小太陽幼兒園；還沒上學就空白" ${dis}></label>
+      <label class="field"><span>誰去接（印在爸媽的卡上）</span><input id="m-pickup" data-m="pickup" list="pickList" value="${esc(f.pickup||'')}" placeholder="例：在診所的人、在家的人" ${dis}><datalist id="pickList"><option value="在診所的人"><option value="在家的人"><option value="爸爸"><option value="媽媽"></datalist></label>`:''}
       <label class="field"><span>過敏（藥物、食物）</span><input id="m-allergy" data-m="allergy" value="${esc(f.allergy)}" placeholder="例：盤尼西林、花生；沒有就空白" ${dis}></label>
       <div class="sheet-actions">${!f.isNew&&!ro&&S.members.length>1?`<button class="btn danger" data-act="mdel">${f.delArm?'再按一次確認刪除':'刪除'}</button>`:''}
         <div class="right"><button class="btn" data-act="close">${ro?'關閉':'取消'}</button>${ro?'':'<button class="btn primary" data-act="mok">儲存</button>'}</div></div>`,'家人資料',keep);
@@ -1497,9 +1500,11 @@ body.locked{overflow:hidden}
     const wait=S.plan.wait1||'1 小時';
     const kids=S.members.filter(x=>roleOf(x)==='child'&&x.school);
     let m1=[];
-    if(r==='child'&&m.school) m1=[{k:'集合點 1',v:`留在${m.school}跟著老師，等爸媽來接（至少等 ${wait}）`}];
+    if(r==='child'&&m.school) m1=[{k:'集合點 1',v:`留在${m.school}跟著老師，一定等爸爸或媽媽來接（至少等 ${wait}）`}];
     else{ if(S.plan.meet1) m1.push({k:'集合點 1',v:S.plan.meet1+(S.plan.wait1?`（等 ${S.plan.wait1}）`:'')});
-      if(r==='self'||r==='spouse') kids.forEach(x=>m1.push({k:'接'+x.name,v:x.school,sub:true})); }
+      if(r==='self'||r==='spouse'){ const g=new Map();
+        kids.forEach(x=>{const key=(x.pickup||'')+'|'+x.school; if(!g.has(key))g.set(key,{pick:(x.pickup||'').trim(),school:x.school,names:[]}); g.get(key).names.push(x.name);});
+        g.forEach(o=>{const n=o.names.join('、'); m1.push(o.pick?{k:o.pick,v:`接${n}（${o.school}）`,sub:true}:{k:'接'+n,v:o.school,sub:true});}); } }
     const meet=[...m1,S.plan.meet2&&{k:'集合點 2',v:S.plan.meet2},S.plan.final&&{k:'最終目標',v:S.plan.final}].filter(Boolean);
     return {m,full:fullOf(m),nick:m.name,blood:m.blood||'',idno:m.idno||'',birth:m.birth||'',allergy:m.allergy||'',photo:m.photo?pfull(m.photo):'',fam,others,meet};
   }
@@ -1616,19 +1621,32 @@ body.locked{overflow:hidden}
       <div class="field"><span>要印誰</span><div class="pick">${S.members.map(m=>`<button data-act="psel" data-id="${m.id}" class="${pState.sel.has(m.id)?'on':''}">${esc(m.name)}</button>`).join('')}</div></div>
       <div class="pprev ${pState.fmt}" id="pprev">${cardsHtml()}</div>
       <div class="sheet-actions"><button class="btn" data-act="close">關閉</button><button class="btn primary" data-act="pgo" ${pState.sel.size?'':'disabled'}>列印</button></div>`,'列印識別卡',keep);
-    const pv=document.getElementById('pprev'); if(pv){fitCards(pv); scalePreview(pv);}
+    fitPreview();
+    // fonts and photos can arrive late and change line heights; fit again when they do
+    try{document.fonts.ready.then(fitPreview);}catch(e){}
+    document.querySelectorAll('#pprev img').forEach(im=>{if(!im.complete)im.addEventListener('load',fitPreview,{once:true});});
   }
   // cards keep their real mm size; the whole page is zoomed to fit the phone screen
+  // (transform instead of zoom: Safari measures zoomed boxes inconsistently)
   function scalePreview(pv){
-    pv.querySelectorAll('.ppage').forEach(pg=>{pg.style.zoom=''; const avail=pv.clientWidth-20, w=pg.scrollWidth; if(w>avail)pg.style.zoom=(avail/w).toFixed(3);});
+    pv.querySelectorAll('.pwrap').forEach(w=>{w.style.width='0px';});
+    const avail=pv.clientWidth-22;
+    pv.querySelectorAll('.ppage').forEach(pg=>{
+      let wr=pg.parentElement; if(!wr.classList.contains('pwrap')){wr=document.createElement('div'); wr.className='pwrap'; pg.before(wr); wr.appendChild(pg);}
+      pg.style.transform=''; const w=pg.offsetWidth, h=pg.offsetHeight, k=Math.min(1,avail/w);
+      pg.style.transform=`scale(${k})`; wr.style.width=(w*k)+'px'; wr.style.height=(h*k)+'px';});
   }
+  function fitPreview(){const pv=document.getElementById('pprev'); if(!pv)return; fitCards(pv); scalePreview(pv);}
   // shrink text until each card's content fits its fixed size (long names, many contacts)
   function fitCards(rootEl){
     rootEl.querySelectorAll('.a6-in,.pc').forEach(el=>{
       el.style.fontSize='';
       let fs=parseFloat(getComputedStyle(el).fontSize), n=0;
-      const over=()=>el.scrollHeight>el.clientHeight+1||el.scrollWidth>el.clientWidth+1||[...el.querySelectorAll('.pc-id > div')].some(x=>x.scrollWidth>x.clientWidth+1);
-      while(over()&&n<30){fs*=0.95; el.style.fontSize=fs+'px'; n++;}
+      el.querySelectorAll('.pc-id > div').forEach(x=>x.style.fontSize='');
+      // the name/ID block next to the photo shrinks on its own, so a long name doesn't shrink the whole card
+      const fitId=()=>el.querySelectorAll('.pc-id > div').forEach(x=>{x.style.fontSize=''; let f=parseFloat(getComputedStyle(x).fontSize), i=0; while(x.scrollWidth>x.clientWidth+1&&i<20){f*=0.94; x.style.fontSize=f+'px'; i++;}});
+      fitId();
+      while(el.scrollHeight>el.clientHeight+1&&n<30){fs*=0.95; el.style.fontSize=fs+'px'; fitId(); n++;}
     });
   }
   function doPrint(){
@@ -1843,7 +1861,7 @@ body.locked{overflow:hidden}
   function toTables(){
     const keys=new Set([...Object.keys(S.details),...Object.keys(S.links),...Object.keys(S.checks).filter(k=>S.checks[k])]);
     const t={
-      Members:S.members.map(m=>({id:m.id,role:roleOf(m),name:m.name,birth:m.birth||'',water:m.water,meals:m.meals,kcal:m.kcal,fullName:m.fullName||'',blood:m.blood||'',idno:m.idno||'',phone:m.phone||'',allergy:m.allergy||'',school:m.school||'',photo:m.photo||''})),
+      Members:S.members.map(m=>({id:m.id,role:roleOf(m),name:m.name,birth:m.birth||'',water:m.water,meals:m.meals,kcal:m.kcal,fullName:m.fullName||'',blood:m.blood||'',idno:m.idno||'',phone:m.phone||'',allergy:m.allergy||'',school:m.school||'',pickup:m.pickup||'',photo:m.photo||''})),
       Contacts:S.contacts.map(c=>({id:c.id,name:c.name,kin:c.kin||'',relation:c.relation||'',phone:c.phone||'',note:c.note||'',onCard:c.onCard?'TRUE':''})),
       Items:S.items.map(it=>{const o={}; ITEM_COLS.forEach(k=>o[k]=it[k]); o.suits=(it.suits||[]).join(','); o.photos=(it.photos||[]).join(','); o.flavors=hasFl(it)?JSON.stringify(it.flavors):''; return o;}),
       Usage:S.log.map(l=>({id:l.id,time:l.t,itemId:l.itemId||'',name:l.name,qty:l.n,unit:l.unit,by:l.by||''})),
@@ -1861,7 +1879,7 @@ body.locked{overflow:hidden}
   function hydrate(t){
     const T=n=>t[n]||[];
     S.members=T('Members').map(r=>({id:r.id,name:r.name,birth:r.birth||'',water:Number(r.water)||0,meals:Number(r.meals)||0,kcal:Number(r.kcal)||0,
-      role:r.role||'',fullName:r.fullName||'',blood:r.blood||'',idno:r.idno||'',phone:r.phone||'',allergy:r.allergy||'',school:r.school||'',photo:r.photo||''}));
+      role:r.role||'',fullName:r.fullName||'',blood:r.blood||'',idno:r.idno||'',phone:r.phone||'',allergy:r.allergy||'',school:r.school||'',pickup:r.pickup||'',photo:r.photo||''}));
     S.contacts=T('Contacts').map(r=>({id:r.id,name:r.name,kin:r.kin||'',relation:r.relation||'',phone:r.phone||'',note:r.note||'',onCard:String(r.onCard).toUpperCase()==='TRUE'}));
     S.items=T('Items').map(r=>{const it={}; ITEM_COLS.forEach(k=>it[k]=r[k]??'');
       ['qty','unitL','kcal','prep'].forEach(k=>it[k]=Number(it[k])||0); ['need','mah','battery'].forEach(k=>it[k]=num(it[k]));
@@ -2113,7 +2131,7 @@ body.locked{overflow:hidden}
       case 'mphotorm': mState.photo=''; drawMember(); break;
       case 'mok': {const f=mState; if(!f.name.trim()){toast('請填稱呼');break;}
         if(f.idno&&!/^[A-Z][0-9A-Z][0-9]{8}$/.test(f.idno.trim().toUpperCase())&&!confirmOnce('idfmt'))break;
-        const rec={id:f.id,role:roleOf(f),name:f.name.trim(),fullName:f.fullName.trim(),birth:f.birth,blood:f.blood,idno:f.idno.trim().toUpperCase(),phone:f.phone.trim(),allergy:f.allergy.trim(),school:roleOf(f)==='child'?(f.school||'').trim():'',photo:f.photo,water:f.water,meals:f.meals,kcal:f.kcal};
+        const rec={id:f.id,role:roleOf(f),name:f.name.trim(),fullName:(f.fullName||'').trim(),birth:f.birth||'',blood:f.blood||'',idno:(f.idno||'').trim().toUpperCase(),phone:(f.phone||'').trim(),allergy:(f.allergy||'').trim(),school:roleOf(f)==='child'?(f.school||'').trim():'',pickup:roleOf(f)==='child'?(f.pickup||'').trim():'',photo:f.photo,water:f.water,meals:f.meals,kcal:f.kcal};
         if(f.isNew)S.members.push(rec); else Object.assign(mem(f.id),rec);
         closeSheet(); render(); toast('已儲存'); break;}
       case 'mdel': {if(!mState.delArm){mState.delArm=true; drawMember(); break;}
