@@ -485,7 +485,12 @@ body.locked{overflow:hidden}
 .pc li,.a6-in li{display:flex;justify-content:space-between;gap:2mm;border-bottom:.2mm solid #E1E6EB;padding:.35mm 0}
 .pc li span small,.a6-in li span small{color:#5C6977;margin-left:1mm}
 .pc li b,.a6-in li b{font-family:var(--font-num);white-space:nowrap}
+.pc-meet li span{white-space:nowrap;flex:0 0 auto;color:#5C6977}
 .pc-meet li b{font-family:var(--font-body);white-space:normal;text-align:right}
+.pc-meet li.msub span{padding-left:1.2em}
+.pc-meet li.msub span::before{content:'↳ ';color:#98A6B4}
+.pc>*,.a6-in>*{flex-shrink:0}
+.ccpair>.pc,.ccpair>.fold,.pprev .a6{flex:0 0 auto}
 .pc.back{gap:.3mm;font-size:6.3pt;line-height:1.22}
 .pc.back li{padding:.2mm 0}
 .pc.back .pc-lab{margin-top:.5mm}
@@ -505,7 +510,9 @@ body.locked{overflow:hidden}
 .pprev .ppage{display:flex;flex-direction:column;gap:4mm;margin-bottom:6mm}
 .pprev .ppage.a6-page{flex-direction:row;flex-wrap:wrap;gap:3mm}
 .pprev .a6{padding:0}
-.pprev.cc .ccpair{transform-origin:top left}
+.pprev .ppage{width:max-content}
+.pprev .ppage.a6-page{width:213mm}
+.pc-name,.pc-no,.pc-id > div > span{white-space:nowrap}
 #printArea{display:none}
 #printArea.measuring{display:block;position:absolute;left:-10000px;top:0}
 @media print{
@@ -623,8 +630,8 @@ body.locked{overflow:hidden}
     members:[
       {id:'dad', name:'爸爸', birth:'1988-05-01', kcal:2000, water:3, meals:3, fullName:'王大明', blood:'O', idno:'A123456789', phone:'0912-000-111', allergy:'盤尼西林'},
       {id:'mom', name:'媽媽', birth:'1989-08-01', kcal:1600, water:3, meals:3, fullName:'林小美', blood:'A', idno:'B223456789', phone:'0912-000-222'},
-      {id:'son1',name:'哥哥', birth:'2018-03-01', kcal:1550, water:3, meals:3, fullName:'王小安', blood:'O', idno:'A134567890'},
-      {id:'son2',name:'弟弟', birth:'2021-06-01', kcal:1400, water:3, meals:3},
+      {id:'son1',name:'哥哥', birth:'2018-03-01', kcal:1550, water:3, meals:3, fullName:'王小安', blood:'O', idno:'A134567890', school:'和平國小'},
+      {id:'son2',name:'弟弟', birth:'2021-06-01', kcal:1400, water:3, meals:3, school:'小太陽幼兒園'},
       {id:'girl',name:'妹妹', birth:'2024-04-01', kcal:1150, water:3, meals:3}
     ],
     items:[]
@@ -1412,7 +1419,7 @@ body.locked{overflow:hidden}
   }
   let mState=null;
   function openMember2(id,isNew){
-    const m=isNew?{id:uid('M'),role:'child',name:'',fullName:'',birth:'',blood:'',idno:'',phone:'',allergy:'',photo:'',water:3,meals:3,kcal:2000}:mem(id);
+    const m=isNew?{id:uid('M'),role:'child',name:'',fullName:'',birth:'',blood:'',idno:'',phone:'',allergy:'',school:'',photo:'',water:3,meals:3,kcal:2000}:mem(id);
     mState={...m,isNew:!!isNew,delArm:false};
     drawMember(false);
   }
@@ -1431,6 +1438,7 @@ body.locked{overflow:hidden}
         <label class="field"><span>手機</span><input id="m-phone" data-m="phone" type="tel" value="${esc(f.phone)}" placeholder="0912-345-678" ${dis}></label>
       </div>
       <label class="field"><span>在家中的身分（決定卡片上「配偶」「父母」怎麼顯示）</span><select id="m-role" data-m="role" ${dis}>${ROLES.map(([k,l])=>`<option value="${k}" ${roleOf(f)===k?'selected':''}>${l}</option>`).join('')}</select></label>
+      ${roleOf(f)==='child'?`<label class="field"><span>學校（災害時原地等待的地方，只印在自己和爸媽的卡上）</span><input id="m-school" data-m="school" value="${esc(f.school||'')}" placeholder="例：和平國小、小太陽幼兒園；還沒上學就空白" ${dis}></label>`:''}
       <label class="field"><span>過敏（藥物、食物）</span><input id="m-allergy" data-m="allergy" value="${esc(f.allergy)}" placeholder="例：盤尼西林、花生；沒有就空白" ${dis}></label>
       <div class="sheet-actions">${!f.isNew&&!ro&&S.members.length>1?`<button class="btn danger" data-act="mdel">${f.delArm?'再按一次確認刪除':'刪除'}</button>`:''}
         <div class="right"><button class="btn" data-act="close">${ro?'關閉':'取消'}</button>${ro?'':'<button class="btn primary" data-act="mok">儲存</button>'}</div></div>`,'家人資料',keep);
@@ -1486,7 +1494,13 @@ body.locked{overflow:hidden}
     S.contacts.filter(c=>c.onCard&&c.phone&&c.kin).forEach(c=>fam.push({name:c.name,rel:kinLabel(c,m),phone:c.phone,rank:isParentOf(c,m)?1:r==='child'?2:3}));
     fam.sort((a,b)=>rank(a)-rank(b));
     const others=S.contacts.filter(c=>c.onCard&&c.phone&&!c.kin).map(c=>({name:c.name,rel:c.relation,phone:c.phone}));
-    const meet=[S.plan.meet1&&{k:'集合點 1',v:S.plan.meet1+(S.plan.wait1?`（等 ${S.plan.wait1}）`:'')},S.plan.meet2&&{k:'集合點 2',v:S.plan.meet2},S.plan.final&&{k:'最終目標',v:S.plan.final}].filter(Boolean);
+    const wait=S.plan.wait1||'1 小時';
+    const kids=S.members.filter(x=>roleOf(x)==='child'&&x.school);
+    let m1=[];
+    if(r==='child'&&m.school) m1=[{k:'集合點 1',v:`留在${m.school}跟著老師，等爸媽來接（至少等 ${wait}）`}];
+    else{ if(S.plan.meet1) m1.push({k:'集合點 1',v:S.plan.meet1+(S.plan.wait1?`（等 ${S.plan.wait1}）`:'')});
+      if(r==='self'||r==='spouse') kids.forEach(x=>m1.push({k:'接'+x.name,v:x.school,sub:true})); }
+    const meet=[...m1,S.plan.meet2&&{k:'集合點 2',v:S.plan.meet2},S.plan.final&&{k:'最終目標',v:S.plan.final}].filter(Boolean);
     return {m,full:fullOf(m),nick:m.name,blood:m.blood||'',idno:m.idno||'',birth:m.birth||'',allergy:m.allergy||'',photo:m.photo?pfull(m.photo):'',fam,others,meet};
   }
 
@@ -1500,12 +1514,14 @@ body.locked{overflow:hidden}
     // subtle hazard stripe above the card, below the clock area
     g.save(); g.beginPath(); g.rect(0,780,W,26); g.clip(); g.fillStyle='#F5B800'; g.fillRect(0,780,W,26);
     g.fillStyle='#13263A'; for(let x=-40;x<W+40;x+=56){g.beginPath(); g.moveTo(x,780); g.lineTo(x+26,780); g.lineTo(x-0,806); g.lineTo(x-26,806); g.closePath(); g.fill();} g.restore();
-    const X=64, CW=W-128; let y=850;
+    const rrOn=(g,x,y,w,h,r)=>{g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath();};
+    const main=g, TOP=850, BOTTOM=2330, CW=W-128;
+    const oc=document.createElement('canvas'); oc.width=CW; oc.height=4200;
+    {const g=oc.getContext('2d'); const X=0; let y=0;
     const rr=(x,y,w,h,r)=>{g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath();};
     const fit=(t,max,size,weight,font)=>{let s=size; do{g.font=`${weight} ${s}px ${font}`; if(g.measureText(t).width<=max)break; s-=2;}while(s>20); return s;};
     const wrap=(t,max)=>{const out=[]; let line=''; for(const ch of t){if(g.measureText(line+ch).width>max&&line){out.push(line); line=ch;} else line+=ch;} if(line)out.push(line); return out;};
-    // card
-    const cardTop=y; const CH=2330-cardTop; rr(X,cardTop,CW,CH,44); g.fillStyle='#FFFFFF'; g.fill();
+    const cardTop=0;
     let cx=X+56; y=cardTop+64;
     g.fillStyle='#5C6977'; g.font=`600 34px ${F}`; g.fillText('ICE 緊急聯絡卡',cx,y+20);
     y+=58;
@@ -1534,8 +1550,12 @@ body.locked{overflow:hidden}
     if(d.others.length){section('緊急聯絡人'); d.others.slice(0,Math.max(1,9-Math.min(7,d.fam.length))).forEach(person);}
     if(d.meet.length){section('約定集合點');
       g.font=`600 34px ${F}`; const LW=Math.max(...d.meet.map(r=>g.measureText(r.k).width))+28;
-      d.meet.forEach(r=>{y+=58; g.fillStyle='#5C6977'; g.font=`600 34px ${F}`; g.fillText(r.k,cx,y); g.fillStyle='#13263A'; g.font=`600 40px ${F}`; const ls=wrap(r.v,CW-112-LW); ls.slice(0,2).forEach((l,i)=>g.fillText(l,cx+LW,y+i*50)); y+=(Math.min(2,ls.length)-1)*50;});}
-    if(y>2290){g.fillStyle='#5C6977'; g.font=`600 26px ${F}`;}
+      d.meet.forEach(r=>{y+=58; g.fillStyle='#5C6977'; g.font=`600 34px ${F}`; g.fillText(r.k,cx,y); g.fillStyle='#13263A'; g.font=`600 40px ${F}`; const ls=wrap(r.v,CW-112-LW); ls.slice(0,3).forEach((l,i)=>g.fillText(l,cx+LW,y+i*50)); y+=(Math.min(3,ls.length)-1)*50;});}
+    const CH=y+64;
+    // fit the finished card between the hazard stripe and the lock-screen buttons
+    const k=Math.min(1,(BOTTOM-TOP)/CH), w=CW*k, h=CH*k, x0=(W-w)/2;
+    rrOn(main,x0,TOP,w,h,44*k); main.fillStyle='#FFFFFF'; main.fill();
+    main.drawImage(oc,0,0,CW,CH,x0,TOP,w,h);}
     g.fillStyle='#98A6B4'; g.font=`500 30px ${F}`; g.textAlign='center'; g.fillText('撿到這支手機，請聯絡上面的家人',W/2,2400); g.textAlign='left';
     return c;
   }
@@ -1560,6 +1580,7 @@ body.locked{overflow:hidden}
   }
 
   // ---- printable cards ----
+  const meetLi=r=>`<li class="${r.sub?'msub':''}"><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`;
   const pPerson=p=>`<li><span>${esc(p.name)}${p.rel?`<small>${esc(p.rel)}</small>`:''}</span><b>${esc(p.phone)}</b></li>`;
   function ccFront(d){return `<div class="pc front"><div class="pc-top"><span>ICE 緊急聯絡卡</span><span class="pc-bt ${d.blood?'':'none'}">${esc(d.blood||'?')}<small>血型</small></span></div>
     <div class="pc-id">${d.photo?`<img src="${d.photo}" alt="">`:''}<div><b class="pc-name">${esc(d.full)}</b><span>${esc(d.nick)}${d.birth?'・'+esc(d.birth):''}</span>
@@ -1567,7 +1588,7 @@ body.locked{overflow:hidden}
     <div class="pc-al ${d.allergy?'':'none'}">過敏：${esc(d.allergy||'無')}</div></div>`;}
   function ccBack(d){return `<div class="pc back">${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,6).map(pPerson).join('')}</ul>`:''}
     ${d.others.length?`<span class="pc-lab">緊急聯絡人</span><ul>${d.others.slice(0,2).map(pPerson).join('')}</ul>`:''}
-    ${d.meet.length?`<span class="pc-lab">集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}</ul>`:''}</div>`;}
+    ${d.meet.length?`<span class="pc-lab">集合點</span><ul class="pc-meet">${d.meet.map(meetLi).join('')}</ul>`:''}</div>`;}
   function a6Card(d){return `<div class="a6"><div class="a6-in">
     <div class="a6-head"><span>ICE 緊急聯絡卡</span><span class="pc-bt big ${d.blood?'':'none'}">${esc(d.blood||'?')}<small>血型</small></span></div>
     <div class="pc-id">${d.photo?`<img src="${d.photo}" alt="">`:''}<div><b class="pc-name">${esc(d.full)}</b><span>${esc(d.nick)}${d.birth?'・生日 '+esc(d.birth):''}</span>
@@ -1575,7 +1596,7 @@ body.locked{overflow:hidden}
     <div class="pc-al ${d.allergy?'':'none'}">過敏：${esc(d.allergy||'無')}</div>
     ${d.fam.length?`<span class="pc-lab">家人</span><ul>${d.fam.slice(0,7).map(pPerson).join('')}</ul>`:''}
     ${d.others.length?`<span class="pc-lab">緊急聯絡人</span><ul>${d.others.slice(0,3).map(pPerson).join('')}</ul>`:''}
-    ${d.meet.length?`<span class="pc-lab">約定集合點</span><ul class="pc-meet">${d.meet.map(r=>`<li><span>${esc(r.k)}</span><b>${esc(r.v)}</b></li>`).join('')}</ul>`:''}
+    ${d.meet.length?`<span class="pc-lab">約定集合點</span><ul class="pc-meet">${d.meet.map(meetLi).join('')}</ul>`:''}
   </div></div>`;}
   let pState=null;
   function openCards(){pState={fmt:'cc',sel:new Set(S.members.map(m=>m.id))}; drawCards(false);}
@@ -1595,14 +1616,19 @@ body.locked{overflow:hidden}
       <div class="field"><span>要印誰</span><div class="pick">${S.members.map(m=>`<button data-act="psel" data-id="${m.id}" class="${pState.sel.has(m.id)?'on':''}">${esc(m.name)}</button>`).join('')}</div></div>
       <div class="pprev ${pState.fmt}" id="pprev">${cardsHtml()}</div>
       <div class="sheet-actions"><button class="btn" data-act="close">關閉</button><button class="btn primary" data-act="pgo" ${pState.sel.size?'':'disabled'}>列印</button></div>`,'列印識別卡',keep);
-    const pv=document.getElementById('pprev'); if(pv)fitCards(pv);
+    const pv=document.getElementById('pprev'); if(pv){fitCards(pv); scalePreview(pv);}
+  }
+  // cards keep their real mm size; the whole page is zoomed to fit the phone screen
+  function scalePreview(pv){
+    pv.querySelectorAll('.ppage').forEach(pg=>{pg.style.zoom=''; const avail=pv.clientWidth-20, w=pg.scrollWidth; if(w>avail)pg.style.zoom=(avail/w).toFixed(3);});
   }
   // shrink text until each card's content fits its fixed size (long names, many contacts)
   function fitCards(rootEl){
     rootEl.querySelectorAll('.a6-in,.pc').forEach(el=>{
       el.style.fontSize='';
       let fs=parseFloat(getComputedStyle(el).fontSize), n=0;
-      while(el.scrollHeight>el.clientHeight+1&&n<30){fs*=0.95; el.style.fontSize=fs+'px'; n++;}
+      const over=()=>el.scrollHeight>el.clientHeight+1||el.scrollWidth>el.clientWidth+1||[...el.querySelectorAll('.pc-id > div')].some(x=>x.scrollWidth>x.clientWidth+1);
+      while(over()&&n<30){fs*=0.95; el.style.fontSize=fs+'px'; n++;}
     });
   }
   function doPrint(){
@@ -1760,7 +1786,7 @@ body.locked{overflow:hidden}
       <div class="sheet-actions"><button class="btn" data-act="scen" data-id="${lState.scId}">取消</button><button class="btn primary" data-act="lok">儲存</button></div>`,'連結品項');
   }
   function openPlan(){
-    openSheet(`<h2>約定集合點</h2><div class="sub">走散或撤離時全家照這個順序走，也會印在識別卡和桌布上。</div>
+    openSheet(`<h2>約定集合點</h2><div class="sub">走散或撤離時全家照這個順序走，也會印在識別卡和桌布上。孩子的卡會把第一集合點換成「留在自己的學校等爸媽」，學校在家人資料填。</div>
       ${PLAN_F.map(([k,l])=>`<label class="field"><span>${l}</span><input id="p-${k}" data-pf="${k}" value="${esc(S.plan[k])}" placeholder="${{meet1:'例：住家附近的國小操場',wait1:'例：1 小時',meet2:'例：區公所前廣場',final:'例：外縣市親友家',contact:'例：外縣市親友的電話'}[k]}"></label>`).join('')}
       <div class="sheet-actions"><button class="btn" data-act="${S.ret?'scen':'close'}" data-id="${S.ret||''}">取消</button><button class="btn primary" data-act="pok">儲存</button></div>`,'我們的計畫');
   }
@@ -1817,7 +1843,7 @@ body.locked{overflow:hidden}
   function toTables(){
     const keys=new Set([...Object.keys(S.details),...Object.keys(S.links),...Object.keys(S.checks).filter(k=>S.checks[k])]);
     const t={
-      Members:S.members.map(m=>({id:m.id,role:roleOf(m),name:m.name,birth:m.birth||'',water:m.water,meals:m.meals,kcal:m.kcal,fullName:m.fullName||'',blood:m.blood||'',idno:m.idno||'',phone:m.phone||'',allergy:m.allergy||'',photo:m.photo||''})),
+      Members:S.members.map(m=>({id:m.id,role:roleOf(m),name:m.name,birth:m.birth||'',water:m.water,meals:m.meals,kcal:m.kcal,fullName:m.fullName||'',blood:m.blood||'',idno:m.idno||'',phone:m.phone||'',allergy:m.allergy||'',school:m.school||'',photo:m.photo||''})),
       Contacts:S.contacts.map(c=>({id:c.id,name:c.name,kin:c.kin||'',relation:c.relation||'',phone:c.phone||'',note:c.note||'',onCard:c.onCard?'TRUE':''})),
       Items:S.items.map(it=>{const o={}; ITEM_COLS.forEach(k=>o[k]=it[k]); o.suits=(it.suits||[]).join(','); o.photos=(it.photos||[]).join(','); o.flavors=hasFl(it)?JSON.stringify(it.flavors):''; return o;}),
       Usage:S.log.map(l=>({id:l.id,time:l.t,itemId:l.itemId||'',name:l.name,qty:l.n,unit:l.unit,by:l.by||''})),
@@ -1835,7 +1861,7 @@ body.locked{overflow:hidden}
   function hydrate(t){
     const T=n=>t[n]||[];
     S.members=T('Members').map(r=>({id:r.id,name:r.name,birth:r.birth||'',water:Number(r.water)||0,meals:Number(r.meals)||0,kcal:Number(r.kcal)||0,
-      role:r.role||'',fullName:r.fullName||'',blood:r.blood||'',idno:r.idno||'',phone:r.phone||'',allergy:r.allergy||'',photo:r.photo||''}));
+      role:r.role||'',fullName:r.fullName||'',blood:r.blood||'',idno:r.idno||'',phone:r.phone||'',allergy:r.allergy||'',school:r.school||'',photo:r.photo||''}));
     S.contacts=T('Contacts').map(r=>({id:r.id,name:r.name,kin:r.kin||'',relation:r.relation||'',phone:r.phone||'',note:r.note||'',onCard:String(r.onCard).toUpperCase()==='TRUE'}));
     S.items=T('Items').map(r=>{const it={}; ITEM_COLS.forEach(k=>it[k]=r[k]??'');
       ['qty','unitL','kcal','prep'].forEach(k=>it[k]=Number(it[k])||0); ['need','mah','battery'].forEach(k=>it[k]=num(it[k]));
@@ -2087,7 +2113,7 @@ body.locked{overflow:hidden}
       case 'mphotorm': mState.photo=''; drawMember(); break;
       case 'mok': {const f=mState; if(!f.name.trim()){toast('請填稱呼');break;}
         if(f.idno&&!/^[A-Z][0-9A-Z][0-9]{8}$/.test(f.idno.trim().toUpperCase())&&!confirmOnce('idfmt'))break;
-        const rec={id:f.id,role:roleOf(f),name:f.name.trim(),fullName:f.fullName.trim(),birth:f.birth,blood:f.blood,idno:f.idno.trim().toUpperCase(),phone:f.phone.trim(),allergy:f.allergy.trim(),photo:f.photo,water:f.water,meals:f.meals,kcal:f.kcal};
+        const rec={id:f.id,role:roleOf(f),name:f.name.trim(),fullName:f.fullName.trim(),birth:f.birth,blood:f.blood,idno:f.idno.trim().toUpperCase(),phone:f.phone.trim(),allergy:f.allergy.trim(),school:roleOf(f)==='child'?(f.school||'').trim():'',photo:f.photo,water:f.water,meals:f.meals,kcal:f.kcal};
         if(f.isNew)S.members.push(rec); else Object.assign(mem(f.id),rec);
         closeSheet(); render(); toast('已儲存'); break;}
       case 'mdel': {if(!mState.delArm){mState.delArm=true; drawMember(); break;}
@@ -2161,7 +2187,7 @@ body.locked{overflow:hidden}
     const t=e.target;
     if(t.dataset.e&&eState){eState[t.dataset.e]=t.value; return;}
     if(t.dataset.en!=null&&eState){eState.needs[Number(t.dataset.en)].l=t.value; return;}
-    if(t.dataset.m&&mState){mState[t.dataset.m]=t.value; return;}
+    if(t.dataset.m&&mState){mState[t.dataset.m]=t.value; if(t.dataset.m==='role')drawMember(); return;}
     if(t.dataset.c&&ctState){ctState[t.dataset.c]=t.type==='checkbox'?t.checked:t.value; if(t.dataset.c==='kin')drawContact(); return;}
     if(e.target.dataset.d&&dState){dState[e.target.dataset.d]=e.target.value;return;}
     if(e.target.dataset.l&&lState){lState.q=e.target.value; drawLink(); const el=document.getElementById('l-q'); el.focus(); el.setSelectionRange(el.value.length,el.value.length); return;}
