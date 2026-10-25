@@ -50,6 +50,7 @@ body{margin:0;font-size:14px} img{max-width:100%} [hidden]{display:none!importan
 *{box-sizing:border-box}
 html,body{overflow-x:clip;max-width:100%}
 body{touch-action:pan-y pinch-zoom}
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 96px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
@@ -410,30 +411,61 @@ li.open > div > .nd-wrap{grid-template-rows:1fr;opacity:1}
 .src a{color:var(--accent)}
 body.resp .fab,body.stock .fab{display:none}
 /* 盤點 */
-.lc{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.lc-h{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 4px}
-.lc-t{flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:0;background:none;padding:8px 6px;text-align:left;font:inherit;color:var(--ink)}
-.lc-t b{font-size:17px}
-.lc-t small{color:var(--muted);font-size:13px}
-.lc-t .chev{transition:transform .2s;flex:0 0 auto}
+.stock-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.stock-top h2{margin:0;font-size:18px}
+.lc{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.lc + .lc{margin-top:0}
+.lc-h{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:12px 12px 12px 14px}
+.lc-t{min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;text-align:left;font:inherit;color:var(--ink)}
+.lc-ic{flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:17px}
+.lc-tt{min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.lc-tt b{font-size:18px}
+.lc-tt small{color:var(--muted);font-size:13px}
+.lc-tt small .w{color:var(--t-3);font-weight:600}
+.lc-tt small .x{color:var(--t-exp);font-weight:600}
+.lc-t .chev{flex:0 0 auto;color:var(--muted);transition:transform .2s;margin-left:auto}
 .lc-t[aria-expanded="true"] .chev{transform:rotate(180deg)}
-.lc-b{border-top:1px solid var(--line);padding:4px 12px 10px}
-.lc-sub{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 2px}
-.lc-sub h4{margin:0;font-size:14px;color:var(--accent)}
-.lc-sub h4 small{color:var(--muted);font-weight:400;margin-left:6px}
-.lc-list{list-style:none;margin:0;padding:0}
-.lc-list li{border-top:1px solid var(--line)}
-.lc-list li:first-child{border-top:0}
-.lc-list button{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;border:0;background:none;padding:8px 0;text-align:left;font:inherit;color:var(--ink)}
-.lc-list .nm{font-weight:600;min-width:0}
-.lc-list .nm small{display:block;font-weight:400;color:var(--muted);font-size:12px}
-.lc-list .q{font-family:var(--font-num);font-size:18px;font-weight:700;text-align:right}
-.lc-list .q small{font-family:var(--font-body);font-size:11px;color:var(--muted);font-weight:400;margin-left:2px}
-.lc-list .ex{grid-column:1/-1;display:flex;gap:6px;align-items:center}
-.lc-none{font-size:13px;color:var(--muted);padding:6px 0}
-.lc-un li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,46%);gap:8px;align-items:center;padding:8px 0}
-.lc-un select{width:100%;min-width:0}
-.stock-acts{display:flex;gap:8px;justify-content:flex-end}
+.lc-pr{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface-2);border-radius:99px;padding:5px 11px;font-size:13px;color:var(--ink);white-space:nowrap}
+.lc-pr svg{width:15px;height:15px}
+.lc-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 12px 64px}
+.lc-chips span{font-size:12px;border-radius:99px;padding:2px 9px;background:var(--wash);color:var(--ink)}
+.lc-chips span.z{color:var(--muted);background:transparent;border:1px dashed var(--line)}
+.lc-chips b{font-family:var(--font-num);font-size:14px;margin-left:3px}
+.lc-b{border-top:1px solid var(--line)}
+.lc-sec{border-top:1px solid var(--line)}
+.lc-sec:first-child{border-top:0}
+.lc-sh{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px 8px 14px;background:var(--surface-2)}
+.lc-sh h4{margin:0;font-size:14px;color:var(--accent);display:flex;align-items:baseline;gap:6px}
+.lc-sh h4 small{color:var(--muted);font-weight:400;font-size:12px}
+.lc-sh.empty{background:transparent}
+.lc-sh.empty h4{color:var(--muted);font-weight:500}
+.lc-list{list-style:none;margin:0;padding:0 12px 0 14px}
+.lc-list li + li{border-top:1px solid var(--line)}
+.lc-row{width:100%;display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;border:0;background:none;padding:9px 0;text-align:left;font:inherit;color:var(--ink)}
+.lc-th{width:40px;height:40px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;overflow:hidden;font-size:15px}
+.lc-th img{width:100%;height:100%;object-fit:cover}
+.lc-nm{min-width:0;display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+.lc-nm b{font-size:15px;line-height:1.3;font-weight:600}
+.lc-nm .fl{font-size:12px;color:var(--muted);line-height:1.35}
+.lc-q{text-align:right;font-family:var(--font-num);font-size:22px;font-weight:700;line-height:1;white-space:nowrap}
+.lc-q small{font-family:var(--font-body);font-size:12px;color:var(--muted);font-weight:400;margin-left:2px}
+/* 待歸位 */
+.lc.todo{border-color:color-mix(in srgb,var(--signal) 70%,var(--line));box-shadow:inset 4px 0 0 var(--signal)}
+.lc.todo .lc-ic{background:color-mix(in srgb,var(--signal) 28%,transparent);color:var(--signal-ink)}
+.todo-hint{font-size:13px;color:var(--muted);padding:0 14px 10px 64px;margin-top:-6px}
+.todo-list{list-style:none;margin:0;padding:0 12px 0 14px;border-top:1px solid var(--line)}
+.todo-list li + li{border-top:1px solid var(--line)}
+.todo-row{width:100%;display:grid;grid-template-columns:24px 40px minmax(0,1fr) auto;gap:10px;align-items:center;border:0;background:none;padding:9px 0;text-align:left;font:inherit;color:var(--ink)}
+.todo-row .ck{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;color:transparent;font-size:13px;font-weight:800}
+.todo-row[aria-pressed="true"] .ck{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.todo-row .cat{font-size:12px;color:var(--muted);white-space:nowrap}
+.todo-bar{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin:8px;padding:8px;border-radius:14px;background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.todo-bar select{width:100%;min-width:0;border:0;border-radius:10px;padding:9px 10px;background:var(--surface);color:var(--ink)}
+.todo-bar .btn{background:var(--signal);color:var(--signal-ink);border:0;font-weight:700;white-space:nowrap}
+.todo-bar .btn:disabled{opacity:.5}
+.todo-sel{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 12px 64px}
+.todo-sel button{border:1px solid var(--line);background:var(--surface-2);color:var(--accent);font:inherit;font-size:13px;padding:3px 11px;border-radius:99px}
+.stock-list{display:flex;flex-direction:column;gap:10px}
 .locedit{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
 .locedit > li{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface-2)}
 .locrow{display:flex;gap:6px;align-items:center}
@@ -442,23 +474,33 @@ body.resp .fab,body.stock .fab{display:none}
 .lockids{list-style:none;margin:8px 0 0;padding:0 0 0 14px;display:flex;flex-direction:column;gap:6px;border-left:2px solid var(--line)}
 /* 盤點清單（列印） */
 .il{font-family:var(--font-body);color:#13263A;background:#fff;font-size:10.5pt;line-height:1.35}
-.il-h{display:flex;justify-content:space-between;align-items:flex-end;gap:4mm;border-bottom:.8mm solid #F5B800;padding-bottom:1.5mm;margin-bottom:2mm}
-.il-h b{font-size:1.5em}
-.il-h span{font-size:.8em;color:#5C6977;text-align:right}
+.il-h{border-bottom:.8mm solid #F5B800;padding-bottom:1.5mm;margin-bottom:2mm}
+.il-h b{display:block;font-size:1.55em;line-height:1.25}
+.il-meta{display:flex;justify-content:space-between;align-items:flex-end;gap:3mm;margin-top:1mm;font-size:.8em;color:#5C6977;white-space:nowrap}
+.il-meta .fill{display:flex;gap:3mm}
+.il-meta .fill i{display:inline-block;width:16mm;border-bottom:.25mm solid #98A6B4;margin-left:1mm;vertical-align:-.6mm}
+.il.a6 .il-meta .fill i{width:11mm}
+.il table{table-layout:fixed}
+.il col.ck{width:6mm}.il col.q{width:17mm}.il col.e{width:20mm}
+.il td,.il th{overflow-wrap:anywhere}
 .il h3{font-size:1.05em;margin:3mm 0 1mm;color:#1C3D5A;break-after:avoid}
 .il table{width:100%;border-collapse:collapse}
 .il th{font-size:.75em;color:#5C6977;font-weight:600;text-align:left;border-bottom:.3mm solid #98A6B4;padding:.8mm 1mm}
 .il td{border-bottom:.2mm solid #D5DCE3;padding:1.2mm 1mm;vertical-align:top}
 .il tr{break-inside:avoid}
-.il td.ck{width:5mm}.il td.ck i{display:inline-block;width:3.6mm;height:3.6mm;border:.35mm solid #13263A;border-radius:.6mm;vertical-align:-.5mm}
+.il td.ck{}.il td.ck i{display:inline-block;width:3.6mm;height:3.6mm;border:.35mm solid #13263A;border-radius:.6mm;vertical-align:-.5mm}
 .il td small{display:block;color:#5C6977;font-size:.8em}
 .il td.q,.il th.q{text-align:right;white-space:nowrap}
-.il td.e,.il th.e{white-space:nowrap;width:1%}
+.il td.e,.il th.e{white-space:nowrap;text-align:right}
 .il td.e.bad{color:#C62E2E;font-weight:700}
 .il .none{color:#98A6B4;font-size:.85em;padding:1mm}
 .il.a6{font-size:8.6pt}
 .ilprev{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px;max-height:46vh;overflow:auto}
-.ilprev .il{padding:4mm;border-radius:6px}
+.ilprev .il{padding:4mm;border-radius:6px;box-sizing:border-box;transform-origin:0 0}
+.ilprev .il.a5{width:148mm;min-height:210mm;padding:9mm}
+.ilprev .il.a6{width:105mm;min-height:148mm;padding:6mm}
+.ilprev .pwrap{overflow:hidden;margin:0 auto;box-shadow:0 2px 10px rgba(0,0,0,.12);border-radius:4px}
+.ilprev{contain:inline-size}
 #printArea.print-list .il{padding:0}
 /* 裁切 */
 .crop{position:fixed;inset:0;z-index:60;background:rgba(10,20,30,.82);display:flex;align-items:center;justify-content:center;padding:16px}
@@ -528,6 +570,8 @@ body.locked{overflow:hidden}
 .wall-acts{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
 
 [hidden]{display:none!important}
+/* iOS Safari zooms the whole page when focusing a field under 16px */
+input,select,textarea{font-size:16px!important}
 /* printable ID cards (shared by preview and print) */
 .pc,.a6-in{font-family:var(--font-body);color:#13263A;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .pc{width:85.6mm;height:54mm;box-sizing:border-box;padding:3mm 3.5mm;border:.3mm solid #C9D2DC;border-radius:3mm;overflow:hidden;font-size:7.2pt;line-height:1.3;display:flex;flex-direction:column;gap:1.4mm}
@@ -864,22 +908,40 @@ body.locked{overflow:hidden}
   const itemsAt=id=>S.items.filter(it=>it.loc===id).sort(locSort);
   const itemsUnder=t=>S.items.filter(it=>it.loc===t.id||t.kids.some(k=>k.id===it.loc));
   const flTxt=it=>hasFl(it)?it.flavors.filter(x=>Number(x.q)>0).map(x=>`${x.n} ${x.q}`).join('・'):'';
+  const thumbOf=it=>`<span class="lc-th">${it.photos&&it.photos.length?`<img src="${psrc(it.photos[0])}" alt="">`:esc(it.name.slice(0,1))}</span>`;
+  const showTier=it=>{const t=tierOf(it); return t!=='ok'&&!(t==='12'&&!it.exp);};
   function stockRows(list){
-    if(!list.length)return '<div class="lc-none">沒有品項</div>';
-    return `<ul class="lc-list">${list.map(it=>`<li><button data-act="open" data-id="${it.id}"><span class="nm">${esc(it.name)}${flTxt(it)?`<small>${esc(flTxt(it))}</small>`:''}</span><span class="q">${it.qty}<small>${esc(it.unit)}</small></span>${it.exp||['chk'].includes(tierOf(it))?`<span class="ex">${tierChip(it)}</span>`:''}</button></li>`).join('')}</ul>`;
+    return `<ul class="lc-list">${list.map(it=>`<li><button class="lc-row" data-act="open" data-id="${it.id}">${thumbOf(it)}<span class="lc-nm"><b>${esc(it.name)}</b>${flTxt(it)?`<span class="fl">${esc(flTxt(it))}</span>`:''}${showTier(it)?tierChip(it):''}</span><span class="lc-q">${it.qty}<small>${esc(it.unit)}</small></span></button></li>`).join('')}</ul>`;
+  }
+  const PRINT_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>';
+  function warnTxt(list){const x=list.filter(it=>tierOf(it)==='exp').length, w=list.filter(it=>tierOf(it)==='3').length;
+    return (x?`・<span class="x">${x} 項過期</span>`:'')+(w?`・<span class="w">${w} 項快到期</span>`:'');}
+  function secBlock(title,list,id){
+    if(!list.length)return `<div class="lc-sec"><div class="lc-sh empty"><h4>${esc(title)}<small>空</small></h4>${id?`<button class="lc-pr" data-act="invout" data-id="${id}">${PRINT_IC}清單</button>`:''}</div></div>`;
+    return `<div class="lc-sec"><div class="lc-sh"><h4>${esc(title)}<small>${list.length} 項</small></h4>${id?`<button class="lc-pr" data-act="invout" data-id="${id}">${PRINT_IC}清單</button>`:''}</div>${stockRows(list)}</div>`;
   }
   function renderStock(){
     const el=document.getElementById('stock'), ro=S.offline;
     const un=S.items.filter(it=>!locFind(it.loc)).sort(locSort);
-    el.innerHTML=`<div class="stock-acts"><button class="btn sm" data-act="locedit" ${ro?'disabled':''}>${ICON.pencil} 管理位置</button></div>
-      ${un.length?`<div class="lc"><div class="lc-h"><span class="lc-t"><b>未指定位置</b><small>${un.length} 項・選一個位置就會歸位</small></span></div>
-        <div class="lc-b"><ul class="lc-list lc-un">${un.map(it=>`<li><span class="nm">${esc(it.name)}<small>${esc(it.cat)}・${it.qty} ${esc(it.unit)}</small></span><select data-locset="${it.id}" aria-label="${esc(it.name)}的位置" ${ro?'disabled':''}>${locOptions('')}</select></li>`).join('')}</ul></div></div>`:''}
+    if(!S.todoSel)S.todoSel=new Set();
+    [...S.todoSel].forEach(id=>{if(!un.some(it=>it.id===id))S.todoSel.delete(id);});
+    const nSel=S.todoSel.size;
+    el.innerHTML=`<div class="stock-top"><h2>存放位置</h2><button class="btn sm" data-act="locedit" ${ro?'disabled':''}>${ICON.pencil} 管理位置</button></div>
+      <div class="stock-list">
+      ${un.length?`<div class="lc todo"><div class="lc-h"><div class="lc-t"><span class="lc-ic">?</span><span class="lc-tt"><b>待歸位</b><small>${un.length} 項還沒有位置</small></span></div></div>
+        <div class="todo-hint">勾選品項，再從下方選位置一次移入</div>
+        ${ro?'':`<div class="todo-sel"><button data-act="todoall">${nSel===un.length?'取消全選':'全選'}</button>${CATS.filter(c=>un.some(it=>it.cat===c)).map(c=>`<button data-act="todocat" data-k="${c}">＋${c}</button>`).join('')}</div>`}
+        <ul class="todo-list">${un.map(it=>`<li><button class="todo-row" data-act="todotog" data-id="${it.id}" aria-pressed="${S.todoSel.has(it.id)}" ${ro?'disabled':''}><span class="ck">✓</span>${thumbOf(it)}<span class="lc-nm"><b>${esc(it.name)}</b>${flTxt(it)?`<span class="fl">${esc(flTxt(it))}</span>`:''}</span><span class="cat">${esc(it.cat)}・${it.qty} ${esc(it.unit)}</span></button></li>`).join('')}</ul>
+        ${ro?'':`<div class="todo-bar"><select id="todoLoc" aria-label="移入哪個位置">${locOptions(S.todoLoc||'').replace('>未指定<','>選擇位置…<')}</select><button class="btn" data-act="todogo" ${nSel?'':'disabled'}>${nSel?`移入 ${nSel} 項`:'移入'}</button></div>`}
+      </div>`:''}
       ${S.locs.map(t=>{const open=S.locOpen.has(t.id), all=itemsUnder(t), direct=itemsAt(t.id);
-        return `<div class="lc"><div class="lc-h"><button class="lc-t" data-act="locfold" data-id="${t.id}" aria-expanded="${open}">${ICON.chev}<b>${esc(t.name)}</b><small>${all.length} 項${t.kids.length?`・${t.kids.length} 個子位置`:''}</small></button><button class="btn sm" data-act="invout" data-id="${t.id}">清單</button></div>
+        return `<div class="lc"><div class="lc-h"><button class="lc-t" data-act="locfold" data-id="${t.id}" aria-expanded="${open}"><span class="lc-ic">${esc(t.name.slice(0,1))}</span><span class="lc-tt"><b>${esc(t.name)}</b><small>${all.length} 項${warnTxt(all)}</small></span>${ICON.chev}</button><button class="lc-pr" data-act="invout" data-id="${t.id}">${PRINT_IC}清單</button></div>
+          ${!open&&t.kids.length?`<div class="lc-chips">${direct.length?`<span>直接放<b>${direct.length}</b></span>`:''}${t.kids.map(k=>{const n=itemsAt(k.id).length; return `<span class="${n?'':'z'}">${esc(k.name)}<b>${n}</b></span>`;}).join('')}</div>`:''}
           ${open?`<div class="lc-b">
-            ${direct.length||!t.kids.length?`${t.kids.length?`<div class="lc-sub"><h4>直接放在${esc(t.name)}<small>${direct.length} 項</small></h4></div>`:''}${stockRows(direct)}`:''}
-            ${t.kids.map(k=>{const l=itemsAt(k.id); return `<div class="lc-sub"><h4>${esc(k.name)}<small>${l.length} 項</small></h4><button class="btn sm ghost" data-act="invout" data-id="${k.id}">清單</button></div>${stockRows(l)}`;}).join('')}
-          </div>`:''}</div>`;}).join('')}`;
+            ${direct.length||!t.kids.length?secBlock(t.kids.length?`直接放在${t.name}`:'品項',direct,null):''}
+            ${t.kids.map(k=>secBlock(k.name,itemsAt(k.id),k.id)).join('')}
+          </div>`:''}</div>`;}).join('')}
+      </div>`;
   }
   // ---- location editor ----
   let lcState=null;
@@ -915,8 +977,8 @@ body.locked{overflow:hidden}
   const expTxt=it=>it.exp||'';
   function invHtml(id,fmt){
     const {title,secs}=invSections(id), n=secs.reduce((a,x)=>a+x.items.length,0);
-    return `<div class="il ${fmt}"><div class="il-h"><b>${esc(title)}</b><span>${n} 項・列印 ${fmt==='a6'?'':''}${fmt_(today)}<br>盤點日期：＿＿＿＿＿　盤點人：＿＿＿</span></div>
-      ${secs.map(sec=>`${sec.h?`<h3>${esc(sec.h)}</h3>`:''}${sec.items.length?`<table><thead><tr><th></th><th>品名</th><th class="q">應有</th><th class="e">有效期限</th></tr></thead><tbody>${sec.items.map(it=>{const bad=it.exp&&['exp','3'].includes(tierOf(it));
+    return `<div class="il ${fmt}"><div class="il-h"><b>${esc(title)}</b><div class="il-meta"><span>${n} 項・${fmt_(today)} 列印</span><span class="fill"><span>盤點日<i></i></span><span>盤點人<i></i></span></span></div></div>
+      ${secs.map(sec=>`${sec.h?`<h3>${esc(sec.h)}<small style="font-weight:400;color:#5C6977;margin-left:2mm">${sec.items.length} 項</small></h3>`:''}${sec.items.length?`<table><colgroup><col class="ck"><col><col class="q"><col class="e"></colgroup><thead><tr><th></th><th>品名</th><th class="q">應有</th><th class="e">有效期限</th></tr></thead><tbody>${sec.items.map(it=>{const bad=it.exp&&['exp','3'].includes(tierOf(it));
         return `<tr><td class="ck"><i></i></td><td>${esc(it.name)}${flTxt(it)?`<small>${esc(flTxt(it))}</small>`:''}</td><td class="q">${it.qty} ${esc(it.unit)}</td><td class="e ${bad?'bad':''}">${esc(expTxt(it))||'—'}</td></tr>`;}).join('')}</tbody></table>`:'<div class="none">沒有品項</div>'}`).join('')}</div>`;
   }
   const fmt_=d=>fmt(d);
@@ -925,9 +987,11 @@ body.locked{overflow:hidden}
     openSheet(`<h2>盤點清單</h2><div class="sub">${esc(locLabel(ioState.id))}${locFind(ioState.id)&&!locFind(ioState.id).sub&&locFind(ioState.id).top.kids.length?'・包含所有子位置':''}</div>
       <div class="field"><span>列印紙張</span><div class="toggles"><button data-act="ifmt" data-k="a5" class="${ioState.fmt==='a5'?'on':''}">A5</button><button data-act="ifmt" data-k="a6" class="${ioState.fmt==='a6'?'on':''}">A6</button></div>
         <div class="hint">列印時紙張選 ${ioState.fmt.toUpperCase()}；用 A4 紙印的話，縮放選「符合頁面」。</div></div>
-      <div class="ilprev">${invHtml(ioState.id,ioState.fmt)}</div>
+      <div class="ilprev" id="ilprev">${invHtml(ioState.id,ioState.fmt)}</div>
       <div id="wallOut" class="wall-out"></div>
       <div class="sheet-actions"><button class="btn" data-act="iimg">存成圖片</button><button class="btn primary" data-act="iprint">列印</button></div>`,'盤點清單',keep);
+    const pv=document.getElementById('ilprev'); if(pv){const il=pv.querySelector('.il'); const wr=document.createElement('div'); wr.className='pwrap'; il.before(wr); wr.appendChild(il);
+      const k=Math.min(1,(pv.clientWidth-22)/il.offsetWidth); il.style.transform=`scale(${k})`; wr.style.width=il.offsetWidth*k+'px'; wr.style.height=il.offsetHeight*k+'px';}
   }
   function printInv(){
     let el=document.getElementById('printArea'); if(!el){el=document.createElement('div'); el.id='printArea'; document.body.appendChild(el);}
@@ -2440,6 +2504,11 @@ body.locked{overflow:hidden}
       case 'ctfold': S.ctOpen=!S.ctOpen; renderResp(); break;
       case 'locfold': {const id=b.dataset.id; S.locOpen.has(id)?S.locOpen.delete(id):S.locOpen.add(id); renderStock(); break;}
       case 'locedit': openLocEdit(); break;
+      case 'todotog': {const id=b.dataset.id; S.todoSel.has(id)?S.todoSel.delete(id):S.todoSel.add(id); renderStock(); break;}
+      case 'todoall': {const un=S.items.filter(it=>!locFind(it.loc)); if(S.todoSel.size===un.length)S.todoSel.clear(); else un.forEach(it=>S.todoSel.add(it.id)); renderStock(); break;}
+      case 'todocat': {S.items.filter(it=>!locFind(it.loc)&&it.cat===b.dataset.k).forEach(it=>S.todoSel.add(it.id)); renderStock(); break;}
+      case 'todogo': {const loc=(document.getElementById('todoLoc')||{}).value; if(!locFind(loc)){toast('先選一個位置');break;}
+        const n=S.todoSel.size; S.items.forEach(it=>{if(S.todoSel.has(it.id))it.loc=loc;}); S.todoSel.clear(); S.todoLoc=loc; S.locOpen.add(locFind(loc).top.id); render(); toast(`${n} 項已移入 ${locLabel(loc)}`); break;}
       case 'lcadd': lcState.push({id:uid('L'),name:'',kids:[]}); drawLocEdit(); break;
       case 'lcadk': lcState[Number(b.dataset.t)].kids.push({id:uid('L'),name:''}); drawLocEdit(); break;
       case 'lcmv': {const t=Number(b.dataset.t), k=b.dataset.k, d=Number(b.dataset.d); const arr=k==null?lcState:lcState[t].kids, i=k==null?t:Number(k), j=i+d; if(j<0||j>=arr.length)break; [arr[i],arr[j]]=[arr[j],arr[i]]; drawLocEdit(); break;}
@@ -2484,6 +2553,7 @@ body.locked{overflow:hidden}
   document.addEventListener('input',e=>{
     const t=e.target;
     if(t.dataset.lct!=null&&lcState){const o=t.dataset.lck!=null?lcState[Number(t.dataset.lct)].kids[Number(t.dataset.lck)]:lcState[Number(t.dataset.lct)]; o.name=t.value; return;}
+    if(t.id==='todoLoc'){S.todoLoc=t.value; return;}
     if(t.dataset.locset){const it=S.items.find(x=>x.id===t.dataset.locset); if(it){it.loc=t.value; renderStock(); toast('已指定：'+locLabel(it.loc)); if(!DEMO&&sess&&S.role==='editor'&&synced&&diff().n)scheduleSync();} return;}
     if(t.dataset.e&&eState){eState[t.dataset.e]=t.value; return;}
     if(t.dataset.en!=null&&eState){eState.needs[Number(t.dataset.en)].l=t.value; return;}
