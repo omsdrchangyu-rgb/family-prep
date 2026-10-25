@@ -450,7 +450,8 @@ body.resp .fab,body.stock .fab{display:none}
 .lc-q{text-align:right;font-family:var(--font-num);font-size:22px;font-weight:700;line-height:1;white-space:nowrap}
 .lc-q small{font-family:var(--font-body);font-size:12px;color:var(--muted);font-weight:400;margin-left:2px}
 /* 待歸位 */
-.lc.todo{border-color:color-mix(in srgb,var(--signal) 70%,var(--line));box-shadow:inset 4px 0 0 var(--signal)}
+.lc.todo{border-color:color-mix(in srgb,var(--signal) 75%,var(--line))}
+.lc.todo > .lc-h,.lc.todo > .todo-hint,.lc.todo > .todo-sel,.lc.todo > .todo-bar{background:color-mix(in srgb,var(--signal) 9%,var(--surface))}
 .lc.todo .lc-ic{background:color-mix(in srgb,var(--signal) 28%,transparent);color:var(--signal-ink)}
 .todo-hint{font-size:13px;color:var(--muted);padding:0 14px 10px 64px;margin-top:-6px}
 .todo-list{list-style:none;margin:0;padding:0 12px 0 14px;border-top:1px solid var(--line)}
@@ -459,10 +460,10 @@ body.resp .fab,body.stock .fab{display:none}
 .todo-row .ck{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;color:transparent;font-size:13px;font-weight:800}
 .todo-row[aria-pressed="true"] .ck{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .todo-row .cat{font-size:12px;color:var(--muted);white-space:nowrap}
-.todo-bar{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin:8px;padding:8px;border-radius:14px;background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 20px rgba(0,0,0,.18)}
-.todo-bar select{width:100%;min-width:0;border:0;border-radius:10px;padding:9px 10px;background:var(--surface);color:var(--ink)}
-.todo-bar .btn{background:var(--signal);color:var(--signal-ink);border:0;font-weight:700;white-space:nowrap}
-.todo-bar .btn:disabled{opacity:.5}
+.todo-bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:0 12px 12px 14px}
+.todo-bar select{width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:var(--surface);color:var(--ink)}
+.todo-bar .btn{background:var(--accent);color:var(--accent-ink);border:0;font-weight:700;white-space:nowrap}
+.todo-bar .btn:disabled{opacity:.4}
 .todo-sel{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 12px 64px}
 .todo-sel button{border:1px solid var(--line);background:var(--surface-2);color:var(--accent);font:inherit;font-size:13px;padding:3px 11px;border-radius:99px}
 .stock-list{display:flex;flex-direction:column;gap:10px}
@@ -495,10 +496,15 @@ body.resp .fab,body.stock .fab{display:none}
 .il td.e.bad{color:#C62E2E;font-weight:700}
 .il .none{color:#98A6B4;font-size:.85em;padding:1mm}
 .il.a6{font-size:8.6pt}
+.il.land .il-body{column-count:2;column-gap:7mm}
+.il.land .il-sec h3{margin-top:0;padding-top:2mm}
+.il.land .il-sec{break-inside:auto}
 .ilprev{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px;max-height:46vh;overflow:auto}
 .ilprev .il{padding:4mm;border-radius:6px;box-sizing:border-box;transform-origin:0 0}
 .ilprev .il.a5{width:148mm;min-height:210mm;padding:9mm}
 .ilprev .il.a6{width:105mm;min-height:148mm;padding:6mm}
+.ilprev .il.a5.land{width:210mm;min-height:148mm}
+.ilprev .il.a6.land{width:148mm;min-height:105mm}
 .ilprev .pwrap{overflow:hidden;margin:0 auto;box-shadow:0 2px 10px rgba(0,0,0,.12);border-radius:4px}
 .ilprev{contain:inline-size}
 #printArea.print-list .il{padding:0}
@@ -929,10 +935,11 @@ input,select,textarea{font-size:16px!important}
     el.innerHTML=`<div class="stock-top"><h2>存放位置</h2><button class="btn sm" data-act="locedit" ${ro?'disabled':''}>${ICON.pencil} 管理位置</button></div>
       <div class="stock-list">
       ${un.length?`<div class="lc todo"><div class="lc-h"><div class="lc-t"><span class="lc-ic">?</span><span class="lc-tt"><b>待歸位</b><small>${un.length} 項還沒有位置</small></span></div></div>
-        <div class="todo-hint">勾選品項，再從下方選位置一次移入</div>
+        <div class="todo-hint">勾選品項，選好位置後按「移入」</div>
         ${ro?'':`<div class="todo-sel"><button data-act="todoall">${nSel===un.length?'取消全選':'全選'}</button>${CATS.filter(c=>un.some(it=>it.cat===c)).map(c=>`<button data-act="todocat" data-k="${c}">＋${c}</button>`).join('')}</div>`}
-        <ul class="todo-list">${un.map(it=>`<li><button class="todo-row" data-act="todotog" data-id="${it.id}" aria-pressed="${S.todoSel.has(it.id)}" ${ro?'disabled':''}><span class="ck">✓</span>${thumbOf(it)}<span class="lc-nm"><b>${esc(it.name)}</b>${flTxt(it)?`<span class="fl">${esc(flTxt(it))}</span>`:''}</span><span class="cat">${esc(it.cat)}・${it.qty} ${esc(it.unit)}</span></button></li>`).join('')}</ul>
         ${ro?'':`<div class="todo-bar"><select id="todoLoc" aria-label="移入哪個位置">${locOptions(S.todoLoc||'').replace('>未指定<','>選擇位置…<')}</select><button class="btn" data-act="todogo" ${nSel?'':'disabled'}>${nSel?`移入 ${nSel} 項`:'移入'}</button></div>`}
+        <ul class="todo-list">${un.map(it=>`<li><button class="todo-row" data-act="todotog" data-id="${it.id}" aria-pressed="${S.todoSel.has(it.id)}" ${ro?'disabled':''}><span class="ck">✓</span>${thumbOf(it)}<span class="lc-nm"><b>${esc(it.name)}</b>${flTxt(it)?`<span class="fl">${esc(flTxt(it))}</span>`:''}</span><span class="cat">${esc(it.cat)}・${it.qty} ${esc(it.unit)}</span></button></li>`).join('')}</ul>
+        
       </div>`:''}
       ${S.locs.map(t=>{const open=S.locOpen.has(t.id), all=itemsUnder(t), direct=itemsAt(t.id);
         return `<div class="lc"><div class="lc-h"><button class="lc-t" data-act="locfold" data-id="${t.id}" aria-expanded="${open}"><span class="lc-ic">${esc(t.name.slice(0,1))}</span><span class="lc-tt"><b>${esc(t.name)}</b><small>${all.length} 項${warnTxt(all)}</small></span>${ICON.chev}</button><button class="lc-pr" data-act="invout" data-id="${t.id}">${PRINT_IC}清單</button></div>
@@ -977,16 +984,16 @@ input,select,textarea{font-size:16px!important}
   const expTxt=it=>it.exp||'';
   function invHtml(id,fmt){
     const {title,secs}=invSections(id), n=secs.reduce((a,x)=>a+x.items.length,0);
-    return `<div class="il ${fmt}"><div class="il-h"><b>${esc(title)}</b><div class="il-meta"><span>${n} 項・${fmt_(today)} 列印</span><span class="fill"><span>盤點日<i></i></span><span>盤點人<i></i></span></span></div></div>
-      ${secs.map(sec=>`${sec.h?`<h3>${esc(sec.h)}<small style="font-weight:400;color:#5C6977;margin-left:2mm">${sec.items.length} 項</small></h3>`:''}${sec.items.length?`<table><colgroup><col class="ck"><col><col class="q"><col class="e"></colgroup><thead><tr><th></th><th>品名</th><th class="q">應有</th><th class="e">有效期限</th></tr></thead><tbody>${sec.items.map(it=>{const bad=it.exp&&['exp','3'].includes(tierOf(it));
-        return `<tr><td class="ck"><i></i></td><td>${esc(it.name)}${flTxt(it)?`<small>${esc(flTxt(it))}</small>`:''}</td><td class="q">${it.qty} ${esc(it.unit)}</td><td class="e ${bad?'bad':''}">${esc(expTxt(it))||'—'}</td></tr>`;}).join('')}</tbody></table>`:'<div class="none">沒有品項</div>'}`).join('')}</div>`;
+    return `<div class="il ${fmt} ${ioState&&ioState.ori==='l'?'land':''}"><div class="il-h"><b>${esc(title)}</b><div class="il-meta"><span>${n} 項・${fmt_(today)} 列印</span><span class="fill"><span>盤點日<i></i></span><span>盤點人<i></i></span></span></div></div>
+      <div class="il-body">${secs.map(sec=>`<div class="il-sec">${sec.h?`<h3>${esc(sec.h)}<small style="font-weight:400;color:#5C6977;margin-left:2mm">${sec.items.length} 項</small></h3>`:''}${sec.items.length?`<table><colgroup><col class="ck"><col><col class="q"><col class="e"></colgroup><thead><tr><th></th><th>品名</th><th class="q">應有</th><th class="e">有效期限</th></tr></thead><tbody>${sec.items.map(it=>{const bad=it.exp&&['exp','3'].includes(tierOf(it));
+        return `<tr><td class="ck"><i></i></td><td>${esc(it.name)}${flTxt(it)?`<small>${esc(flTxt(it))}</small>`:''}</td><td class="q">${it.qty} ${esc(it.unit)}</td><td class="e ${bad?'bad':''}">${esc(expTxt(it))||'—'}</td></tr>`;}).join('')}</tbody></table>`:'<div class="none">沒有品項</div>'}</div>`).join('')}</div></div>`;
   }
   const fmt_=d=>fmt(d);
-  function openInvOut(id){ioState={id,fmt:(ioState&&ioState.fmt)||'a5'}; drawInvOut(false);}
+  function openInvOut(id){ioState={id,fmt:(ioState&&ioState.fmt)||'a5',ori:(ioState&&ioState.ori)||'p'}; drawInvOut(false);}
   function drawInvOut(keep=true){
     openSheet(`<h2>盤點清單</h2><div class="sub">${esc(locLabel(ioState.id))}${locFind(ioState.id)&&!locFind(ioState.id).sub&&locFind(ioState.id).top.kids.length?'・包含所有子位置':''}</div>
-      <div class="field"><span>列印紙張</span><div class="toggles"><button data-act="ifmt" data-k="a5" class="${ioState.fmt==='a5'?'on':''}">A5</button><button data-act="ifmt" data-k="a6" class="${ioState.fmt==='a6'?'on':''}">A6</button></div>
-        <div class="hint">列印時紙張選 ${ioState.fmt.toUpperCase()}；用 A4 紙印的話，縮放選「符合頁面」。</div></div>
+      <div class="field"><span>列印紙張</span><div class="toggles"><button data-act="ifmt" data-k="a5" class="${ioState.fmt==='a5'?'on':''}">A5</button><button data-act="ifmt" data-k="a6" class="${ioState.fmt==='a6'?'on':''}">A6</button><span style="width:10px"></span><button data-act="iori" data-k="p" class="${ioState.ori==='p'?'on':''}">直向</button><button data-act="iori" data-k="l" class="${ioState.ori==='l'?'on':''}">橫向</button></div>
+        <div class="hint">列印時紙張選 ${ioState.fmt.toUpperCase()}、${ioState.ori==='l'?'橫向':'直向'}；用 A4 紙印的話，縮放選「符合頁面」。</div></div>
       <div class="ilprev" id="ilprev">${invHtml(ioState.id,ioState.fmt)}</div>
       <div id="wallOut" class="wall-out"></div>
       <div class="sheet-actions"><button class="btn" data-act="iimg">存成圖片</button><button class="btn primary" data-act="iprint">列印</button></div>`,'盤點清單',keep);
@@ -997,7 +1004,8 @@ input,select,textarea{font-size:16px!important}
     let el=document.getElementById('printArea'); if(!el){el=document.createElement('div'); el.id='printArea'; document.body.appendChild(el);}
     el.className='print-list'; el.innerHTML=invHtml(ioState.id,ioState.fmt);
     let st=document.getElementById('pageSize'); if(!st){st=document.createElement('style'); st.id='pageSize'; document.head.appendChild(st);}
-    st.textContent=`@media print{@page{size:${ioState.fmt==='a6'?'105mm 148mm':'148mm 210mm'};margin:${ioState.fmt==='a6'?6:9}mm}}`;
+    const dims=ioState.fmt==='a6'?[105,148]:[148,210]; if(ioState.ori==='l')dims.reverse();
+    st.textContent=`@media print{@page{size:${dims[0]}mm ${dims[1]}mm;margin:${ioState.fmt==='a6'?6:9}mm}}`;
     document.body.classList.add('printing');
     const done=()=>{document.body.classList.remove('printing'); window.removeEventListener('afterprint',done);};
     window.addEventListener('afterprint',done);
@@ -1106,7 +1114,7 @@ input,select,textarea{font-size:16px!important}
       const un=S.items.filter(it=>!locFind(it.loc)).length;
       document.getElementById('days').innerHTML=`
         <div class="days-top"><p class="label">盤點・依存放位置檢視</p></div>
-        <div class="n">${S.items.length-un}/${S.items.length}<span>項已歸位</span></div>
+        <div class="n">${S.items.length-un}/${S.items.length}<span>已歸位</span></div>
         <div class="big-cap">${un?`${un} 項還沒指定位置・`:''}每個位置都能印成 A5／A6 清單或存成圖片</div>`;
       return;
     }
@@ -2516,6 +2524,7 @@ input,select,textarea{font-size:16px!important}
       case 'lcok': saveLocEdit(); break;
       case 'invout': openInvOut(b.dataset.id); break;
       case 'ifmt': ioState.fmt=b.dataset.k; drawInvOut(); break;
+      case 'iori': ioState.ori=b.dataset.k; drawInvOut(); break;
       case 'iprint': printInv(); break;
       case 'iimg': genInvImage(); break;
       case 'fcover': {const i=Number(b.dataset.i); const [p]=fState.photos.splice(i,1); fState.photos.unshift(p); drawForm(); break;}
